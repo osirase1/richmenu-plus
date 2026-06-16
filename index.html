@@ -102,39 +102,22 @@
 <div class="panel active" id="panel-settings"><h3>基本設定</h3><div class="form-group"><label>メニュー名</label><input type="text" id="menuName"></div><div class="form-row"><div class="form-group"><label>エイリアスID</label><input type="text" id="menuAlias"></div><div class="form-group"><label>チャットバーテキスト</label><input type="text" id="chatBarText"></div></div><div class="form-row"><div class="form-group"><label>サイズ</label><select id="menuSize"><option value="large">Large (2500×1686)</option><option value="compact">Compact (2500×843)</option></select></div><div class="form-group"><label>背景色</label><input type="color" id="bgColor" value="#ffffff"></div></div>
 <div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="menuSelected" style="width:auto;"> トーク画面を開いた時にメニューを最初から表示する</label></div>
 <h3 style="margin-top:16px;">背景画像</h3><div class="image-controls"><button class="btn btn-primary btn-sm" id="btnChangeImage">📷 変更</button><button class="btn btn-danger btn-sm" id="btnRemoveImage">🗑 削除</button></div>
-<div class="info-box">
-<b>📌 タブ切り替えのご案内</b><br>
-・<b>⚙ 設定</b>：メニュー名・サイズ・背景画像など基本情報を編集<br>
-・<b>📦 エリア</b>：作成した各タップ領域のラベル/座標/アクションを編集<br>
-・<b>👤 ユーザー</b>：このメニューを表示するユーザーを登録・一括リンク<br>
-・<b>🔗 API</b>：LINEへアップロード／デフォルト設定<br>
-・<b>💾 保存</b>：このブラウザに自動保存・JSONファイル保存/読み込み
-<hr style="margin:8px 0;border:none;border-top:1px dashed #b8d4ff;">
-<b>💡 操作のヒント</b><br>
-・空白部分をドラッグ → 新規エリア作成<br>
-・エリアを右クリック → 編集メニュー<br>
-・Ctrl + ホイール → ズーム
-</div>
 <button class="btn btn-danger btn-sm btn-block" id="btnClearAreas">全エリア削除</button></div>
 
 <div class="panel" id="panel-areas"><div class="area-list" id="areaListContainer"></div></div>
-<div class="panel" id="panel-users"><h3>👤 ユーザーリンク</h3><div class="info-box">ここに登録したユーザーのみ、このリッチメニューが表示されます。<br>アップロード後に「ユーザーリンク」ボタンで一括適用できます。</div>
-<div class="user-add-row"><div class="form-group" style="margin:0;"><label>ユーザー名（表示用）</label><input type="text" id="newUserName" placeholder="例: 山田 太郎"></div><div class="form-group" style="margin:0;"><label>ユーザーID</label><input type="text" id="newUserId" placeholder="例: U1234567890abcdef..."></div><button class="btn btn-primary btn-sm btn-block" id="btnAddUser">＋ 追加</button></div>
+<div class="panel" id="panel-users"><h3>👤 ユーザーリンク</h3><div class="user-add-row"><div class="form-group" style="margin:0;"><label>ユーザー名（表示用）</label><input type="text" id="newUserName" placeholder="例: 山田 太郎"></div><div class="form-group" style="margin:0;"><label>ユーザーID</label><input type="text" id="newUserId" placeholder="例: U1234567890abcdef..."></div><button class="btn btn-primary btn-sm btn-block" id="btnAddUser">＋ 追加</button></div>
 <h3 style="margin-top:18px;">登録ユーザー <span id="userCount" style="color:#888;font-size:14px;font-weight:normal;"></span></h3><div class="user-list" id="userListContainer"></div>
 <h3 style="margin-top:18px;">適用 / 解除</h3><button class="btn btn-primary btn-sm btn-block" id="btnLinkUsers">🔗 登録ユーザー全員にリンク</button><button class="btn btn-sm btn-block" id="btnUnlinkUsers" style="margin-top:8px;">🔓 全員のリンクを解除</button></div>
 <div class="panel" id="panel-api"><h3>LINE API 連携</h3>
-<div class="info-box"><b>✅ Vercel API経由版です</b><br>チャネルアクセストークンは、<b>毎回入力しなくても使える</b>ようにできます。<br>方法は2つです。<br>① このブラウザにトークンを保存する<br>② Vercelの環境変数 <code>LINE_CHANNEL_ACCESS_TOKEN</code> に入れて、入力欄を空のまま使う<br><br><b>👥 共有利用時の仕様</b><br>URLとパスワードを知っている人は、Vercelアカウントが無くてもこのツールを開けます。<br>ただし、Vercelに <code>LINE_CHANNEL_ACCESS_TOKEN</code> を設定した場合、ログインできる人はあなたのLINE公式アカウントを操作できます。共有利用では注意してください。</div>
-<div class="warning"><b>⚠️ トークン取り扱いの注意</b><br>・入力欄にトークンを入れた場合、アップロード時だけあなたのVercel APIへ送信されます。<br>・「このブラウザにトークンを保存する」をONにすると、次回から自動入力されます。共有PCではOFFにしてください。<br>・Vercel側に <code>LINE_CHANNEL_ACCESS_TOKEN</code> を設定した場合、入力欄が空でも操作できます。<br>・共有利用後は必要に応じて「トークン削除」を押してください。<br>・このツールは個人用・関係者用の簡易保護です。不特定多数への公開利用はおすすめしません。</div>
-<div class="form-group"><label>チャネルアクセストークン</label><input type="password" id="lineTokenInput" placeholder="空欄可：Vercel環境変数に設定済みなら入力不要"></div>
+<div class="form-group"><label>チャネルアクセストークン</label><input type="password" id="lineTokenInput" placeholder="チャネルアクセストークン"></div>
 <label style="display:flex;align-items:center;gap:8px;margin:-6px 0 12px;font-size:14px;color:#555;"><input type="checkbox" id="rememberLineToken" style="width:auto;"> このブラウザにトークンを保存する（次回から自動入力）</label>
 <div class="button-row" style="margin-bottom:10px;"><button class="btn btn-sm" id="btnSaveLineToken">トークン保存</button><button class="btn btn-sm" id="btnClearLineToken">トークン削除</button></div>
-<button class="btn btn-primary btn-block" id="btnApiUpload">🚀 Vercel経由でアップロード / 上書き</button>
+<button class="btn btn-primary btn-block" id="btnApiUpload">🚀 アップロード / 上書き</button>
 <label style="display:flex;align-items:center;gap:8px;margin:10px 0 8px;font-size:15px;"><input type="checkbox" id="autoSetDefault" checked style="width:auto;"> アップロード後に自動でデフォルトに設定する</label>
 <div class="button-row">
 <button class="btn btn-block" id="btnSetDefault">✅ このメニューをデフォルトに設定</button>
 <button class="btn btn-danger btn-block" id="btnClearDefault">🧹 デフォルト解除</button>
 </div>
-<div class="info-box" style="font-size:14px;">全員に表示したい場合は、アップロード後に「デフォルトに設定」が必要です。ユーザータブのリンクは、特定ユーザーだけに表示したい場合に使います。<br><b>注意：</b>デフォルトを解除しても、ユーザー個別リンクが残っている場合は個別リンク側が表示されます。</div>
 <h3 style="margin-top:18px;">反映状態確認</h3>
 <div class="form-group"><label>確認用ユーザーID（自分のUから始まるID）</label><input type="text" id="statusUserId" placeholder="例: U1234567890abcdef..."></div>
 <div class="button-row">
@@ -145,20 +128,9 @@
 <button class="btn btn-sm btn-primary" id="btnCheckReflectStatus">🧭 デフォルト＋個別リンクをまとめて確認</button>
 </div>
 <div class="token-guide" id="apiResult" style="display:none;"></div>
-<div class="token-guide">
-<h4>🔑 Vercel側に必要な環境変数</h4>
-<ol>
-<li><code>APP_PASSWORD</code>：このツールにログインするためのパスワードです。</li>
-<li><code>LINE_CHANNEL_ACCESS_TOKEN</code>：任意。設定すると、APIタブのトークン入力欄を空のまま使えます。</li>
-<li>保存後、<code>Deployments</code> から再デプロイします。</li>
-</ol>
-<div style="margin-top:10px;font-size:13px;color:#888;">※ トークンを毎回入力したくない場合は、「このブラウザに保存」またはVercel環境変数 <code>LINE_CHANNEL_ACCESS_TOKEN</code> を使ってください。共有利用の場合、Vercel環境変数方式はログインできる人全員が同じLINE公式アカウントを操作できるため注意してください。</div>
-</div>
 </div>
 
-<div class="panel" id="panel-save"><h3>💾 本人側保存</h3>
-<div class="info-box"><b>作成したリッチメニューを、使う人本人のブラウザ・PC側に保存できます。</b><br>Google Drive連携や外部アカウント設定は不要です。通常はこのブラウザに自動保存され、必要に応じてJSONファイルとしてPCに保存できます。</div>
-<div class="warning"><b>⚠️ 保存の注意</b><br>ブラウザ自動保存は、キャッシュ・Cookie・サイトデータ削除、別ブラウザ、別端末では消えたり見えなくなったりします。大事なデータは必ず「プロジェクトファイル保存」でバックアップしてください。</div>
+<div class="panel" id="panel-save"><h3>💾 保存</h3>
 <div class="token-guide" id="saveStatus">自動保存：準備中</div>
 <h3 style="margin-top:18px;">このブラウザに保存</h3>
 <div class="button-row"><button class="btn btn-primary" id="btnSaveLocalNow">今すぐブラウザに保存</button><button class="btn" id="btnRestoreLocal">ブラウザ保存から復元</button></div>
@@ -167,7 +139,6 @@
 <div class="form-group"><label>保存ファイル名</label><input type="text" id="projectFileName" placeholder="例: 体験用リッチメニュー"></div>
 <div class="button-row"><button class="btn btn-primary" id="btnDownloadProject">プロジェクトファイル保存</button><button class="btn" id="btnLoadProjectFile">プロジェクトファイル読み込み</button></div>
 <input type="file" id="projectFileInput" accept="application/json,.json" style="display:none;">
-<div class="token-guide"><h4>保存される内容</h4>メニュー名、エイリアスID、チャットバーテキスト、背景画像、タップエリア、アクション設定、ユーザー情報、アップロード済みrichMenuIdなどを保存します。これはLINE API用JSONではなく、このアプリで再編集するためのプロジェクトファイルです。</div>
 </div>
 </div></div></div>
 <div class="ctx-menu" id="ctxMenu"><div class="ctx-menu-item" data-act="edit">✏️ 編集</div><div class="ctx-menu-item" data-act="action">🔗 アクション設定</div><div class="ctx-menu-item danger" data-act="delete">🗑 削除</div></div>
@@ -926,7 +897,7 @@ $('btnApiUpload').addEventListener('click',async()=>{
     if(img.bytes>1024*1024){
       throw new Error('画像サイズが1MBを超えています: '+formatBytes(img.bytes)+'。画像を軽くしてから再度お試しください。');
     }
-    setApiResult('LINEへアップロード中です...<br>画像サイズ: '+formatBytes(img.bytes)+' / JPEG品質: '+Math.round(img.quality*100)+'%'+(getLineToken()?'':'<br><span style="color:#666;">トークン入力欄が空のため、Vercel環境変数 LINE_CHANNEL_ACCESS_TOKEN を使用します。</span>'));
+    setApiResult('LINEへアップロード中です...<br>画像サイズ: '+formatBytes(img.bytes)+' / JPEG品質: '+Math.round(img.quality*100)+'%');
     const result=await appApi('/api/upload-richmenu',{
       richMenu:buildRichMenuJson(m),
       alias:m.alias||'',
