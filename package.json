@@ -1,0 +1,12 @@
+{
+  "name": "richmenu-plus-vercel",
+  "version": "1.1.0",
+  "private": true,
+  "description": "LINE rich menu editor with Vercel API proxy, templates, JSON editor, and app password",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

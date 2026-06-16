@@ -1,0 +1,1280 @@
+<!-- File: richmenu_editor.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>リッチメニュープラス</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}html,body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#333;height:100%;overflow:hidden;font-size:15px}
+.header{background:#06c755;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.1);flex-wrap:wrap;gap:8px}
+.header h1{font-size:18px;font-weight:600;white-space:nowrap}.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.main{display:flex;height:calc(100vh - 52px);min-height:0}
+.left{flex:1;padding:12px;overflow:auto;background:#e9ecef;display:flex;flex-direction:column;min-width:0}
+.right{width:32%;min-width:380px;background:#fff;border-left:1px solid #ddd;display:flex;flex-direction:column;min-height:0;flex-shrink:0}
+.menu-tabs{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;justify-content:flex-end}
+.menu-tab{background:#fff;border:1px solid #ddd;padding:10px 18px;border-radius:5px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:14px}
+.menu-tab.active{background:#06c755;color:#fff;border-color:#06c755}
+.menu-tab .close{cursor:pointer;opacity:.7;font-weight:bold;padding:0 4px;font-size:16px}.menu-tab .close:hover{opacity:1}
+.menu-add{background:#fff;border:1px dashed #06c755;color:#06c755;padding:10px 18px;border-radius:5px;cursor:pointer;font-size:14px}
+.canvas-wrap{position:relative;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:10px;flex:1;display:flex;flex-direction:column;min-height:0}
+.canvas-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px;color:#666;flex-wrap:wrap;gap:6px}
+.zoom-controls{display:flex;align-items:center;gap:6px}
+.zoom-controls button{background:#f0f0f0;border:1px solid #ddd;width:38px;height:38px;border-radius:4px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.zoom-controls .zoom-val{min-width:50px;text-align:center;font-weight:600;font-size:13px}
+.upload-badge{padding:4px 10px;border-radius:10px;font-size:12px;font-weight:bold}
+.upload-badge.new{background:#ffeaa7;color:#856404}.upload-badge.uploaded{background:#d4edda;color:#155724}.upload-badge.modified{background:#f8d7da;color:#721c24}
+.canvas-scroll{flex:1;overflow:auto;background:#f8f9fa;border:1px solid #ddd;border-radius:4px;padding:8px;display:flex;align-items:flex-start;justify-content:center;min-height:0}
+.canvas-container{position:relative;display:inline-block}
+#canvas{display:block;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.1);cursor:crosshair}
+.upload-overlay{position:absolute;inset:0;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;border:2px dashed #06c755}
+.upload-overlay.hidden{display:none}.upload-overlay.dragover{background:rgba(6,199,85,.15)}
+.upload-overlay-icon{font-size:36px;margin-bottom:6px}
+.upload-overlay-text{color:#06c755;font-weight:600;font-size:13px;text-align:center;padding:0 10px}
+.tabs{display:flex;background:#f8f9fa;border-bottom:1px solid #ddd;flex-wrap:wrap}
+.tab{flex:1 1 33%;padding:14px 6px;text-align:center;cursor:pointer;font-size:15px;border-bottom:3px solid transparent;font-weight:500;min-width:92px}
+.tab.active{background:#fff;border-bottom-color:#06c755;color:#06c755;font-weight:700}
+.panel-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.panel{display:none;padding:18px;overflow-y:auto;flex:1}.panel.active{display:block}
+.panel h3{font-size:19px;margin-bottom:14px;font-weight:700}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:16px;color:#333;margin-bottom:6px;font-weight:600}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:5px;font-size:17px;font-family:inherit}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#06c755}
+.form-row{display:flex;gap:8px}.form-row .form-group{flex:1}
+.btn{padding:12px 18px;border:1px solid #ddd;background:#fff;border-radius:5px;cursor:pointer;font-size:16px;white-space:nowrap;font-weight:500}
+.btn-primary{background:#06c755;color:#fff;border-color:#06c755}
+.btn-danger{background:#dc3545;color:#fff;border-color:#dc3545}
+.btn-sm{padding:10px 14px;font-size:15px}.btn-block{width:100%}
+.image-controls{display:flex;gap:8px;margin-bottom:12px}.image-controls .btn{flex:1}
+.area-list{display:flex;flex-direction:column;gap:9px}
+.area-card{border:1px solid #ddd;border-left:4px solid #06c755;border-radius:6px;background:#fff;overflow:hidden}
+.area-card.selected{box-shadow:0 0 0 2px #06c755}
+.area-header{padding:13px 15px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:#f8f9fa;font-size:16px}
+.area-header-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.area-header-left strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:16px}
+.toggle-icon{transition:transform .2s;font-size:12px}.area-card.expanded .toggle-icon{transform:rotate(90deg)}
+.status-dot{width:11px;height:11px;border-radius:50%;display:inline-block;flex-shrink:0}
+.status-dot.on{background:#06c755}.status-dot.off{background:#ccc}
+.meta-text{font-size:14px;color:#666;white-space:nowrap}
+.area-body{padding:14px;display:none;border-top:1px solid #eee}.area-card.expanded .area-body{display:block}
+.user-list{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.user-item{display:flex;gap:10px;align-items:center;background:#f8f9fa;padding:12px;border-radius:5px;border:1px solid #e0e0e0}
+.user-item .info{flex:1;min-width:0}
+.user-item .info .name{font-size:16px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-item .info .uid{font-size:13px;color:#666;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-add-row{display:flex;flex-direction:column;gap:10px;background:#fff;padding:14px;border-radius:6px;border:1px dashed #06c755;margin-top:10px}
+.user-empty{text-align:center;color:#999;font-size:15px;padding:22px}
+.ctx-menu{position:fixed;background:#fff;border:1px solid #ddd;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:1000;min-width:200px;display:none}
+.ctx-menu.show{display:block}
+.ctx-menu-item{padding:12px 16px;cursor:pointer;font-size:15px}.ctx-menu-item:hover{background:#f0f0f0}.ctx-menu-item.danger{color:#dc3545}
+.info-box{background:#e7f3ff;border-left:4px solid #06c755;padding:13px 15px;font-size:15px;color:#333;margin:12px 0;border-radius:5px;line-height:1.8}
+.info-box b{color:#06c755}
+.warning{background:#fff3cd;border-left:4px solid #ffc107;padding:13px 15px;font-size:15px;color:#856404;margin:12px 0;border-radius:5px}
+.token-guide{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:6px;padding:15px;font-size:15px;line-height:1.8;color:#333;margin-top:12px}
+.token-guide h4{font-size:16px;margin-bottom:10px;color:#06c755}
+.token-guide ol{padding-left:20px;margin:8px 0}
+.token-guide li{margin-bottom:7px}
+.token-guide a{color:#06c755;text-decoration:none}
+.token-guide a:hover{text-decoration:underline}
+.token-guide code{background:#eee;padding:2px 6px;border-radius:3px;font-family:monospace;font-size:14px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:12px 22px;border-radius:6px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:2000;font-size:14px}
+.toast.show{opacity:1}.toast.success{background:#06c755}.toast.error{background:#dc3545}
+
+.login-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#06c755,#0aa06b);display:flex;align-items:center;justify-content:center;z-index:5000;padding:20px}
+.login-overlay.hidden{display:none}.login-card{width:min(440px,100%);background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.24);padding:28px}.login-card h2{font-size:24px;margin-bottom:16px;color:#111}.login-card p{font-size:14px;line-height:1.7;color:#555;margin-bottom:16px}.login-card input{width:100%;padding:14px 16px;border:1px solid #ddd;border-radius:8px;font-size:18px;margin-bottom:12px}.login-card .login-error{color:#dc3545;font-size:14px;min-height:20px;margin-top:10px}.logout-mini{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.5)}
+.template-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}.template-card{border:1px solid #ddd;background:#fff;border-radius:8px;padding:14px;text-align:left;cursor:pointer}.template-card:hover{border-color:#06c755;box-shadow:0 0 0 2px rgba(6,199,85,.12)}.template-card strong{display:block;font-size:16px;margin-bottom:6px}.template-card small{color:#666;line-height:1.5}.code-editor{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:13px;line-height:1.5;min-height:420px;white-space:pre}.button-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}.button-row .btn{flex:1}.json-status{font-size:13px;color:#666;margin-top:8px;line-height:1.6}
+.drive-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}.drive-item{border:1px solid #ddd;border-radius:8px;background:#fff;padding:12px}.drive-item strong{display:block;font-size:15px;margin-bottom:4px;word-break:break-all}.drive-item small{color:#666}.drive-item .button-row{margin-top:10px}.drive-status{font-size:14px;line-height:1.7;color:#333;background:#f8f9fa;border:1px solid #e0e0e0;border-radius:6px;padding:12px;margin:10px 0}.drive-status.ok{border-left:4px solid #06c755}.drive-status.err{border-left:4px solid #dc3545}.drive-current{font-size:13px;color:#666;word-break:break-all;margin:8px 0}
+@media(max-width:900px){.template-grid{grid-template-columns:1fr}.tab{font-size:14px;padding:12px 4px}}
+
+@media(max-width:900px){.main{flex-direction:column}.left{width:100%;height:55%;flex:none}.right{width:100%;height:45%;min-width:0;border-left:none;border-top:1px solid #ddd}}
+</style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+<div id="loginOverlay" class="login-overlay"><div class="login-card"><h2>パスワードを入力してください</h2><input type="password" id="appPasswordInput" placeholder="パスワード" autocomplete="current-password"><button class="btn btn-primary btn-block" id="btnLogin">ログイン</button><div class="login-error" id="loginMsg"></div></div></div>
+<div class="header"><h1>🎨 リッチメニュープラス</h1><div class="header-actions"><button class="btn btn-sm" id="btnUndo">↶ 戻す</button><button class="btn btn-sm" id="btnRedo">↷ 進む</button><button class="btn btn-sm logout-mini" id="btnLogout">ログアウト</button></div></div>
+<div class="main">
+<div class="left"><div class="menu-tabs" id="menuTabs"></div>
+<div class="canvas-wrap"><div class="canvas-info"><span id="sizeInfo">2500 × 1686 px</span><div class="zoom-controls"><button id="btnZoomOut">−</button><span class="zoom-val" id="zoomVal">100%</span><button id="btnZoomIn">＋</button><button id="btnZoomFit" style="width:auto;padding:0 10px;font-size:13px;">⤢ Fit</button></div><span class="upload-badge new" id="uploadStatus">未アップロード</span></div>
+<div class="canvas-scroll" id="canvasScroll"><div class="canvas-container"><canvas id="canvas" width="2500" height="1686"></canvas><div class="upload-overlay" id="uploadOverlay"><div class="upload-overlay-icon">📷</div><div class="upload-overlay-text">クリックまたはドラッグで画像をアップロード</div><input type="file" id="fileInput" accept="image/*" style="display:none;"></div></div></div></div></div>
+<div class="right"><div class="tabs"><div class="tab active" data-tab="settings">⚙ 設定</div><div class="tab" data-tab="areas">📦 エリア</div><div class="tab" data-tab="users">👤 ユーザー</div><div class="tab" data-tab="api">🔗 API</div><div class="tab" data-tab="drive">☁ Drive</div></div>
+<div class="panel-wrap">
+<div class="panel active" id="panel-settings"><h3>基本設定</h3><div class="form-group"><label>メニュー名</label><input type="text" id="menuName"></div><div class="form-row"><div class="form-group"><label>エイリアスID</label><input type="text" id="menuAlias"></div><div class="form-group"><label>チャットバーテキスト</label><input type="text" id="chatBarText"></div></div><div class="form-row"><div class="form-group"><label>サイズ</label><select id="menuSize"><option value="large">Large (2500×1686)</option><option value="compact">Compact (2500×843)</option></select></div><div class="form-group"><label>背景色</label><input type="color" id="bgColor" value="#ffffff"></div></div>
+<div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="menuSelected" style="width:auto;"> トーク画面を開いた時にメニューを最初から表示する</label></div>
+<h3 style="margin-top:16px;">背景画像</h3><div class="image-controls"><button class="btn btn-primary btn-sm" id="btnChangeImage">📷 変更</button><button class="btn btn-danger btn-sm" id="btnRemoveImage">🗑 削除</button></div>
+<div class="info-box">
+<b>📌 タブ切り替えのご案内</b><br>
+・<b>⚙ 設定</b>：メニュー名・サイズ・背景画像など基本情報を編集<br>
+・<b>📦 エリア</b>：作成した各タップ領域のラベル/座標/アクションを編集<br>
+・<b>👤 ユーザー</b>：このメニューを表示するユーザーを登録・一括リンク<br>
+・<b>🔗 API</b>：LINEへアップロード／デフォルト設定
+<hr style="margin:8px 0;border:none;border-top:1px dashed #b8d4ff;">
+<b>💡 操作のヒント</b><br>
+・空白部分をドラッグ → 新規エリア作成<br>
+・エリアを右クリック → 編集メニュー<br>
+・Ctrl + ホイール → ズーム
+</div>
+<button class="btn btn-danger btn-sm btn-block" id="btnClearAreas">全エリア削除</button></div>
+
+<div class="panel" id="panel-areas"><div class="area-list" id="areaListContainer"></div></div>
+<div class="panel" id="panel-users"><h3>👤 ユーザーリンク</h3><div class="info-box">ここに登録したユーザーのみ、このリッチメニューが表示されます。<br>アップロード後に「ユーザーリンク」ボタンで一括適用できます。</div>
+<div class="user-add-row"><div class="form-group" style="margin:0;"><label>ユーザー名（表示用）</label><input type="text" id="newUserName" placeholder="例: 山田 太郎"></div><div class="form-group" style="margin:0;"><label>ユーザーID</label><input type="text" id="newUserId" placeholder="例: U1234567890abcdef..."></div><button class="btn btn-primary btn-sm btn-block" id="btnAddUser">＋ 追加</button></div>
+<h3 style="margin-top:18px;">登録ユーザー <span id="userCount" style="color:#888;font-size:14px;font-weight:normal;"></span></h3><div class="user-list" id="userListContainer"></div>
+<h3 style="margin-top:18px;">適用 / 解除</h3><button class="btn btn-primary btn-sm btn-block" id="btnLinkUsers">🔗 登録ユーザー全員にリンク</button><button class="btn btn-sm btn-block" id="btnUnlinkUsers" style="margin-top:8px;">🔓 全員のリンクを解除</button></div>
+<div class="panel" id="panel-api"><h3>LINE API 連携</h3>
+<div class="info-box"><b>✅ Vercel API経由版です</b><br>チャネルアクセストークンは、<b>毎回入力しなくても使える</b>ようにできます。<br>方法は2つです。<br>① このブラウザにトークンを保存する<br>② Vercelの環境変数 <code>LINE_CHANNEL_ACCESS_TOKEN</code> に入れて、入力欄を空のまま使う<br><br><b>👥 共有利用時の仕様</b><br>URLとパスワードを知っている人は、Vercelアカウントが無くてもこのツールを開けます。<br>ただし、Vercelに <code>LINE_CHANNEL_ACCESS_TOKEN</code> を設定した場合、ログインできる人はあなたのLINE公式アカウントを操作できます。共有利用では注意してください。</div>
+<div class="warning"><b>⚠️ トークン取り扱いの注意</b><br>・入力欄にトークンを入れた場合、アップロード時だけあなたのVercel APIへ送信されます。<br>・「このブラウザにトークンを保存する」をONにすると、次回から自動入力されます。共有PCではOFFにしてください。<br>・Vercel側に <code>LINE_CHANNEL_ACCESS_TOKEN</code> を設定した場合、入力欄が空でも操作できます。<br>・共有利用後は必要に応じて「トークン削除」を押してください。<br>・このツールは個人用・関係者用の簡易保護です。不特定多数への公開利用はおすすめしません。</div>
+<div class="form-group"><label>チャネルアクセストークン</label><input type="password" id="lineTokenInput" placeholder="空欄可：Vercel環境変数に設定済みなら入力不要"></div>
+<label style="display:flex;align-items:center;gap:8px;margin:-6px 0 12px;font-size:14px;color:#555;"><input type="checkbox" id="rememberLineToken" style="width:auto;"> このブラウザにトークンを保存する（次回から自動入力）</label>
+<div class="button-row" style="margin-bottom:10px;"><button class="btn btn-sm" id="btnSaveLineToken">トークン保存</button><button class="btn btn-sm" id="btnClearLineToken">トークン削除</button></div>
+<button class="btn btn-primary btn-block" id="btnApiUpload">🚀 Vercel経由でアップロード / 上書き</button>
+<label style="display:flex;align-items:center;gap:8px;margin:10px 0 8px;font-size:15px;"><input type="checkbox" id="autoSetDefault" checked style="width:auto;"> アップロード後に自動でデフォルトに設定する</label>
+<div class="button-row">
+<button class="btn btn-block" id="btnSetDefault">✅ このメニューをデフォルトに設定</button>
+<button class="btn btn-danger btn-block" id="btnClearDefault">🧹 デフォルト解除</button>
+</div>
+<div class="info-box" style="font-size:14px;">全員に表示したい場合は、アップロード後に「デフォルトに設定」が必要です。ユーザータブのリンクは、特定ユーザーだけに表示したい場合に使います。<br><b>注意：</b>デフォルトを解除しても、ユーザー個別リンクが残っている場合は個別リンク側が表示されます。</div>
+<h3 style="margin-top:18px;">反映状態確認</h3>
+<div class="form-group"><label>確認用ユーザーID（自分のUから始まるID）</label><input type="text" id="statusUserId" placeholder="例: U1234567890abcdef..."></div>
+<div class="button-row">
+<button class="btn btn-sm" id="btnCheckDefault">🔎 現在のデフォルトrichMenuId確認</button>
+<button class="btn btn-sm" id="btnCheckUserRichMenu">👤 自分に個別リンク中のrichMenuId確認</button>
+</div>
+<div class="button-row">
+<button class="btn btn-sm btn-primary" id="btnCheckReflectStatus">🧭 デフォルト＋個別リンクをまとめて確認</button>
+</div>
+<div class="token-guide" id="apiResult" style="display:none;"></div>
+<div class="token-guide">
+<h4>🔑 Vercel側に必要な環境変数</h4>
+<ol>
+<li><code>APP_PASSWORD</code>：このツールにログインするためのパスワードです。</li>
+<li><code>LINE_CHANNEL_ACCESS_TOKEN</code>：任意。設定すると、APIタブのトークン入力欄を空のまま使えます。</li>
+<li>保存後、<code>Deployments</code> から再デプロイします。</li>
+</ol>
+<div style="margin-top:10px;font-size:13px;color:#888;">※ トークンを毎回入力したくない場合は、「このブラウザに保存」またはVercel環境変数 <code>LINE_CHANNEL_ACCESS_TOKEN</code> を使ってください。共有利用の場合、Vercel環境変数方式はログインできる人全員が同じLINE公式アカウントを操作できるため注意してください。</div>
+</div>
+</div>
+
+<div class="panel" id="panel-drive"><h3>☁ Google Drive保存</h3>
+<div class="info-box"><b>作成したリッチメニューを、使う人それぞれのGoogle Driveに保存できます。</b><br>保存されるのは、画像・エリア・アクション・ユーザー設定などの編集データです。次回このアプリを開いた時に、Google Driveから読み込んで続きから編集できます。<br><br><b>必要なもの：</b>Googleアカウントでの許可。VercelやGitHubのアカウントは使う人側には不要です。</div>
+<div class="warning"><b>⚠️ 初回だけGoogle Cloud設定が必要です</b><br>アプリ管理者はVercel環境変数 <code>GOOGLE_CLIENT_ID</code> を設定してください。Google OAuthの「承認済みJavaScript生成元」には、このVercel公開URLを登録します。</div>
+<div id="driveStatus" class="drive-status">未接続です。</div>
+<div class="button-row"><button class="btn btn-primary" id="btnDriveConnect">Google Driveに接続</button><button class="btn" id="btnDriveDisconnect">接続解除</button></div>
+<div class="form-group"><label>保存するプロジェクト名</label><input type="text" id="driveProjectName" placeholder="例: 体験用リッチメニュー"></div>
+<div class="drive-current" id="driveCurrentFile">現在開いているDriveファイル：なし</div>
+<div class="button-row"><button class="btn btn-primary" id="btnDriveSave">💾 Driveに保存（同名なら上書き）</button><button class="btn" id="btnDriveOverwrite">現在開いているファイルに上書き</button></div>
+<div class="button-row"><button class="btn" id="btnDriveRefresh">保存済み一覧を更新</button></div>
+<h3 style="margin-top:18px;">保存済みプロジェクト</h3>
+<div class="drive-list" id="driveFileList"><div class="user-empty">Google Driveに接続すると一覧が表示されます。</div></div>
+<div class="token-guide"><h4>保存される場所</h4>Google Drive内に <code>リッチメニュープラス</code> フォルダを作成し、その中に <code>.json</code> 形式で保存します。これはLINEにアップロードするJSONではなく、このアプリで再編集するためのプロジェクトデータです。</div>
+</div>
+</div></div></div>
+<div class="ctx-menu" id="ctxMenu"><div class="ctx-menu-item" data-act="edit">✏️ 編集</div><div class="ctx-menu-item" data-act="action">🔗 アクション設定</div><div class="ctx-menu-item danger" data-act="delete">🗑 削除</div></div>
+<div class="toast" id="toast"></div>
+<script>
+const COLORS=['#FF6B6B','#4ECDC4','#45B7D1','#FFA07A','#98D8C8','#F7DC6F','#BB8FCE','#85C1E2','#F8B739'];
+const MIN_ZOOM=0.1,MAX_ZOOM=3.0;
+const menus=[];
+let currentMenuId=null,selectedAreaId=null,ctxTargetId=null;
+let expandedAreaIds=new Set();
+let history=[],historyIndex=-1;
+let mode='idle',drawStart=null,drawCurrent=null,dragOffset=null,resizeHandle=null,dragOriginal=null;
+let suppressRender=false;
+let zoom=1.0;
+
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
+const ctxMenu=document.getElementById('ctxMenu');
+const canvasScroll=document.getElementById('canvasScroll');
+const $=id=>document.getElementById(id);
+
+function uid(p='a'){return p+'_'+Math.random().toString(36).substr(2,9)}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function showToast(msg,type=''){const t=$('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',2200)}
+function currentMenu(){return menus.find(m=>m.id===currentMenuId)}
+function getCanvasSize(){const m=currentMenu();return m&&m.size==='compact'?{w:2500,h:843}:{w:2500,h:1686}}
+
+const PASSWORD_STORAGE_KEY='richmenu_plus_app_password';
+let appPassword=sessionStorage.getItem(PASSWORD_STORAGE_KEY)||'';
+function getAppPassword(){return appPassword||sessionStorage.getItem(PASSWORD_STORAGE_KEY)||''}
+function showLogin(msg){$('loginOverlay').classList.remove('hidden'); if(msg)$('loginMsg').textContent=msg}
+function hideLogin(){$('loginOverlay').classList.add('hidden');$('loginMsg').textContent=''}
+async function checkPassword(password){
+  const res=await fetch('/api/check-password',{method:'POST',headers:{'Content-Type':'application/json','X-App-Password':password||''},body:'{}'});
+  const data=await res.json().catch(()=>({ok:false,error:'認証確認に失敗しました。'}));
+  if(!res.ok||data.ok===false)throw new Error(data.error||'パスワードが違います。');
+  return true;
+}
+$('btnLogin').addEventListener('click',async()=>{
+  const pw=$('appPasswordInput').value;
+  if(!pw){$('loginMsg').textContent='パスワードを入力してください。';return}
+  try{ $('loginMsg').textContent='確認中です...'; await checkPassword(pw); appPassword=pw; sessionStorage.setItem(PASSWORD_STORAGE_KEY,pw); hideLogin(); showToast('ログインしました','success') }
+  catch(e){ $('loginMsg').textContent=e.message||'ログインできませんでした。' }
+});
+$('appPasswordInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnLogin').click()});
+$('btnLogout').addEventListener('click',()=>{sessionStorage.removeItem(PASSWORD_STORAGE_KEY);appPassword='';$('appPasswordInput').value='';showLogin('ログアウトしました。')});
+if(appPassword){checkPassword(appPassword).then(hideLogin).catch(()=>{sessionStorage.removeItem(PASSWORD_STORAGE_KEY);appPassword='';showLogin('もう一度ログインしてください。')})}else{showLogin()}
+
+
+function createMenu(name){
+  const n=name||'メニュー'+(menus.length+1);
+  const m={id:uid('m'),name:n,alias:'menu-'+(menus.length+1),chatBarText:'メニュー',size:'large',bgColor:'#ffffff',selected:true,bgImage:null,bgImageData:null,areas:[],users:[],uploadStatus:'new',richMenuId:null,isDefault:false};
+  menus.push(m);currentMenuId=m.id;
+  renderMenuTabs();loadCurrentMenu();saveHistory()
+}
+function deleteMenu(id){
+  if(menus.length<=1){showToast('最低1つは必要です','error');return}
+  if(!confirm('このメニューを削除しますか？'))return;
+  const idx=menus.findIndex(m=>m.id===id);
+  menus.splice(idx,1);
+  currentMenuId=menus[Math.max(0,idx-1)].id;
+  renderMenuTabs();loadCurrentMenu();saveHistory()
+}
+function renderMenuTabs(){
+  const tabs=$('menuTabs');tabs.innerHTML='';
+  menus.forEach(m=>{
+    const el=document.createElement('div');
+    el.className='menu-tab'+(m.id===currentMenuId?' active':'');
+    el.innerHTML=`<span>${escapeHtml(m.name)}</span><span class="close" data-del="${m.id}">×</span>`;
+    el.addEventListener('click',e=>{
+      if(e.target.dataset.del){deleteMenu(m.id);return}
+      currentMenuId=m.id;renderMenuTabs();loadCurrentMenu()
+    });
+    tabs.appendChild(el)
+  });
+  const add=document.createElement('div');
+  add.className='menu-add';add.textContent='+ 追加';
+  add.addEventListener('click',()=>createMenu());
+  tabs.appendChild(add)
+}
+function loadCurrentMenu(){
+  const m=currentMenu();if(!m)return;
+  suppressRender=true;
+  $('menuName').value=m.name;
+  $('menuAlias').value=m.alias;
+  $('chatBarText').value=m.chatBarText;
+  $('menuSize').value=m.size;
+  $('bgColor').value=m.bgColor;
+  $('menuSelected').checked=m.selected!==false;
+  suppressRender=false;
+  applyCanvasSize();
+  if(m.bgImageData&&!m.bgImage){
+    const img=new Image();
+    img.onload=()=>{m.bgImage=img;updateOverlay();render()};
+    img.src=m.bgImageData
+  }else{
+    updateOverlay();render()
+  }
+  renderAreaList();renderUserList();updateUploadBadge()
+}
+function applyCanvasSize(){
+  const{w,h}=getCanvasSize();
+  canvas.width=w;canvas.height=h;
+  applyZoom();
+  $('sizeInfo').textContent=`${w} × ${h} px`
+}
+function applyZoom(){
+  const{w,h}=getCanvasSize();
+  canvas.style.width=(w*zoom)+'px';
+  canvas.style.height=(h*zoom)+'px';
+  $('zoomVal').textContent=Math.round(zoom*100)+'%'
+}
+function fitZoom(){
+  const{w,h}=getCanvasSize();
+  const sw=canvasScroll.clientWidth-24;
+  const sh=canvasScroll.clientHeight-24;
+  zoom=Math.max(MIN_ZOOM,Math.min(MAX_ZOOM,Math.min(sw/w,sh/h)));
+  applyZoom()
+}
+function updateOverlay(){
+  const m=currentMenu();
+  $('uploadOverlay').classList.toggle('hidden',!!(m&&m.bgImage))
+}
+function updateUploadBadge(){
+  const m=currentMenu();if(!m)return;
+  const b=$('uploadStatus');
+  b.className='upload-badge '+m.uploadStatus;
+  b.textContent={new:'未アップロード',uploaded:'アップロード済',modified:'変更あり'}[m.uploadStatus]||'未アップロード'
+}
+function markModified(){
+  const m=currentMenu();if(!m)return;
+  if(m.uploadStatus==='uploaded')m.uploadStatus='modified';
+  updateUploadBadge()
+}
+
+const overlay=$('uploadOverlay');
+const fileInput=$('fileInput');
+overlay.addEventListener('click',()=>fileInput.click());
+overlay.addEventListener('dragover',e=>{e.preventDefault();overlay.classList.add('dragover')});
+overlay.addEventListener('dragleave',()=>overlay.classList.remove('dragover'));
+overlay.addEventListener('drop',e=>{
+  e.preventDefault();overlay.classList.remove('dragover');
+  if(e.dataTransfer.files[0])loadImage(e.dataTransfer.files[0])
+});
+fileInput.addEventListener('change',e=>{if(e.target.files[0])loadImage(e.target.files[0])});
+$('btnChangeImage').addEventListener('click',()=>fileInput.click());
+$('btnRemoveImage').addEventListener('click',()=>{
+  const m=currentMenu();
+  if(!m.bgImage&&!m.bgImageData){showToast('画像がありません','error');return}
+  if(!confirm('画像を削除しますか？'))return;
+  m.bgImage=null;m.bgImageData=null;
+  markModified();updateOverlay();render();saveHistory();
+  showToast('画像を削除しました')
+});
+function loadImage(file){
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const{w,h}=getCanvasSize();
+      if(img.width!==w||img.height!==h){
+        showToast(`⚠️ ${img.width}×${img.height} (推奨 ${w}×${h})`,'error')
+      }else{
+        showToast('画像を読み込みました','success')
+      }
+      const m=currentMenu();
+      m.bgImage=img;m.bgImageData=ev.target.result;
+      markModified();updateOverlay();render();saveHistory()
+    };
+    img.src=ev.target.result
+  };
+  reader.readAsDataURL(file)
+}
+
+function bindInput(id,key,opts={}){
+  $(id).addEventListener('input',e=>{
+    if(suppressRender)return;
+    currentMenu()[key]=e.target.value;
+    if(opts.refreshTabs)renderMenuTabs();
+    markModified();
+    if(opts.render)render()
+  })
+}
+bindInput('menuName','name',{refreshTabs:true});
+bindInput('menuAlias','alias');
+bindInput('chatBarText','chatBarText');
+bindInput('bgColor','bgColor',{render:true});
+$('menuSelected').addEventListener('change',e=>{currentMenu().selected=e.target.checked;markModified();saveHistory()});
+$('menuSize').addEventListener('change',e=>{
+  currentMenu().size=e.target.value;
+  applyCanvasSize();markModified();render();saveHistory()
+});
+$('btnClearAreas').addEventListener('click',()=>{
+  if(!confirm('全エリアを削除しますか？'))return;
+  currentMenu().areas=[];
+  selectedAreaId=null;expandedAreaIds.clear();
+  markModified();saveHistory();render();renderAreaList()
+});
+
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+name));
+  if(name==='areas')renderAreaList();
+  if(name==='users')renderUserList();
+  if(name==='drive')updateDrivePanel();
+  if(name==='code')refreshJsonEditor()
+}
+
+function renderAreaList(){
+  const box=$('areaListContainer');
+  const m=currentMenu();
+  if(!m||m.areas.length===0){
+    box.innerHTML='<p style="color:#888;font-size:15px;text-align:center;padding:24px;">エリアなし<br><small>キャンバスでドラッグして作成</small></p>';
+    return
+  }
+  box.innerHTML='';
+  m.areas.forEach(a=>{
+    const card=document.createElement('div');
+    card.dataset.areaId=a.id;
+    card.className='area-card'+(a.id===selectedAreaId?' selected':'')+(expandedAreaIds.has(a.id)?' expanded':'');
+    card.style.borderLeftColor=a.color;
+    const header=document.createElement('div');
+    header.className='area-header';
+    header.innerHTML=`<div class="area-header-left"><span class="toggle-icon">▶</span><span class="status-dot ${a.action&&a.action.type?'on':'off'}"></span><strong>${escapeHtml(a.label)}</strong><span class="meta-text">${a.w}×${a.h}</span></div><span class="meta-text">${a.action&&a.action.type?a.action.type:'未設定'}</span>`;
+    header.addEventListener('click',()=>{
+      if(expandedAreaIds.has(a.id))expandedAreaIds.delete(a.id);
+      else expandedAreaIds.add(a.id);
+      selectedAreaId=a.id;
+      renderAreaList();render()
+    });
+    const body=document.createElement('div');
+    body.className='area-body';
+    body.innerHTML=`<div class="form-group"><label>ラベル</label><input type="text" data-f="label" value="${escapeHtml(a.label)}"></div><div class="form-row"><div class="form-group"><label>X</label><input type="number" data-f="x" value="${a.x}"></div><div class="form-group"><label>Y</label><input type="number" data-f="y" value="${a.y}"></div></div><div class="form-row"><div class="form-group"><label>幅</label><input type="number" data-f="w" value="${a.w}"></div><div class="form-group"><label>高さ</label><input type="number" data-f="h" value="${a.h}"></div></div><div class="form-group"><label>アクションタイプ</label><select data-f="actType"><option value="">なし</option><option value="uri" ${a.action.type==='uri'?'selected':''}>URI (URL)</option><option value="message" ${a.action.type==='message'?'selected':''}>メッセージ</option><option value="postback" ${a.action.type==='postback'?'selected':''}>Postback</option><option value="richmenuswitch" ${a.action.type==='richmenuswitch'?'selected':''}>リッチメニュー切替</option></select></div><div class="form-group" style="${a.action.type?'':'display:none;'}"><label>${getActionLabel(a.action.type)}</label>${renderActionValue(a)}</div><button class="btn btn-danger btn-sm btn-block" data-act="delete">🗑 エリアを削除</button>`;
+    body.querySelectorAll('input, select, textarea').forEach(input=>{
+      input.addEventListener('change',()=>{
+        const f=input.dataset.f;if(!f)return;
+        if(f==='actType'){a.action.type=input.value;a.action.value='';renderAreaList()}
+        else if(f==='actValue'){a.action.value=input.value}
+        else if(['x','y','w','h'].includes(f)){
+          const newVal=parseInt(input.value)||0;
+          const test={x:a.x,y:a.y,w:a.w,h:a.h};
+          test[f]=newVal;
+          if(test.w<20)test.w=20;
+          if(test.h<20)test.h=20;
+          if(test.x<0)test.x=0;
+          if(test.y<0)test.y=0;
+          if(test.x+test.w>canvas.width)test.x=canvas.width-test.w;
+          if(test.y+test.h>canvas.height)test.y=canvas.height-test.h;
+          if(conflictsWithOthers(test,a.id)){
+            showToast('他のエリアと重なるため変更できません','error');
+            input.value=a[f];return
+          }
+          Object.assign(a,test);
+          input.value=a[f]
+        }else{a[f]=input.value}
+        markModified();render();saveHistory()
+      })
+    });
+    body.querySelector('[data-act="delete"]').addEventListener('click',()=>{
+      if(!confirm('削除しますか？'))return;
+      m.areas=m.areas.filter(x=>x.id!==a.id);
+      expandedAreaIds.delete(a.id);
+      if(selectedAreaId===a.id)selectedAreaId=null;
+      markModified();saveHistory();renderAreaList();render()
+    });
+    card.appendChild(header);card.appendChild(body);box.appendChild(card)
+  })
+}
+function getActionLabel(type){return{uri:'URL',message:'メッセージ',postback:'Postback',richmenuswitch:'切替先エイリアス'}[type]||'値'}
+function renderActionValue(a){
+  const type=a.action.type;
+  if(type==='richmenuswitch'){
+    const opts=menus.filter(m=>m.id!==currentMenuId).map(m=>`<option value="${escapeHtml(m.alias)}" ${a.action.value===m.alias?'selected':''}>${escapeHtml(m.name)} (${escapeHtml(m.alias)})</option>`).join('');
+    return`<select data-f="actValue"><option value="">選択...</option>${opts}</select>`
+  }
+  if(type==='uri')return`<input type="url" data-f="actValue" value="${escapeHtml(a.action.value)}" placeholder="https://...">`;
+  if(type)return`<textarea data-f="actValue" rows="2">${escapeHtml(a.action.value)}</textarea>`;
+  return''
+}
+
+function renderUserList(){
+  const box=$('userListContainer');
+  const m=currentMenu();if(!m)return;
+  $('userCount').textContent=`(${m.users.length}名)`;
+  if(m.users.length===0){
+    box.innerHTML='<div class="user-empty">登録ユーザーなし<br>上のフォームから追加してください</div>';
+    return
+  }
+  box.innerHTML='';
+  m.users.forEach(u=>{
+    const el=document.createElement('div');
+    el.className='user-item';
+    el.innerHTML=`<div class="info"><div class="name">${escapeHtml(u.name)}</div><div class="uid">${escapeHtml(u.userId)}</div></div><button class="btn btn-danger btn-sm" data-uid="${u.id}">削除</button>`;
+    el.querySelector('button').addEventListener('click',()=>{
+      if(!confirm(`「${u.name}」を削除しますか？`))return;
+      m.users=m.users.filter(x=>x.id!==u.id);
+      saveHistory();renderUserList();showToast('削除しました')
+    });
+    box.appendChild(el)
+  })
+}
+$('btnAddUser').addEventListener('click',()=>{
+  const name=$('newUserName').value.trim();
+  const userId=$('newUserId').value.trim();
+  if(!name||!userId){showToast('名前とユーザーIDを入力してください','error');return}
+  if(!userId.startsWith('U')){showToast('ユーザーIDは "U" で始まります','error');return}
+  const m=currentMenu();
+  if(m.users.some(u=>u.userId===userId)){showToast('既に登録されています','error');return}
+  m.users.push({id:uid('u'),name,userId});
+  $('newUserName').value='';$('newUserId').value='';
+  saveHistory();renderUserList();showToast('追加しました','success')
+});
+
+function render(){
+  const m=currentMenu();if(!m)return;
+  const{w,h}=getCanvasSize();
+  ctx.fillStyle=m.bgColor||'#ffffff';
+  ctx.fillRect(0,0,w,h);
+  if(m.bgImage){try{ctx.drawImage(m.bgImage,0,0,w,h)}catch(e){}}
+  m.areas.forEach(a=>drawArea(a,a.id===selectedAreaId));
+  if(mode==='drawing'&&drawStart&&drawCurrent){
+    const r=normRect(drawStart,drawCurrent);
+    ctx.fillStyle='rgba(6,199,85,0.18)';
+    ctx.fillRect(r.x,r.y,r.w,r.h);
+    ctx.strokeStyle='#06c755';
+    ctx.lineWidth=4;
+    ctx.setLineDash([10,6]);
+    ctx.strokeRect(r.x,r.y,r.w,r.h);
+    ctx.setLineDash([])
+  }
+}
+function drawArea(a,selected){
+  ctx.fillStyle=a.color+(selected?'C0':'CE');
+  ctx.fillRect(a.x,a.y,a.w,a.h);
+  ctx.strokeStyle=selected?'#06c755':a.color;
+  ctx.lineWidth=selected?12:3;
+  ctx.strokeRect(a.x,a.y,a.w,a.h);
+  const fontSize=selected?88:68;
+  ctx.font='bold '+fontSize+'px sans-serif';
+  const text=a.label+(a.action&&a.action.type?' 🔗':'');
+  const tw=ctx.measureText(text).width;
+  const padX=16,padY=10,bh=fontSize+padY*2;
+  ctx.fillStyle='rgba(255,255,255,0.95)';
+  ctx.fillRect(a.x+6,a.y+6,tw+padX*2,bh);
+  ctx.fillStyle=selected?'#06c755':a.color;
+  ctx.fillText(text,a.x+6+padX,a.y+6+padY+fontSize-6);
+  if(selected){
+    ctx.fillStyle='#06c755';
+    getHandles(a).forEach(hd=>ctx.fillRect(hd.x-14,hd.y-14,28,28))
+  }
+}
+function getHandles(a){
+  return[
+    {name:'nw',x:a.x,y:a.y},{name:'ne',x:a.x+a.w,y:a.y},
+    {name:'sw',x:a.x,y:a.y+a.h},{name:'se',x:a.x+a.w,y:a.y+a.h},
+    {name:'n',x:a.x+a.w/2,y:a.y},{name:'s',x:a.x+a.w/2,y:a.y+a.h},
+    {name:'w',x:a.x,y:a.y+a.h/2},{name:'e',x:a.x+a.w,y:a.y+a.h/2}
+  ]
+}
+function normRect(p1,p2){return{x:Math.min(p1.x,p2.x),y:Math.min(p1.y,p2.y),w:Math.abs(p2.x-p1.x),h:Math.abs(p2.y-p1.y)}}
+function getCanvasPos(e){
+  const rect=canvas.getBoundingClientRect();
+  return{x:(e.clientX-rect.left)/zoom,y:(e.clientY-rect.top)/zoom}
+}
+function hitArea(p){
+  const m=currentMenu();if(!m)return null;
+  for(let i=m.areas.length-1;i>=0;i--){
+    const a=m.areas[i];
+    if(p.x>=a.x&&p.x<=a.x+a.w&&p.y>=a.y&&p.y<=a.y+a.h)return a
+  }
+  return null
+}
+function hitHandle(p,a){
+  for(const hd of getHandles(a)){
+    if(Math.abs(p.x-hd.x)<=22&&Math.abs(p.y-hd.y)<=22)return hd.name
+  }
+  return null
+}
+function rectsOverlap(r1,r2){
+  return !(r1.x+r1.w<=r2.x||r2.x+r2.w<=r1.x||r1.y+r1.h<=r2.y||r2.y+r2.h<=r1.y)
+}
+function conflictsWithOthers(r,excludeId){
+  const m=currentMenu();if(!m)return false;
+  return m.areas.some(a=>a.id!==excludeId&&rectsOverlap(a,r))
+}
+
+function clampDrawRect(start,p){
+  const m=currentMenu();
+  let px=Math.max(0,Math.min(canvas.width,p.x));
+  let py=Math.max(0,Math.min(canvas.height,p.y));
+  const dx=px>=start.x?1:-1;
+  const dy=py>=start.y?1:-1;
+  if(m){
+    for(const a of m.areas){
+      const ax1=a.x,ax2=a.x+a.w,ay1=a.y,ay2=a.y+a.h;
+      const yMin=Math.min(start.y,py),yMax=Math.max(start.y,py);
+      if(!(yMax<=ay1||yMin>=ay2)){
+        if(dx>0 && ax1>=start.x && ax1<px)px=ax1;
+        else if(dx<0 && ax2<=start.x && ax2>px)px=ax2;
+      }
+      const xMin=Math.min(start.x,px),xMax=Math.max(start.x,px);
+      if(!(xMax<=ax1||xMin>=ax2)){
+        if(dy>0 && ay1>=start.y && ay1<py)py=ay1;
+        else if(dy<0 && ay2<=start.y && ay2>py)py=ay2;
+      }
+    }
+  }
+  return{x:px,y:py}
+}
+
+canvas.addEventListener('mousedown',e=>{
+  if(e.button!==0)return;
+  const p=getCanvasPos(e);
+  const m=currentMenu();if(!m)return;
+  hideCtxMenu();
+  if(selectedAreaId){
+    const sel=m.areas.find(a=>a.id===selectedAreaId);
+    if(sel){
+      const hn=hitHandle(p,sel);
+      if(hn){mode='resizing';resizeHandle=hn;dragOriginal={...sel};drawStart=p;return}
+    }
+  }
+  const a=hitArea(p);
+  if(a){
+    selectedAreaId=a.id;mode='dragging';
+    dragOffset={x:p.x-a.x,y:p.y-a.y};
+    dragOriginal={...a};
+    renderAreaList();render()
+  }else{
+    selectedAreaId=null;mode='drawing';
+    drawStart=p;drawCurrent=p;
+    renderAreaList();render()
+  }
+});
+canvas.addEventListener('mousemove',e=>{
+  const p=getCanvasPos(e);
+  const m=currentMenu();if(!m)return;
+  if(mode==='drawing'){
+    drawCurrent=clampDrawRect(drawStart,p);
+    render()
+  }else if(mode==='dragging'){
+    const a=m.areas.find(x=>x.id===selectedAreaId);
+    if(a){
+      const nx=Math.max(0,Math.min(canvas.width-a.w,Math.round(p.x-dragOffset.x)));
+      const ny=Math.max(0,Math.min(canvas.height-a.h,Math.round(p.y-dragOffset.y)));
+      const test={x:nx,y:ny,w:a.w,h:a.h};
+      if(!conflictsWithOthers(test,a.id)){a.x=nx;a.y=ny;render()}
+    }
+  }else if(mode==='resizing'){
+    const a=m.areas.find(x=>x.id===selectedAreaId);
+    if(a&&dragOriginal){
+      const o=dragOriginal;
+      let nx=o.x,ny=o.y,nw=o.w,nh=o.h;
+      if(resizeHandle.includes('e'))nw=Math.max(20,Math.round(p.x-o.x));
+      if(resizeHandle.includes('s'))nh=Math.max(20,Math.round(p.y-o.y));
+      if(resizeHandle.includes('w')){nx=Math.min(o.x+o.w-20,Math.round(p.x));nw=o.w+(o.x-nx)}
+      if(resizeHandle.includes('n')){ny=Math.min(o.y+o.h-20,Math.round(p.y));nh=o.h+(o.y-ny)}
+      nx=Math.max(0,nx);ny=Math.max(0,ny);
+      nw=Math.min(canvas.width-nx,nw);nh=Math.min(canvas.height-ny,nh);
+      const test={x:nx,y:ny,w:nw,h:nh};
+      if(!conflictsWithOthers(test,a.id)){Object.assign(a,test);render()}
+    }
+  }else{
+    if(selectedAreaId){
+      const sel=m.areas.find(a=>a.id===selectedAreaId);
+      if(sel){
+        const hn=hitHandle(p,sel);
+        if(hn){
+          const cursors={nw:'nwse-resize',se:'nwse-resize',ne:'nesw-resize',sw:'nesw-resize',n:'ns-resize',s:'ns-resize',e:'ew-resize',w:'ew-resize'};
+          canvas.style.cursor=cursors[hn];return
+        }
+      }
+    }
+    canvas.style.cursor=hitArea(p)?'move':'crosshair'
+  }
+});
+function finalizeMouseUp(){
+  const m=currentMenu();
+  if(mode==='drawing'&&drawStart&&drawCurrent){
+    const r=normRect(drawStart,drawCurrent);
+    if(r.w>=20&&r.h>=20){
+      const newArea={
+        id:uid('a'),
+        label:'エリア'+(m.areas.length+1),
+        x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.w),h:Math.round(r.h),
+        color:COLORS[m.areas.length%COLORS.length],
+        action:{type:'',value:''}
+      };
+      m.areas.push(newArea);
+      selectedAreaId=newArea.id;
+      expandedAreaIds.add(newArea.id);
+      markModified();saveHistory();renderAreaList()
+    }
+  }else if(mode==='dragging'||mode==='resizing'){
+    if(dragOriginal)saveHistory();
+    renderAreaList()
+  }
+  mode='idle';
+  drawStart=drawCurrent=dragOffset=resizeHandle=dragOriginal=null;
+  render()
+}
+canvas.addEventListener('mouseup',e=>{if(e.button===0)finalizeMouseUp()});
+window.addEventListener('mouseup',e=>{
+  if(e.button===0&&(mode==='drawing'||mode==='dragging'||mode==='resizing'))finalizeMouseUp()
+});
+canvas.addEventListener('contextmenu',e=>{
+  e.preventDefault();
+  const a=hitArea(getCanvasPos(e));
+  if(!a){hideCtxMenu();return}
+  selectedAreaId=a.id;ctxTargetId=a.id;
+  ctxMenu.style.left=e.clientX+'px';
+  ctxMenu.style.top=e.clientY+'px';
+  ctxMenu.classList.add('show');
+  renderAreaList();render()
+});
+function hideCtxMenu(){ctxMenu.classList.remove('show');ctxTargetId=null}
+document.addEventListener('click',e=>{if(!ctxMenu.contains(e.target))hideCtxMenu()});
+ctxMenu.querySelectorAll('.ctx-menu-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    const act=item.dataset.act;
+    const m=currentMenu();
+    const a=m.areas.find(x=>x.id===ctxTargetId);
+    if(!a){hideCtxMenu();return}
+    if(act==='delete'){
+      if(confirm('削除しますか？')){
+        m.areas=m.areas.filter(x=>x.id!==a.id);
+        expandedAreaIds.delete(a.id);
+        if(selectedAreaId===a.id)selectedAreaId=null;
+        markModified();saveHistory();renderAreaList();render()
+      }
+    }else{
+      switchTab('areas');
+      expandedAreaIds.add(a.id);
+      selectedAreaId=a.id;
+      renderAreaList();
+      setTimeout(()=>{
+        const card=document.querySelector(`[data-area-id="${a.id}"]`);
+        if(card)card.scrollIntoView({behavior:'smooth',block:'center'})
+      },50)
+    }
+    hideCtxMenu()
+  })
+});
+
+$('btnZoomIn').addEventListener('click',()=>{zoom=Math.min(MAX_ZOOM,zoom+0.1);applyZoom()});
+$('btnZoomOut').addEventListener('click',()=>{zoom=Math.max(MIN_ZOOM,zoom-0.1);applyZoom()});
+$('btnZoomFit').addEventListener('click',fitZoom);
+canvasScroll.addEventListener('wheel',e=>{
+  if(e.ctrlKey){
+    e.preventDefault();
+    zoom=Math.max(MIN_ZOOM,Math.min(MAX_ZOOM,zoom+(e.deltaY<0?0.1:-0.1)));
+    applyZoom()
+  }
+},{passive:false});
+
+function saveHistory(){
+  const snap=JSON.stringify(menus.map(m=>({...m,bgImage:null})));
+  history=history.slice(0,historyIndex+1);
+  history.push(snap);
+  if(history.length>50)history.shift();
+  historyIndex=history.length-1
+}
+function restoreFrom(snap){
+  const data=JSON.parse(snap);
+  menus.length=0;
+  data.forEach(d=>{
+    const m={...d,bgImage:null};
+    menus.push(m);
+    if(m.bgImageData){
+      const img=new Image();
+      img.onload=()=>{m.bgImage=img;if(m.id===currentMenuId)render()};
+      img.src=m.bgImageData
+    }
+  });
+  if(!menus.find(m=>m.id===currentMenuId))currentMenuId=menus[0]?.id;
+  renderMenuTabs();loadCurrentMenu()
+}
+$('btnUndo').addEventListener('click',()=>{
+  if(historyIndex>0){historyIndex--;restoreFrom(history[historyIndex]);showToast('元に戻しました')}
+});
+$('btnRedo').addEventListener('click',()=>{
+  if(historyIndex<history.length-1){historyIndex++;restoreFrom(history[historyIndex]);showToast('やり直しました')}
+});
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();$('btnUndo').click()}
+  else if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.shiftKey&&e.key==='Z'))){e.preventDefault();$('btnRedo').click()}
+  else if(e.key==='Delete'&&selectedAreaId){
+    const m=currentMenu();
+    if(confirm('選択中のエリアを削除しますか？')){
+      m.areas=m.areas.filter(x=>x.id!==selectedAreaId);
+      expandedAreaIds.delete(selectedAreaId);
+      selectedAreaId=null;
+      markModified();saveHistory();renderAreaList();render()
+    }
+  }
+});
+
+
+function makeArea(label,x,y,w,h,idx,action){return{id:uid('a'),label,x:Math.round(x),y:Math.round(y),w:Math.round(w),h:Math.round(h),color:COLORS[idx%COLORS.length],action:action||{type:'',value:''}}}
+function setAreasFromRects(rects){
+  const m=currentMenu();if(!m)return;
+  if(m.areas.length&&!confirm('現在のエリアをテンプレートで上書きしますか？'))return;
+  m.areas=rects.map((r,i)=>makeArea(r.label||('エリア'+(i+1)),r.x,r.y,r.w,r.h,i,r.action));
+  selectedAreaId=m.areas[0]?.id||null;expandedAreaIds.clear();if(selectedAreaId)expandedAreaIds.add(selectedAreaId);
+  markModified();saveHistory();renderAreaList();render();switchTab('areas');showToast('テンプレートを適用しました','success')
+}
+function templateRects(type){
+  const {w,h}=getCanvasSize();
+  const out=[];
+  if(type==='2x3'){for(let r=0;r<2;r++)for(let c=0;c<3;c++)out.push({label:'エリア'+(out.length+1),x:c*w/3,y:r*h/2,w:w/3,h:h/2})}
+  if(type==='3x2'){for(let r=0;r<3;r++)for(let c=0;c<2;c++)out.push({label:'エリア'+(out.length+1),x:c*w/2,y:r*h/3,w:w/2,h:h/3})}
+  if(type==='1x3'){for(let r=0;r<3;r++)out.push({label:'エリア'+(r+1),x:0,y:r*h/3,w:w,h:h/3})}
+  if(type==='2x2'){for(let r=0;r<2;r++)for(let c=0;c<2;c++)out.push({label:'エリア'+(out.length+1),x:c*w/2,y:r*h/2,w:w/2,h:h/2})}
+  if(type==='top1bottom3'){out.push({label:'メインCTA',x:0,y:0,w:w,h:h*0.45});for(let c=0;c<3;c++)out.push({label:'メニュー'+(c+1),x:c*w/3,y:h*0.45,w:w/3,h:h*0.55})}
+  if(type==='leftBigRight2'){out.push({label:'メイン',x:0,y:0,w:w*0.58,h:h});out.push({label:'右上',x:w*0.58,y:0,w:w*0.42,h:h/2});out.push({label:'右下',x:w*0.58,y:h/2,w:w*0.42,h:h/2})}
+  return out;
+}
+function createTabTwoSet(){
+  const m=currentMenu(); if(!m)return;
+  if((m.areas.length||menus.length>1)&&!confirm('タブ切替2枚セットを作成します。現在のメニュー設定を一部上書きします。よろしいですか？'))return;
+  const {w,h}=getCanvasSize();
+  const hTab=Math.round(h*0.17), contentH=h-hTab;
+  m.name='タブ1';m.alias='tab-1';m.chatBarText='メニュー';m.selected=true;
+  m.areas=[
+    makeArea('タブ1',0,0,w/2,hTab,0,{type:'richmenuswitch',value:'tab-1'}),
+    makeArea('タブ2',w/2,0,w/2,hTab,1,{type:'richmenuswitch',value:'tab-2'}),
+    makeArea('内容1',0,hTab,w/2,contentH/2,2),makeArea('内容2',w/2,hTab,w/2,contentH/2,3),
+    makeArea('内容3',0,hTab+contentH/2,w/2,contentH/2,4),makeArea('内容4',w/2,hTab+contentH/2,w/2,contentH/2,5)
+  ];
+  let m2=menus.find(x=>x.alias==='tab-2');
+  if(!m2){m2={id:uid('m'),name:'タブ2',alias:'tab-2',chatBarText:'メニュー',size:m.size,bgColor:m.bgColor,selected:true,bgImage:null,bgImageData:null,areas:[],users:[],uploadStatus:'new',richMenuId:null,isDefault:false};menus.push(m2)}
+  m2.size=m.size;m2.chatBarText=m.chatBarText;m2.selected=true;m2.areas=[
+    makeArea('タブ1',0,0,w/2,hTab,0,{type:'richmenuswitch',value:'tab-1'}),
+    makeArea('タブ2',w/2,0,w/2,hTab,1,{type:'richmenuswitch',value:'tab-2'}),
+    makeArea('内容A',0,hTab,w/2,contentH/2,2),makeArea('内容B',w/2,hTab,w/2,contentH/2,3),
+    makeArea('内容C',0,hTab+contentH/2,w/2,contentH/2,4),makeArea('内容D',w/2,hTab+contentH/2,w/2,contentH/2,5)
+  ];
+  currentMenuId=m.id;selectedAreaId=m.areas[0].id;expandedAreaIds.clear();expandedAreaIds.add(selectedAreaId);
+  renderMenuTabs();loadCurrentMenu();saveHistory();switchTab('areas');showToast('タブ切替2枚セットを作成しました','success')
+}
+document.querySelectorAll('[data-template]').forEach(btn=>btn.addEventListener('click',()=>{const t=btn.dataset.template;if(t==='tab2set')createTabTwoSet();else setAreasFromRects(templateRects(t))}));
+function refreshJsonEditor(){const el=$('jsonEditor');if(!el)return;try{el.value=JSON.stringify(buildRichMenuJson(currentMenu()),null,2);$('jsonStatus').textContent='現在のGUI設定からJSONを生成しました。'}catch(e){$('jsonStatus').textContent='JSON生成エラー: '+e.message}}
+function actionFromLineAction(action){
+  if(!action||!action.type)return{type:'',value:''};
+  if(action.type==='uri')return{type:'uri',value:action.uri||''};
+  if(action.type==='message')return{type:'message',value:action.text||''};
+  if(action.type==='postback')return{type:'postback',value:action.data||''};
+  if(action.type==='richmenuswitch')return{type:'richmenuswitch',value:action.richMenuAliasId||''};
+  return{type:'postback',value:action.data||''};
+}
+function applyJsonToGui(){
+  const m=currentMenu();if(!m)return;
+  let data;try{data=JSON.parse($('jsonEditor').value)}catch(e){$('jsonStatus').textContent='JSON形式が不正です: '+e.message;return}
+  if(!data.size||!Array.isArray(data.areas)){ $('jsonStatus').textContent='LINEリッチメニューJSONとして必要な size / areas がありません。';return }
+  m.name=data.name||m.name;m.chatBarText=data.chatBarText||m.chatBarText;m.selected=data.selected!==false;m.size=(data.size.height<=843)?'compact':'large';
+  m.areas=data.areas.map((a,i)=>makeArea('エリア'+(i+1),a.bounds?.x||0,a.bounds?.y||0,a.bounds?.width||20,a.bounds?.height||20,i,actionFromLineAction(a.action)));
+  selectedAreaId=m.areas[0]?.id||null;expandedAreaIds.clear();if(selectedAreaId)expandedAreaIds.add(selectedAreaId);
+  loadCurrentMenu();markModified();saveHistory();$('jsonStatus').textContent='JSONをGUIへ反映しました。';showToast('JSONを反映しました','success')
+}
+if($('btnJsonRefresh'))$('btnJsonRefresh').addEventListener('click',refreshJsonEditor);
+if($('btnJsonFormat'))$('btnJsonFormat').addEventListener('click',()=>{try{$('jsonEditor').value=JSON.stringify(JSON.parse($('jsonEditor').value),null,2);$('jsonStatus').textContent='JSONを整形しました。'}catch(e){$('jsonStatus').textContent='JSON形式が不正です: '+e.message}});
+if($('btnJsonCopy'))$('btnJsonCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('jsonEditor').value);showToast('JSONをコピーしました','success')}catch(e){showToast('コピーできませんでした','error')}});
+if($('btnJsonDownload'))$('btnJsonDownload').addEventListener('click',()=>{const m=currentMenu();const blob=new Blob([$('jsonEditor').value],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(m?.alias||m?.name||'richmenu')+'.json';a.click();URL.revokeObjectURL(a.href)});
+if($('btnJsonApply'))$('btnJsonApply').addEventListener('click',applyJsonToGui);
+
+function buildAction(act){
+  if(!act.type)return{type:'postback',data:'noop'};
+  if(act.type==='uri')return{type:'uri',uri:act.value};
+  if(act.type==='message')return{type:'message',text:act.value};
+  if(act.type==='postback')return{type:'postback',data:act.value};
+  if(act.type==='richmenuswitch')return{type:'richmenuswitch',richMenuAliasId:act.value,data:'switch='+act.value};
+  return{type:'postback',data:'noop'}
+}
+function buildRichMenuJson(m){
+  const{w,h}=m.size==='compact'?{w:2500,h:843}:{w:2500,h:1686};
+  return{
+    size:{width:w,height:h},
+    selected:m.selected!==false,
+    name:m.name,
+    chatBarText:m.chatBarText||'メニュー',
+    areas:m.areas.map(a=>({bounds:{x:a.x,y:a.y,width:a.w,height:a.h},action:buildAction(a.action)}))
+  }
+}
+
+
+function dataUrlByteLength(dataUrl){
+  const base64=String(dataUrl).split(',')[1]||'';
+  return Math.floor(base64.length*3/4);
+}
+function formatBytes(bytes){
+  if(bytes<1024)return bytes+' B';
+  if(bytes<1024*1024)return Math.round(bytes/1024)+' KB';
+  return (bytes/1024/1024).toFixed(2)+' MB';
+}
+function setApiResult(html,type=''){
+  const box=$('apiResult');
+  if(!box)return;
+  box.style.display='block';
+  box.innerHTML=html;
+  box.style.borderLeftColor=type==='error'?'#dc3545':'#06c755';
+}
+function makeUploadImageDataUrl(m){
+  const{w,h}=getCanvasSize();
+  const out=document.createElement('canvas');
+  out.width=w;out.height=h;
+  const o=out.getContext('2d');
+  o.fillStyle=m.bgColor||'#ffffff';
+  o.fillRect(0,0,w,h);
+  if(m.bgImage){
+    try{o.drawImage(m.bgImage,0,0,w,h)}catch(e){}
+  }
+  let quality=0.92;
+  let dataUrl=out.toDataURL('image/jpeg',quality);
+  while(dataUrlByteLength(dataUrl)>950*1024 && quality>0.45){
+    quality=Math.max(0.45,quality-0.08);
+    dataUrl=out.toDataURL('image/jpeg',quality);
+  }
+  return{dataUrl,bytes:dataUrlByteLength(dataUrl),quality};
+}
+
+const LINE_TOKEN_SESSION_KEY='richmenu_plus_line_token_session';
+const LINE_TOKEN_LOCAL_KEY='richmenu_plus_line_token_local';
+function loadLineToken(){
+  const local=localStorage.getItem(LINE_TOKEN_LOCAL_KEY)||'';
+  const session=sessionStorage.getItem(LINE_TOKEN_SESSION_KEY)||'';
+  const saved=local||session;
+  const input=$('lineTokenInput');
+  if(input)input.value=saved;
+  const remember=$('rememberLineToken');
+  if(remember)remember.checked=!!local;
+}
+function getLineToken(){
+  const input=$('lineTokenInput');
+  return input?input.value.trim():'';
+}
+function saveLineTokenFromInput(){
+  const token=getLineToken();
+  if(!token){showToast('トークンを入力してください','error');return false}
+  if($('rememberLineToken')&&$('rememberLineToken').checked){
+    localStorage.setItem(LINE_TOKEN_LOCAL_KEY,token);
+    sessionStorage.removeItem(LINE_TOKEN_SESSION_KEY);
+    showToast('このブラウザにトークンを保存しました','success');
+  }else{
+    sessionStorage.setItem(LINE_TOKEN_SESSION_KEY,token);
+    localStorage.removeItem(LINE_TOKEN_LOCAL_KEY);
+    showToast('このタブ用にトークンを保持しました','success');
+  }
+  return true;
+}
+function clearLineToken(){
+  localStorage.removeItem(LINE_TOKEN_LOCAL_KEY);
+  sessionStorage.removeItem(LINE_TOKEN_SESSION_KEY);
+  if($('lineTokenInput'))$('lineTokenInput').value='';
+  if($('rememberLineToken'))$('rememberLineToken').checked=false;
+  showToast('トークンを削除しました');
+}
+
+
+function getStatusUserId(){
+  const input=$('statusUserId');
+  const typed=input?input.value.trim():'';
+  if(typed)return typed;
+  const m=currentMenu();
+  const first=m&&m.users&&m.users[0]?m.users[0].userId:'';
+  if(first&&input)input.value=first;
+  return first||'';
+}
+function formatRichMenuStatus(data,mode){
+  const parts=[];
+  if(mode!=='user'){
+    parts.push('<b>現在のデフォルトrichMenuId</b>');
+    if(data.defaultRichMenuId){
+      parts.push('<code>'+escapeHtml(data.defaultRichMenuId)+'</code>');
+    }else{
+      parts.push('<span style="color:#888;">未設定</span>');
+    }
+    if(data.defaultMessage)parts.push('<div style="margin-top:6px;">'+escapeHtml(data.defaultMessage)+'</div>');
+  }
+  if(mode!=='default'){
+    parts.push('<hr style="margin:12px 0;border:none;border-top:1px dashed #ddd;">');
+    parts.push('<b>個別リンク中のrichMenuId</b>');
+    if(data.userId)parts.push('<div style="font-size:13px;color:#666;">userId: <code>'+escapeHtml(data.userId)+'</code></div>');
+    if(data.userRichMenuId){
+      parts.push('<code>'+escapeHtml(data.userRichMenuId)+'</code>');
+      parts.push('<div style="margin-top:6px;color:#856404;">個別リンクがあるため、デフォルトよりこちらが優先表示されます。</div>');
+    }else{
+      parts.push('<span style="color:#888;">個別リンクなし</span>');
+    }
+    if(data.userMessage)parts.push('<div style="margin-top:6px;">'+escapeHtml(data.userMessage)+'</div>');
+  }
+  return parts.join('<br>');
+}
+
+async function appApi(path,payload){
+  const headers={'Content-Type':'application/json','X-App-Password':getAppPassword()};
+  const token=getLineToken();
+  if(token)headers['X-Line-Token']=token;
+  const res=await fetch(path,{
+    method:'POST',
+    headers,
+    body:JSON.stringify(payload||{})
+  });
+  const text=await res.text();
+  let data;
+  try{data=JSON.parse(text)}catch(e){data={ok:false,error:text||res.statusText}}
+  if(!res.ok||data.ok===false){
+    if(res.status===401){showLogin('パスワード確認が必要です。もう一度ログインしてください。')}
+    throw new Error(data.error||data.message||text||('HTTP '+res.status));
+  }
+  return data;
+}
+if($('btnSaveLineToken'))$('btnSaveLineToken').addEventListener('click',saveLineTokenFromInput);
+if($('btnClearLineToken'))$('btnClearLineToken').addEventListener('click',clearLineToken);
+if($('lineTokenInput'))$('lineTokenInput').addEventListener('change',()=>{if(getLineToken())saveLineTokenFromInput()});
+loadLineToken();
+
+$('btnApiUpload').addEventListener('click',async()=>{
+  const m=currentMenu();if(!m)return;
+  if(!m.bgImageData){showToast('背景画像をアップロードしてください','error');return}
+  if(m.areas.length===0){showToast('エリアが0件です','error');return}
+  try{
+    setApiResult('アップロード準備中です...');
+    const img=makeUploadImageDataUrl(m);
+    if(img.bytes>1024*1024){
+      throw new Error('画像サイズが1MBを超えています: '+formatBytes(img.bytes)+'。画像を軽くしてから再度お試しください。');
+    }
+    setApiResult('LINEへアップロード中です...<br>画像サイズ: '+formatBytes(img.bytes)+' / JPEG品質: '+Math.round(img.quality*100)+'%'+(getLineToken()?'':'<br><span style="color:#666;">トークン入力欄が空のため、Vercel環境変数 LINE_CHANNEL_ACCESS_TOKEN を使用します。</span>'));
+    const result=await appApi('/api/upload-richmenu',{
+      richMenu:buildRichMenuJson(m),
+      alias:m.alias||'',
+      oldRichMenuId:m.richMenuId||'',
+      imageDataUrl:img.dataUrl
+    });
+    m.richMenuId=result.richMenuId;
+    m.uploadStatus='uploaded';
+    updateUploadBadge();
+    saveHistory();
+    let msg='<b>アップロード成功</b><br>richMenuId: <code>'+escapeHtml(result.richMenuId)+'</code>'+(m.alias?'<br>alias: <code>'+escapeHtml(m.alias)+'</code>':'');
+    if($('autoSetDefault')&&$('autoSetDefault').checked){
+      await appApi('/api/set-default-richmenu',{richMenuId:m.richMenuId});
+      m.isDefault=true;msg+='<br><b>デフォルト設定成功</b>';
+    }
+    setApiResult(msg);
+    showToast('アップロード成功','success')
+  }catch(e){
+    setApiResult('<b>アップロード失敗</b><br>'+escapeHtml(e.message),'error');
+    showToast('失敗: '+e.message,'error')
+  }
+});
+
+$('btnSetDefault').addEventListener('click',async()=>{
+  const m=currentMenu();
+  if(!m.richMenuId){showToast('先にアップロードしてください','error');return}
+  try{
+    setApiResult('デフォルトに設定中です...');
+    await appApi('/api/set-default-richmenu',{richMenuId:m.richMenuId});
+    m.isDefault=true;saveHistory();
+    setApiResult('<b>デフォルト設定成功</b><br>richMenuId: <code>'+escapeHtml(m.richMenuId)+'</code>');
+    showToast('デフォルトに設定しました','success')
+  }catch(e){setApiResult('<b>デフォルト設定失敗</b><br>'+escapeHtml(e.message),'error');showToast('失敗: '+e.message,'error')}
+});
+
+$('btnClearDefault').addEventListener('click',async()=>{
+  if(!confirm('Messaging APIで設定したデフォルトリッチメニューを解除しますか？\n※ユーザー個別リンクがある場合、そのユーザーには個別リンク側が表示されます。'))return;
+  try{
+    setApiResult('デフォルト解除中です...');
+    const result=await appApi('/api/clear-default-richmenu',{});
+    const msg=result.cleared?'<b>デフォルト解除成功</b>':'<b>デフォルトは未設定でした</b><br>'+escapeHtml(result.message||'');
+    setApiResult(msg);
+    showToast(result.cleared?'デフォルトを解除しました':'デフォルトは未設定でした','success')
+  }catch(e){setApiResult('<b>デフォルト解除失敗</b><br>'+escapeHtml(e.message),'error');showToast('失敗: '+e.message,'error')}
+});
+
+$('btnCheckDefault').addEventListener('click',async()=>{
+  try{
+    setApiResult('現在のデフォルトを確認中です...');
+    const result=await appApi('/api/get-richmenu-status',{});
+    setApiResult(formatRichMenuStatus(result,'default'));
+    showToast('デフォルトを確認しました','success')
+  }catch(e){setApiResult('<b>確認失敗</b><br>'+escapeHtml(e.message),'error');showToast('失敗: '+e.message,'error')}
+});
+
+$('btnCheckUserRichMenu').addEventListener('click',async()=>{
+  const userId=getStatusUserId();
+  if(!userId){showToast('確認用ユーザーIDを入力してください','error');return}
+  try{
+    setApiResult('個別リンク状態を確認中です...');
+    const result=await appApi('/api/get-richmenu-status',{userId});
+    setApiResult(formatRichMenuStatus(result,'user'));
+    showToast('個別リンクを確認しました','success')
+  }catch(e){setApiResult('<b>確認失敗</b><br>'+escapeHtml(e.message),'error');showToast('失敗: '+e.message,'error')}
+});
+
+$('btnCheckReflectStatus').addEventListener('click',async()=>{
+  const userId=getStatusUserId();
+  try{
+    setApiResult('反映状態を確認中です...');
+    const result=await appApi('/api/get-richmenu-status',{userId});
+    setApiResult(formatRichMenuStatus(result,'all'));
+    showToast('反映状態を確認しました','success')
+  }catch(e){setApiResult('<b>確認失敗</b><br>'+escapeHtml(e.message),'error');showToast('失敗: '+e.message,'error')}
+});
+
+$('btnLinkUsers').addEventListener('click',async()=>{
+  const m=currentMenu();
+  if(!m.richMenuId){showToast('先にアップロードしてください','error');return}
+  if(m.users.length===0){showToast('ユーザーが登録されていません','error');return}
+  try{
+    const result=await appApi('/api/link-users',{richMenuId:m.richMenuId,userIds:m.users.map(u=>u.userId)});
+    showToast(`成功:${result.okCount} / 失敗:${result.ngCount}`,result.ngCount===0?'success':'error')
+  }catch(e){showToast('失敗: '+e.message,'error')}
+});
+$('btnUnlinkUsers').addEventListener('click',async()=>{
+  const m=currentMenu();
+  if(m.users.length===0){showToast('ユーザーが登録されていません','error');return}
+  if(!confirm(`${m.users.length}名のリンクを解除しますか？`))return;
+  try{
+    const result=await appApi('/api/unlink-users',{userIds:m.users.map(u=>u.userId)});
+    showToast(`成功:${result.okCount} / 失敗:${result.ngCount}`,result.ngCount===0?'success':'error')
+  }catch(e){showToast('失敗: '+e.message,'error')}
+});
+
+
+// Google Drive project save/load
+const DRIVE_SCOPE='https://www.googleapis.com/auth/drive.file';
+const DRIVE_FOLDER_NAME='リッチメニュープラス';
+const DRIVE_APP_PROP_KEY='app';
+const DRIVE_APP_PROP_VALUE='richmenu-plus';
+let googleClientId='';
+let driveAccessToken='';
+let driveTokenClient=null;
+let driveFolderId='';
+let currentDriveFileId='';
+let currentDriveFileName='';
+
+function updateDrivePanel(){
+  const nameInput=$('driveProjectName');
+  const m=currentMenu();
+  if(nameInput&&m&&!nameInput.value)nameInput.value=m.name||'リッチメニュー';
+  renderDriveStatus();
+}
+function setDriveStatus(msg,type=''){
+  const el=$('driveStatus');if(!el)return;
+  el.innerHTML=msg;el.className='drive-status '+(type||'');
+}
+function renderDriveStatus(){
+  if(driveAccessToken)setDriveStatus('Google Driveに接続済みです。保存・読み込みができます。','ok');
+  else setDriveStatus('未接続です。先に「Google Driveに接続」を押してください。');
+  const cur=$('driveCurrentFile');
+  if(cur)cur.innerHTML='現在開いているDriveファイル：'+(currentDriveFileId?'<code>'+escapeHtml(currentDriveFileName||currentDriveFileId)+'</code>':'なし');
+}
+function waitForGoogleIdentity(){
+  return new Promise((resolve,reject)=>{
+    let count=0;
+    const timer=setInterval(()=>{
+      if(window.google&&google.accounts&&google.accounts.oauth2){clearInterval(timer);resolve()}
+      if(++count>80){clearInterval(timer);reject(new Error('Google認証ライブラリを読み込めませんでした。ネットワークや広告ブロックを確認してください。'))}
+    },100);
+  });
+}
+async function loadGoogleClientId(){
+  if(googleClientId)return googleClientId;
+  const data=await appApi('/api/google-config',{});
+  if(!data.clientId)throw new Error('Vercel環境変数 GOOGLE_CLIENT_ID が未設定です。READMEの手順で設定してください。');
+  googleClientId=data.clientId;
+  return googleClientId;
+}
+async function connectGoogleDrive(forcePrompt=false){
+  await loadGoogleClientId();
+  await waitForGoogleIdentity();
+  return new Promise((resolve,reject)=>{
+    driveTokenClient=google.accounts.oauth2.initTokenClient({
+      client_id:googleClientId,
+      scope:DRIVE_SCOPE,
+      include_granted_scopes:true,
+      callback:(resp)=>{
+        if(resp.error){reject(new Error(resp.error_description||resp.error));return}
+        driveAccessToken=resp.access_token;
+        renderDriveStatus();
+        resolve(resp.access_token);
+      }
+    });
+    try{driveTokenClient.requestAccessToken({prompt:forcePrompt?'consent':''})}
+    catch(e){reject(e)}
+  });
+}
+async function ensureDriveConnected(){
+  if(driveAccessToken)return driveAccessToken;
+  return connectGoogleDrive(false);
+}
+function driveQueryEscape(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+async function driveFetch(url,opts={},retry=true){
+  await ensureDriveConnected();
+  opts.headers=Object.assign({},opts.headers||{}, {'Authorization':'Bearer '+driveAccessToken});
+  const res=await fetch(url,opts);
+  if(res.status===401&&retry){driveAccessToken='';await connectGoogleDrive(false);return driveFetch(url,opts,false)}
+  const text=await res.text();
+  let data=text;
+  try{data=text?JSON.parse(text):{}}catch(e){}
+  if(!res.ok)throw new Error((data&&data.error&&data.error.message)||data.error_description||text||('Google Drive API error '+res.status));
+  return data;
+}
+async function ensureDriveFolder(){
+  if(driveFolderId)return driveFolderId;
+  const q="mimeType='application/vnd.google-apps.folder' and name='"+driveQueryEscape(DRIVE_FOLDER_NAME)+"' and trashed=false";
+  const found=await driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&fields=files(id,name)&spaces=drive');
+  if(found.files&&found.files[0]){driveFolderId=found.files[0].id;return driveFolderId}
+  const created=await driveFetch('https://www.googleapis.com/drive/v3/files?fields=id,name',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:DRIVE_FOLDER_NAME,mimeType:'application/vnd.google-apps.folder'})});
+  driveFolderId=created.id;
+  return driveFolderId;
+}
+function projectData(){
+  return {
+    app:'richmenu-plus',
+    version:'1.0',
+    savedAt:new Date().toISOString(),
+    currentMenuId,
+    menus:menus.map(m=>{const copy={...m};delete copy.bgImage;return copy;})
+  };
+}
+function loadProjectData(data){
+  if(!data||!Array.isArray(data.menus)||!data.menus.length)throw new Error('リッチメニュープラスの保存データではありません。');
+  menus.length=0;
+  data.menus.forEach(d=>menus.push({...d,bgImage:null}));
+  currentMenuId=(data.currentMenuId&&menus.some(m=>m.id===data.currentMenuId))?data.currentMenuId:menus[0].id;
+  selectedAreaId=null;expandedAreaIds.clear();history=[];historyIndex=-1;
+  renderMenuTabs();loadCurrentMenu();saveHistory();setTimeout(fitZoom,100);
+}
+function safeFileName(name){return String(name||'リッチメニュー').replace(/[\\/:*?"<>|]/g,'_').trim().slice(0,80)||'リッチメニュー'}
+function driveProjectFileName(){
+  const n=($('driveProjectName')&&$('driveProjectName').value.trim())||(currentMenu()?.name)||'リッチメニュー';
+  return 'richmenu-project-'+safeFileName(n)+'.json';
+}
+function makeMultipartBody(metadata,content){
+  const boundary='-------richmenuplus'+Math.random().toString(36).slice(2);
+  const body='--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(metadata)+'\r\n--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+content+'\r\n--'+boundary+'--';
+  return {body,boundary};
+}
+async function findDriveProjectByName(name){
+  const folderId=await ensureDriveFolder();
+  const q="'"+folderId+"' in parents and name='"+driveQueryEscape(name)+"' and trashed=false";
+  const data=await driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&fields=files(id,name,modifiedTime,size)&spaces=drive');
+  return data.files&&data.files[0];
+}
+async function uploadProjectToDrive(fileId){
+  const folderId=await ensureDriveFolder();
+  const fileName=driveProjectFileName();
+  const data=projectData();
+  data.projectName=($('driveProjectName')&&$('driveProjectName').value.trim())||(currentMenu()?.name)||'リッチメニュー';
+  const content=JSON.stringify(data,null,2);
+  const bytes=new Blob([content]).size;
+  if(bytes>20*1024*1024&&!confirm('保存データが20MBを超えています。Google Driveに保存を続けますか？'))return null;
+  const metadata={name:fileName,mimeType:'application/json',appProperties:{[DRIVE_APP_PROP_KEY]:DRIVE_APP_PROP_VALUE}};
+  if(!fileId)metadata.parents=[folderId];
+  const mp=makeMultipartBody(metadata,content);
+  const url=fileId?'https://www.googleapis.com/upload/drive/v3/files/'+encodeURIComponent(fileId)+'?uploadType=multipart&fields=id,name,modifiedTime':'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime';
+  const method=fileId?'PATCH':'POST';
+  const result=await driveFetch(url,{method,headers:{'Content-Type':'multipart/related; boundary='+mp.boundary},body:mp.body});
+  currentDriveFileId=result.id;currentDriveFileName=result.name;renderDriveStatus();return result;
+}
+async function listDriveProjects(){
+  const folderId=await ensureDriveFolder();
+  const q="'"+folderId+"' in parents and mimeType='application/json' and trashed=false";
+  const data=await driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&orderBy=modifiedTime desc&fields=files(id,name,modifiedTime,size)&spaces=drive');
+  renderDriveList(data.files||[]);
+  return data.files||[];
+}
+function renderDriveList(files){
+  const box=$('driveFileList');if(!box)return;
+  if(!files.length){box.innerHTML='<div class="user-empty">保存済みプロジェクトはまだありません。</div>';return}
+  box.innerHTML=files.map(f=>{
+    const date=f.modifiedTime?new Date(f.modifiedTime).toLocaleString('ja-JP'):'';
+    const size=f.size?formatBytes(Number(f.size)):'';
+    return '<div class="drive-item"><strong>'+escapeHtml(f.name)+'</strong><small>更新: '+escapeHtml(date)+' '+escapeHtml(size)+'</small><div class="button-row"><button class="btn btn-sm btn-primary" data-drive-open="'+escapeHtml(f.id)+'" data-name="'+escapeHtml(f.name)+'">開く</button><button class="btn btn-sm" data-drive-overwrite="'+escapeHtml(f.id)+'" data-name="'+escapeHtml(f.name)+'">このファイルへ上書き</button><button class="btn btn-sm btn-danger" data-drive-delete="'+escapeHtml(f.id)+'">削除</button></div></div>';
+  }).join('');
+}
+async function openDriveProject(fileId,name){
+  const data=await driveFetch('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(fileId)+'?alt=media');
+  loadProjectData(data);
+  currentDriveFileId=fileId;currentDriveFileName=name||'';
+  const n=(data.projectName||String(name||'').replace(/^richmenu-project-/,'').replace(/\.json$/,''));
+  if($('driveProjectName'))$('driveProjectName').value=n;
+  renderDriveStatus();
+}
+async function deleteDriveProject(fileId){
+  await driveFetch('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(fileId),{method:'DELETE'});
+  if(currentDriveFileId===fileId){currentDriveFileId='';currentDriveFileName='';renderDriveStatus()}
+}
+if($('btnDriveConnect'))$('btnDriveConnect').addEventListener('click',async()=>{try{setDriveStatus('Google Driveに接続中です...');await connectGoogleDrive(true);await listDriveProjects();showToast('Google Driveに接続しました','success')}catch(e){setDriveStatus(escapeHtml(e.message),'err');showToast('接続失敗: '+e.message,'error')}});
+if($('btnDriveDisconnect'))$('btnDriveDisconnect').addEventListener('click',()=>{try{if(window.google&&driveAccessToken)google.accounts.oauth2.revoke(driveAccessToken,()=>{})}catch(e){}driveAccessToken='';driveFolderId='';currentDriveFileId='';currentDriveFileName='';renderDriveStatus();if($('driveFileList'))$('driveFileList').innerHTML='<div class="user-empty">Google Driveに接続すると一覧が表示されます。</div>';showToast('Drive接続を解除しました')});
+if($('btnDriveSave'))$('btnDriveSave').addEventListener('click',async()=>{try{setDriveStatus('Google Driveへ保存中です...');await ensureDriveConnected();const name=driveProjectFileName();const existing=await findDriveProjectByName(name);const result=await uploadProjectToDrive(existing?existing.id:null);if(result){setDriveStatus('保存しました：<code>'+escapeHtml(result.name)+'</code>','ok');await listDriveProjects();showToast(existing?'同名ファイルを上書きしました':'Driveに保存しました','success')}}catch(e){setDriveStatus(escapeHtml(e.message),'err');showToast('保存失敗: '+e.message,'error')}});
+if($('btnDriveOverwrite'))$('btnDriveOverwrite').addEventListener('click',async()=>{try{if(!currentDriveFileId){showToast('先にDriveからファイルを開くか、保存済み一覧の「このファイルへ上書き」を選んでください','error');return}setDriveStatus('現在のDriveファイルへ上書き中です...');const result=await uploadProjectToDrive(currentDriveFileId);setDriveStatus('上書き保存しました：<code>'+escapeHtml(result.name)+'</code>','ok');await listDriveProjects();showToast('上書き保存しました','success')}catch(e){setDriveStatus(escapeHtml(e.message),'err');showToast('上書き失敗: '+e.message,'error')}});
+if($('btnDriveRefresh'))$('btnDriveRefresh').addEventListener('click',async()=>{try{setDriveStatus('保存済み一覧を取得中です...');await ensureDriveConnected();await listDriveProjects();renderDriveStatus();showToast('一覧を更新しました','success')}catch(e){setDriveStatus(escapeHtml(e.message),'err');showToast('取得失敗: '+e.message,'error')}});
+if($('driveFileList'))$('driveFileList').addEventListener('click',async(e)=>{
+  const open=e.target.closest('[data-drive-open]');
+  const overwrite=e.target.closest('[data-drive-overwrite]');
+  const del=e.target.closest('[data-drive-delete]');
+  try{
+    if(open){if(!confirm('現在の編集中データを、Driveの保存データで置き換えますか？'))return;setDriveStatus('Driveから読み込み中です...');await openDriveProject(open.dataset.driveOpen,open.dataset.name);setDriveStatus('読み込みました：<code>'+escapeHtml(open.dataset.name||'')+'</code>','ok');showToast('Driveから読み込みました','success')}
+    if(overwrite){if(!confirm('現在の編集中データで、このDriveファイルを上書きしますか？'))return;currentDriveFileId=overwrite.dataset.driveOverwrite;currentDriveFileName=overwrite.dataset.name||'';const result=await uploadProjectToDrive(currentDriveFileId);setDriveStatus('上書き保存しました：<code>'+escapeHtml(result.name)+'</code>','ok');await listDriveProjects();showToast('上書き保存しました','success')}
+    if(del){if(!confirm('このDrive保存データを削除しますか？'))return;setDriveStatus('削除中です...');await deleteDriveProject(del.dataset.driveDelete);await listDriveProjects();renderDriveStatus();showToast('削除しました','success')}
+  }catch(err){setDriveStatus(escapeHtml(err.message),'err');showToast('Drive操作失敗: '+err.message,'error')}
+});
+
+createMenu('メインメニュー');
+setTimeout(fitZoom,100);
+</script>
+</body>
+</html>
