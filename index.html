@@ -82,23 +82,22 @@
 .toast.show{opacity:1}.toast.success{background:#06c755}.toast.error{background:#dc3545}
 
 .login-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#06c755,#0aa06b);display:flex;align-items:center;justify-content:center;z-index:5000;padding:20px}
-.login-overlay.hidden{display:none}.login-card{width:min(440px,100%);background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.24);padding:28px}.login-card h2{font-size:24px;margin-bottom:16px;color:#111}.login-card p{font-size:14px;line-height:1.7;color:#555;margin-bottom:16px}.login-card input{width:100%;padding:14px 16px;border:1px solid #ddd;border-radius:8px;font-size:18px;margin-bottom:12px}.login-card .login-error{color:#dc3545;font-size:14px;min-height:20px;margin-top:10px}.logout-mini{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.5)}
-.template-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}.template-card{border:1px solid #ddd;background:#fff;border-radius:8px;padding:14px;text-align:left;cursor:pointer}.template-card:hover{border-color:#06c755;box-shadow:0 0 0 2px rgba(6,199,85,.12)}.template-card strong{display:block;font-size:16px;margin-bottom:6px}.template-card small{color:#666;line-height:1.5}.code-editor{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:13px;line-height:1.5;min-height:420px;white-space:pre}.button-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}.button-row .btn{flex:1}.json-status{font-size:13px;color:#666;margin-top:8px;line-height:1.6}
+.login-overlay.hidden{display:none}.login-card{width:min(440px,100%);background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.24);padding:28px}.login-card h2{font-size:24px;margin-bottom:8px;color:#111}.login-card p{font-size:14px;line-height:1.7;color:#555;margin-bottom:16px}.login-card input{width:100%;padding:14px 16px;border:1px solid #ddd;border-radius:8px;font-size:18px;margin-bottom:12px}.login-card .login-error{color:#dc3545;font-size:14px;min-height:20px;margin-top:10px}.logout-mini{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.5)}
+.button-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}.button-row .btn{flex:1}
 .drive-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}.drive-item{border:1px solid #ddd;border-radius:8px;background:#fff;padding:12px}.drive-item strong{display:block;font-size:15px;margin-bottom:4px;word-break:break-all}.drive-item small{color:#666}.drive-item .button-row{margin-top:10px}.drive-status{font-size:14px;line-height:1.7;color:#333;background:#f8f9fa;border:1px solid #e0e0e0;border-radius:6px;padding:12px;margin:10px 0}.drive-status.ok{border-left:4px solid #06c755}.drive-status.err{border-left:4px solid #dc3545}.drive-current{font-size:13px;color:#666;word-break:break-all;margin:8px 0}
-@media(max-width:900px){.template-grid{grid-template-columns:1fr}.tab{font-size:14px;padding:12px 4px}}
+@media(max-width:900px){.tab{font-size:14px;padding:12px 4px}}
 
 @media(max-width:900px){.main{flex-direction:column}.left{width:100%;height:55%;flex:none}.right{width:100%;height:45%;min-width:0;border-left:none;border-top:1px solid #ddd}}
 </style>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-<div id="loginOverlay" class="login-overlay"><div class="login-card"><h2>パスワードを入力してください</h2><input type="password" id="appPasswordInput" placeholder="パスワード" autocomplete="current-password"><button class="btn btn-primary btn-block" id="btnLogin">ログイン</button><div class="login-error" id="loginMsg"></div></div></div>
+<div id="loginOverlay" class="login-overlay"><div class="login-card"><p style="font-size:18px;font-weight:700;color:#111;margin-bottom:14px;">パスワードを入力してください</p><input type="password" id="appPasswordInput" placeholder="パスワード" autocomplete="current-password"><button class="btn btn-primary btn-block" id="btnLogin">ログイン</button><div class="login-error" id="loginMsg"></div></div></div>
 <div class="header"><h1>🎨 リッチメニュープラス</h1><div class="header-actions"><button class="btn btn-sm" id="btnUndo">↶ 戻す</button><button class="btn btn-sm" id="btnRedo">↷ 進む</button><button class="btn btn-sm logout-mini" id="btnLogout">ログアウト</button></div></div>
 <div class="main">
 <div class="left"><div class="menu-tabs" id="menuTabs"></div>
 <div class="canvas-wrap"><div class="canvas-info"><span id="sizeInfo">2500 × 1686 px</span><div class="zoom-controls"><button id="btnZoomOut">−</button><span class="zoom-val" id="zoomVal">100%</span><button id="btnZoomIn">＋</button><button id="btnZoomFit" style="width:auto;padding:0 10px;font-size:13px;">⤢ Fit</button></div><span class="upload-badge new" id="uploadStatus">未アップロード</span></div>
 <div class="canvas-scroll" id="canvasScroll"><div class="canvas-container"><canvas id="canvas" width="2500" height="1686"></canvas><div class="upload-overlay" id="uploadOverlay"><div class="upload-overlay-icon">📷</div><div class="upload-overlay-text">クリックまたはドラッグで画像をアップロード</div><input type="file" id="fileInput" accept="image/*" style="display:none;"></div></div></div></div></div>
-<div class="right"><div class="tabs"><div class="tab active" data-tab="settings">⚙ 設定</div><div class="tab" data-tab="areas">📦 エリア</div><div class="tab" data-tab="users">👤 ユーザー</div><div class="tab" data-tab="api">🔗 API</div><div class="tab" data-tab="drive">☁ Drive</div></div>
+<div class="right"><div class="tabs"><div class="tab active" data-tab="settings">⚙ 設定</div><div class="tab" data-tab="areas">📦 エリア</div><div class="tab" data-tab="users">👤 ユーザー</div><div class="tab" data-tab="api">🔗 API</div><div class="tab" data-tab="save">💾 保存</div></div>
 <div class="panel-wrap">
 <div class="panel active" id="panel-settings"><h3>基本設定</h3><div class="form-group"><label>メニュー名</label><input type="text" id="menuName"></div><div class="form-row"><div class="form-group"><label>エイリアスID</label><input type="text" id="menuAlias"></div><div class="form-group"><label>チャットバーテキスト</label><input type="text" id="chatBarText"></div></div><div class="form-row"><div class="form-group"><label>サイズ</label><select id="menuSize"><option value="large">Large (2500×1686)</option><option value="compact">Compact (2500×843)</option></select></div><div class="form-group"><label>背景色</label><input type="color" id="bgColor" value="#ffffff"></div></div>
 <div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="menuSelected" style="width:auto;"> トーク画面を開いた時にメニューを最初から表示する</label></div>
@@ -108,7 +107,8 @@
 ・<b>⚙ 設定</b>：メニュー名・サイズ・背景画像など基本情報を編集<br>
 ・<b>📦 エリア</b>：作成した各タップ領域のラベル/座標/アクションを編集<br>
 ・<b>👤 ユーザー</b>：このメニューを表示するユーザーを登録・一括リンク<br>
-・<b>🔗 API</b>：LINEへアップロード／デフォルト設定
+・<b>🔗 API</b>：LINEへアップロード／デフォルト設定<br>
+・<b>💾 保存</b>：このブラウザに自動保存・JSONファイル保存/読み込み
 <hr style="margin:8px 0;border:none;border-top:1px dashed #b8d4ff;">
 <b>💡 操作のヒント</b><br>
 ・空白部分をドラッグ → 新規エリア作成<br>
@@ -156,18 +156,18 @@
 </div>
 </div>
 
-<div class="panel" id="panel-drive"><h3>☁ Google Drive保存</h3>
-<div class="info-box"><b>作成したリッチメニューを、使う人それぞれのGoogle Driveに保存できます。</b><br>保存されるのは、画像・エリア・アクション・ユーザー設定などの編集データです。次回このアプリを開いた時に、Google Driveから読み込んで続きから編集できます。<br><br><b>必要なもの：</b>Googleアカウントでの許可。VercelやGitHubのアカウントは使う人側には不要です。</div>
-<div class="warning"><b>⚠️ 初回だけGoogle Cloud設定が必要です</b><br>アプリ管理者はVercel環境変数 <code>GOOGLE_CLIENT_ID</code> を設定してください。Google OAuthの「承認済みJavaScript生成元」には、このVercel公開URLを登録します。</div>
-<div id="driveStatus" class="drive-status">未接続です。</div>
-<div class="button-row"><button class="btn btn-primary" id="btnDriveConnect">Google Driveに接続</button><button class="btn" id="btnDriveDisconnect">接続解除</button></div>
-<div class="form-group"><label>保存するプロジェクト名</label><input type="text" id="driveProjectName" placeholder="例: 体験用リッチメニュー"></div>
-<div class="drive-current" id="driveCurrentFile">現在開いているDriveファイル：なし</div>
-<div class="button-row"><button class="btn btn-primary" id="btnDriveSave">💾 Driveに保存（同名なら上書き）</button><button class="btn" id="btnDriveOverwrite">現在開いているファイルに上書き</button></div>
-<div class="button-row"><button class="btn" id="btnDriveRefresh">保存済み一覧を更新</button></div>
-<h3 style="margin-top:18px;">保存済みプロジェクト</h3>
-<div class="drive-list" id="driveFileList"><div class="user-empty">Google Driveに接続すると一覧が表示されます。</div></div>
-<div class="token-guide"><h4>保存される場所</h4>Google Drive内に <code>リッチメニュープラス</code> フォルダを作成し、その中に <code>.json</code> 形式で保存します。これはLINEにアップロードするJSONではなく、このアプリで再編集するためのプロジェクトデータです。</div>
+<div class="panel" id="panel-save"><h3>💾 本人側保存</h3>
+<div class="info-box"><b>作成したリッチメニューを、使う人本人のブラウザ・PC側に保存できます。</b><br>Google Drive連携や外部アカウント設定は不要です。通常はこのブラウザに自動保存され、必要に応じてJSONファイルとしてPCに保存できます。</div>
+<div class="warning"><b>⚠️ 保存の注意</b><br>ブラウザ自動保存は、キャッシュ・Cookie・サイトデータ削除、別ブラウザ、別端末では消えたり見えなくなったりします。大事なデータは必ず「プロジェクトファイル保存」でバックアップしてください。</div>
+<div class="token-guide" id="saveStatus">自動保存：準備中</div>
+<h3 style="margin-top:18px;">このブラウザに保存</h3>
+<div class="button-row"><button class="btn btn-primary" id="btnSaveLocalNow">今すぐブラウザに保存</button><button class="btn" id="btnRestoreLocal">ブラウザ保存から復元</button></div>
+<button class="btn btn-danger btn-block" id="btnClearLocalProject">このブラウザの保存データを削除</button>
+<h3 style="margin-top:22px;">ファイルで保存・読み込み</h3>
+<div class="form-group"><label>保存ファイル名</label><input type="text" id="projectFileName" placeholder="例: 体験用リッチメニュー"></div>
+<div class="button-row"><button class="btn btn-primary" id="btnDownloadProject">プロジェクトファイル保存</button><button class="btn" id="btnLoadProjectFile">プロジェクトファイル読み込み</button></div>
+<input type="file" id="projectFileInput" accept="application/json,.json" style="display:none;">
+<div class="token-guide"><h4>保存される内容</h4>メニュー名、エイリアスID、チャットバーテキスト、背景画像、タップエリア、アクション設定、ユーザー情報、アップロード済みrichMenuIdなどを保存します。これはLINE API用JSONではなく、このアプリで再編集するためのプロジェクトファイルです。</div>
 </div>
 </div></div></div>
 <div class="ctx-menu" id="ctxMenu"><div class="ctx-menu-item" data-act="edit">✏️ 編集</div><div class="ctx-menu-item" data-act="action">🔗 アクション設定</div><div class="ctx-menu-item danger" data-act="delete">🗑 削除</div></div>
@@ -373,8 +373,6 @@ function switchTab(name){
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+name));
   if(name==='areas')renderAreaList();
   if(name==='users')renderUserList();
-  if(name==='drive')updateDrivePanel();
-  if(name==='code')refreshJsonEditor()
 }
 
 function renderAreaList(){
@@ -767,73 +765,6 @@ document.addEventListener('keydown',e=>{
 });
 
 
-function makeArea(label,x,y,w,h,idx,action){return{id:uid('a'),label,x:Math.round(x),y:Math.round(y),w:Math.round(w),h:Math.round(h),color:COLORS[idx%COLORS.length],action:action||{type:'',value:''}}}
-function setAreasFromRects(rects){
-  const m=currentMenu();if(!m)return;
-  if(m.areas.length&&!confirm('現在のエリアをテンプレートで上書きしますか？'))return;
-  m.areas=rects.map((r,i)=>makeArea(r.label||('エリア'+(i+1)),r.x,r.y,r.w,r.h,i,r.action));
-  selectedAreaId=m.areas[0]?.id||null;expandedAreaIds.clear();if(selectedAreaId)expandedAreaIds.add(selectedAreaId);
-  markModified();saveHistory();renderAreaList();render();switchTab('areas');showToast('テンプレートを適用しました','success')
-}
-function templateRects(type){
-  const {w,h}=getCanvasSize();
-  const out=[];
-  if(type==='2x3'){for(let r=0;r<2;r++)for(let c=0;c<3;c++)out.push({label:'エリア'+(out.length+1),x:c*w/3,y:r*h/2,w:w/3,h:h/2})}
-  if(type==='3x2'){for(let r=0;r<3;r++)for(let c=0;c<2;c++)out.push({label:'エリア'+(out.length+1),x:c*w/2,y:r*h/3,w:w/2,h:h/3})}
-  if(type==='1x3'){for(let r=0;r<3;r++)out.push({label:'エリア'+(r+1),x:0,y:r*h/3,w:w,h:h/3})}
-  if(type==='2x2'){for(let r=0;r<2;r++)for(let c=0;c<2;c++)out.push({label:'エリア'+(out.length+1),x:c*w/2,y:r*h/2,w:w/2,h:h/2})}
-  if(type==='top1bottom3'){out.push({label:'メインCTA',x:0,y:0,w:w,h:h*0.45});for(let c=0;c<3;c++)out.push({label:'メニュー'+(c+1),x:c*w/3,y:h*0.45,w:w/3,h:h*0.55})}
-  if(type==='leftBigRight2'){out.push({label:'メイン',x:0,y:0,w:w*0.58,h:h});out.push({label:'右上',x:w*0.58,y:0,w:w*0.42,h:h/2});out.push({label:'右下',x:w*0.58,y:h/2,w:w*0.42,h:h/2})}
-  return out;
-}
-function createTabTwoSet(){
-  const m=currentMenu(); if(!m)return;
-  if((m.areas.length||menus.length>1)&&!confirm('タブ切替2枚セットを作成します。現在のメニュー設定を一部上書きします。よろしいですか？'))return;
-  const {w,h}=getCanvasSize();
-  const hTab=Math.round(h*0.17), contentH=h-hTab;
-  m.name='タブ1';m.alias='tab-1';m.chatBarText='メニュー';m.selected=true;
-  m.areas=[
-    makeArea('タブ1',0,0,w/2,hTab,0,{type:'richmenuswitch',value:'tab-1'}),
-    makeArea('タブ2',w/2,0,w/2,hTab,1,{type:'richmenuswitch',value:'tab-2'}),
-    makeArea('内容1',0,hTab,w/2,contentH/2,2),makeArea('内容2',w/2,hTab,w/2,contentH/2,3),
-    makeArea('内容3',0,hTab+contentH/2,w/2,contentH/2,4),makeArea('内容4',w/2,hTab+contentH/2,w/2,contentH/2,5)
-  ];
-  let m2=menus.find(x=>x.alias==='tab-2');
-  if(!m2){m2={id:uid('m'),name:'タブ2',alias:'tab-2',chatBarText:'メニュー',size:m.size,bgColor:m.bgColor,selected:true,bgImage:null,bgImageData:null,areas:[],users:[],uploadStatus:'new',richMenuId:null,isDefault:false};menus.push(m2)}
-  m2.size=m.size;m2.chatBarText=m.chatBarText;m2.selected=true;m2.areas=[
-    makeArea('タブ1',0,0,w/2,hTab,0,{type:'richmenuswitch',value:'tab-1'}),
-    makeArea('タブ2',w/2,0,w/2,hTab,1,{type:'richmenuswitch',value:'tab-2'}),
-    makeArea('内容A',0,hTab,w/2,contentH/2,2),makeArea('内容B',w/2,hTab,w/2,contentH/2,3),
-    makeArea('内容C',0,hTab+contentH/2,w/2,contentH/2,4),makeArea('内容D',w/2,hTab+contentH/2,w/2,contentH/2,5)
-  ];
-  currentMenuId=m.id;selectedAreaId=m.areas[0].id;expandedAreaIds.clear();expandedAreaIds.add(selectedAreaId);
-  renderMenuTabs();loadCurrentMenu();saveHistory();switchTab('areas');showToast('タブ切替2枚セットを作成しました','success')
-}
-document.querySelectorAll('[data-template]').forEach(btn=>btn.addEventListener('click',()=>{const t=btn.dataset.template;if(t==='tab2set')createTabTwoSet();else setAreasFromRects(templateRects(t))}));
-function refreshJsonEditor(){const el=$('jsonEditor');if(!el)return;try{el.value=JSON.stringify(buildRichMenuJson(currentMenu()),null,2);$('jsonStatus').textContent='現在のGUI設定からJSONを生成しました。'}catch(e){$('jsonStatus').textContent='JSON生成エラー: '+e.message}}
-function actionFromLineAction(action){
-  if(!action||!action.type)return{type:'',value:''};
-  if(action.type==='uri')return{type:'uri',value:action.uri||''};
-  if(action.type==='message')return{type:'message',value:action.text||''};
-  if(action.type==='postback')return{type:'postback',value:action.data||''};
-  if(action.type==='richmenuswitch')return{type:'richmenuswitch',value:action.richMenuAliasId||''};
-  return{type:'postback',value:action.data||''};
-}
-function applyJsonToGui(){
-  const m=currentMenu();if(!m)return;
-  let data;try{data=JSON.parse($('jsonEditor').value)}catch(e){$('jsonStatus').textContent='JSON形式が不正です: '+e.message;return}
-  if(!data.size||!Array.isArray(data.areas)){ $('jsonStatus').textContent='LINEリッチメニューJSONとして必要な size / areas がありません。';return }
-  m.name=data.name||m.name;m.chatBarText=data.chatBarText||m.chatBarText;m.selected=data.selected!==false;m.size=(data.size.height<=843)?'compact':'large';
-  m.areas=data.areas.map((a,i)=>makeArea('エリア'+(i+1),a.bounds?.x||0,a.bounds?.y||0,a.bounds?.width||20,a.bounds?.height||20,i,actionFromLineAction(a.action)));
-  selectedAreaId=m.areas[0]?.id||null;expandedAreaIds.clear();if(selectedAreaId)expandedAreaIds.add(selectedAreaId);
-  loadCurrentMenu();markModified();saveHistory();$('jsonStatus').textContent='JSONをGUIへ反映しました。';showToast('JSONを反映しました','success')
-}
-if($('btnJsonRefresh'))$('btnJsonRefresh').addEventListener('click',refreshJsonEditor);
-if($('btnJsonFormat'))$('btnJsonFormat').addEventListener('click',()=>{try{$('jsonEditor').value=JSON.stringify(JSON.parse($('jsonEditor').value),null,2);$('jsonStatus').textContent='JSONを整形しました。'}catch(e){$('jsonStatus').textContent='JSON形式が不正です: '+e.message}});
-if($('btnJsonCopy'))$('btnJsonCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('jsonEditor').value);showToast('JSONをコピーしました','success')}catch(e){showToast('コピーできませんでした','error')}});
-if($('btnJsonDownload'))$('btnJsonDownload').addEventListener('click',()=>{const m=currentMenu();const blob=new Blob([$('jsonEditor').value],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(m?.alias||m?.name||'richmenu')+'.json';a.click();URL.revokeObjectURL(a.href)});
-if($('btnJsonApply'))$('btnJsonApply').addEventListener('click',applyJsonToGui);
-
 function buildAction(act){
   if(!act.type)return{type:'postback',data:'noop'};
   if(act.type==='uri')return{type:'uri',uri:act.value};
@@ -1092,189 +1023,129 @@ $('btnUnlinkUsers').addEventListener('click',async()=>{
 });
 
 
-// Google Drive project save/load
-const DRIVE_SCOPE='https://www.googleapis.com/auth/drive.file';
-const DRIVE_FOLDER_NAME='リッチメニュープラス';
-const DRIVE_APP_PROP_KEY='app';
-const DRIVE_APP_PROP_VALUE='richmenu-plus';
-let googleClientId='';
-let driveAccessToken='';
-let driveTokenClient=null;
-let driveFolderId='';
-let currentDriveFileId='';
-let currentDriveFileName='';
 
-function updateDrivePanel(){
-  const nameInput=$('driveProjectName');
-  const m=currentMenu();
-  if(nameInput&&m&&!nameInput.value)nameInput.value=m.name||'リッチメニュー';
-  renderDriveStatus();
-}
-function setDriveStatus(msg,type=''){
-  const el=$('driveStatus');if(!el)return;
-  el.innerHTML=msg;el.className='drive-status '+(type||'');
-}
-function renderDriveStatus(){
-  if(driveAccessToken)setDriveStatus('Google Driveに接続済みです。保存・読み込みができます。','ok');
-  else setDriveStatus('未接続です。先に「Google Driveに接続」を押してください。');
-  const cur=$('driveCurrentFile');
-  if(cur)cur.innerHTML='現在開いているDriveファイル：'+(currentDriveFileId?'<code>'+escapeHtml(currentDriveFileName||currentDriveFileId)+'</code>':'なし');
-}
-function waitForGoogleIdentity(){
-  return new Promise((resolve,reject)=>{
-    let count=0;
-    const timer=setInterval(()=>{
-      if(window.google&&google.accounts&&google.accounts.oauth2){clearInterval(timer);resolve()}
-      if(++count>80){clearInterval(timer);reject(new Error('Google認証ライブラリを読み込めませんでした。ネットワークや広告ブロックを確認してください。'))}
-    },100);
-  });
-}
-async function loadGoogleClientId(){
-  if(googleClientId)return googleClientId;
-  const data=await appApi('/api/google-config',{});
-  if(!data.clientId)throw new Error('Vercel環境変数 GOOGLE_CLIENT_ID が未設定です。READMEの手順で設定してください。');
-  googleClientId=data.clientId;
-  return googleClientId;
-}
-async function connectGoogleDrive(forcePrompt=false){
-  await loadGoogleClientId();
-  await waitForGoogleIdentity();
-  return new Promise((resolve,reject)=>{
-    driveTokenClient=google.accounts.oauth2.initTokenClient({
-      client_id:googleClientId,
-      scope:DRIVE_SCOPE,
-      include_granted_scopes:true,
-      callback:(resp)=>{
-        if(resp.error){reject(new Error(resp.error_description||resp.error));return}
-        driveAccessToken=resp.access_token;
-        renderDriveStatus();
-        resolve(resp.access_token);
-      }
-    });
-    try{driveTokenClient.requestAccessToken({prompt:forcePrompt?'consent':''})}
-    catch(e){reject(e)}
-  });
-}
-async function ensureDriveConnected(){
-  if(driveAccessToken)return driveAccessToken;
-  return connectGoogleDrive(false);
-}
-function driveQueryEscape(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
-async function driveFetch(url,opts={},retry=true){
-  await ensureDriveConnected();
-  opts.headers=Object.assign({},opts.headers||{}, {'Authorization':'Bearer '+driveAccessToken});
-  const res=await fetch(url,opts);
-  if(res.status===401&&retry){driveAccessToken='';await connectGoogleDrive(false);return driveFetch(url,opts,false)}
-  const text=await res.text();
-  let data=text;
-  try{data=text?JSON.parse(text):{}}catch(e){}
-  if(!res.ok)throw new Error((data&&data.error&&data.error.message)||data.error_description||text||('Google Drive API error '+res.status));
-  return data;
-}
-async function ensureDriveFolder(){
-  if(driveFolderId)return driveFolderId;
-  const q="mimeType='application/vnd.google-apps.folder' and name='"+driveQueryEscape(DRIVE_FOLDER_NAME)+"' and trashed=false";
-  const found=await driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&fields=files(id,name)&spaces=drive');
-  if(found.files&&found.files[0]){driveFolderId=found.files[0].id;return driveFolderId}
-  const created=await driveFetch('https://www.googleapis.com/drive/v3/files?fields=id,name',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:DRIVE_FOLDER_NAME,mimeType:'application/vnd.google-apps.folder'})});
-  driveFolderId=created.id;
-  return driveFolderId;
-}
+// Local browser / file project save-load
+const LOCAL_PROJECT_KEY='richmenu_plus_project_autosave_v1';
+let restoringProject=false;
+let autoSaveTimer=null;
+
 function projectData(){
   return {
     app:'richmenu-plus',
-    version:'1.0',
+    version:'2.0-local',
     savedAt:new Date().toISOString(),
     currentMenuId,
     menus:menus.map(m=>{const copy={...m};delete copy.bgImage;return copy;})
   };
 }
 function loadProjectData(data){
-  if(!data||!Array.isArray(data.menus)||!data.menus.length)throw new Error('リッチメニュープラスの保存データではありません。');
+  if(!data||data.app!=='richmenu-plus'||!Array.isArray(data.menus)||!data.menus.length)throw new Error('リッチメニュープラスの保存データではありません。');
+  restoringProject=true;
   menus.length=0;
   data.menus.forEach(d=>menus.push({...d,bgImage:null}));
   currentMenuId=(data.currentMenuId&&menus.some(m=>m.id===data.currentMenuId))?data.currentMenuId:menus[0].id;
   selectedAreaId=null;expandedAreaIds.clear();history=[];historyIndex=-1;
   renderMenuTabs();loadCurrentMenu();saveHistory();setTimeout(fitZoom,100);
+  restoringProject=false;
+  updateSaveStatus('読み込みました。必要に応じて編集を続けられます。','success');
 }
-function safeFileName(name){return String(name||'リッチメニュー').replace(/[\\/:*?"<>|]/g,'_').trim().slice(0,80)||'リッチメニュー'}
-function driveProjectFileName(){
-  const n=($('driveProjectName')&&$('driveProjectName').value.trim())||(currentMenu()?.name)||'リッチメニュー';
+function safeFileName(name){return String(name||'リッチメニュー').replace(/[\/:*?"<>|]/g,'_').trim().slice(0,80)||'リッチメニュー'}
+function projectFileName(){
+  const n=($('projectFileName')&&$('projectFileName').value.trim())||(currentMenu()?.name)||'リッチメニュー';
   return 'richmenu-project-'+safeFileName(n)+'.json';
 }
-function makeMultipartBody(metadata,content){
-  const boundary='-------richmenuplus'+Math.random().toString(36).slice(2);
-  const body='--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(metadata)+'\r\n--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+content+'\r\n--'+boundary+'--';
-  return {body,boundary};
+function updateSaveStatus(msg,type=''){
+  const el=$('saveStatus'); if(!el)return;
+  const saved=localStorage.getItem(LOCAL_PROJECT_KEY);
+  let last='';
+  if(saved){try{const d=JSON.parse(saved); if(d.savedAt)last='<br>最終自動保存：'+escapeHtml(new Date(d.savedAt).toLocaleString('ja-JP'));}catch(e){}}
+  el.innerHTML=escapeHtml(msg||'自動保存：有効です')+last;
+  el.style.borderLeftColor=type==='error'?'#dc3545':'#06c755';
 }
-async function findDriveProjectByName(name){
-  const folderId=await ensureDriveFolder();
-  const q="'"+folderId+"' in parents and name='"+driveQueryEscape(name)+"' and trashed=false";
-  const data=await driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&fields=files(id,name,modifiedTime,size)&spaces=drive');
-  return data.files&&data.files[0];
-}
-async function uploadProjectToDrive(fileId){
-  const folderId=await ensureDriveFolder();
-  const fileName=driveProjectFileName();
-  const data=projectData();
-  data.projectName=($('driveProjectName')&&$('driveProjectName').value.trim())||(currentMenu()?.name)||'リッチメニュー';
-  const content=JSON.stringify(data,null,2);
-  const bytes=new Blob([content]).size;
-  if(bytes>20*1024*1024&&!confirm('保存データが20MBを超えています。Google Driveに保存を続けますか？'))return null;
-  const metadata={name:fileName,mimeType:'application/json',appProperties:{[DRIVE_APP_PROP_KEY]:DRIVE_APP_PROP_VALUE}};
-  if(!fileId)metadata.parents=[folderId];
-  const mp=makeMultipartBody(metadata,content);
-  const url=fileId?'https://www.googleapis.com/upload/drive/v3/files/'+encodeURIComponent(fileId)+'?uploadType=multipart&fields=id,name,modifiedTime':'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime';
-  const method=fileId?'PATCH':'POST';
-  const result=await driveFetch(url,{method,headers:{'Content-Type':'multipart/related; boundary='+mp.boundary},body:mp.body});
-  currentDriveFileId=result.id;currentDriveFileName=result.name;renderDriveStatus();return result;
-}
-async function listDriveProjects(){
-  const folderId=await ensureDriveFolder();
-  const q="'"+folderId+"' in parents and mimeType='application/json' and trashed=false";
-  const data=await driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&orderBy=modifiedTime desc&fields=files(id,name,modifiedTime,size)&spaces=drive');
-  renderDriveList(data.files||[]);
-  return data.files||[];
-}
-function renderDriveList(files){
-  const box=$('driveFileList');if(!box)return;
-  if(!files.length){box.innerHTML='<div class="user-empty">保存済みプロジェクトはまだありません。</div>';return}
-  box.innerHTML=files.map(f=>{
-    const date=f.modifiedTime?new Date(f.modifiedTime).toLocaleString('ja-JP'):'';
-    const size=f.size?formatBytes(Number(f.size)):'';
-    return '<div class="drive-item"><strong>'+escapeHtml(f.name)+'</strong><small>更新: '+escapeHtml(date)+' '+escapeHtml(size)+'</small><div class="button-row"><button class="btn btn-sm btn-primary" data-drive-open="'+escapeHtml(f.id)+'" data-name="'+escapeHtml(f.name)+'">開く</button><button class="btn btn-sm" data-drive-overwrite="'+escapeHtml(f.id)+'" data-name="'+escapeHtml(f.name)+'">このファイルへ上書き</button><button class="btn btn-sm btn-danger" data-drive-delete="'+escapeHtml(f.id)+'">削除</button></div></div>';
-  }).join('');
-}
-async function openDriveProject(fileId,name){
-  const data=await driveFetch('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(fileId)+'?alt=media');
-  loadProjectData(data);
-  currentDriveFileId=fileId;currentDriveFileName=name||'';
-  const n=(data.projectName||String(name||'').replace(/^richmenu-project-/,'').replace(/\.json$/,''));
-  if($('driveProjectName'))$('driveProjectName').value=n;
-  renderDriveStatus();
-}
-async function deleteDriveProject(fileId){
-  await driveFetch('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(fileId),{method:'DELETE'});
-  if(currentDriveFileId===fileId){currentDriveFileId='';currentDriveFileName='';renderDriveStatus()}
-}
-if($('btnDriveConnect'))$('btnDriveConnect').addEventListener('click',async()=>{try{setDriveStatus('Google Driveに接続中です...');await connectGoogleDrive(true);await listDriveProjects();showToast('Google Driveに接続しました','success')}catch(e){setDriveStatus(escapeHtml(e.message),'err');showToast('接続失敗: '+e.message,'error')}});
-if($('btnDriveDisconnect'))$('btnDriveDisconnect').addEventListener('click',()=>{try{if(window.google&&driveAccessToken)google.accounts.oauth2.revoke(driveAccessToken,()=>{})}catch(e){}driveAccessToken='';driveFolderId='';currentDriveFileId='';currentDriveFileName='';renderDriveStatus();if($('driveFileList'))$('driveFileList').innerHTML='<div class="user-empty">Google Driveに接続すると一覧が表示されます。</div>';showToast('Drive接続を解除しました')});
-if($('btnDriveSave'))$('btnDriveSave').addEventListener('click',async()=>{try{setDriveStatus('Google Driveへ保存中です...');await ensureDriveConnected();const name=driveProjectFileName();const existing=await findDriveProjectByName(name);const result=await uploadProjectToDrive(existing?existing.id:null);if(result){setDriveStatus('保存しました：<code>'+escapeHtml(result.name)+'</code>','ok');await listDriveProjects();showToast(existing?'同名ファイルを上書きしました':'Driveに保存しました','success')}}catch(e){setDriveStatus(escapeHtml(e.message),'err');showToast('保存失敗: '+e.message,'error')}});
-if($('btnDriveOverwrite'))$('btnDriveOverwrite').addEventListener('click',async()=>{try{if(!currentDriveFileId){showToast('先にDriveからファイルを開くか、保存済み一覧の「このファイルへ上書き」を選んでください','error');return}setDriveStatus('現在のDriveファイルへ上書き中です...');const result=await uploadProjectToDrive(currentDriveFileId);setDriveStatus('上書き保存しました：<code>'+escapeHtml(result.name)+'</code>','ok');await listDriveProjects();showToast('上書き保存しました','success')}catch(e){setDriveStatus(escapeHtml(e.message),'err');showToast('上書き失敗: '+e.message,'error')}});
-if($('btnDriveRefresh'))$('btnDriveRefresh').addEventListener('click',async()=>{try{setDriveStatus('保存済み一覧を取得中です...');await ensureDriveConnected();await listDriveProjects();renderDriveStatus();showToast('一覧を更新しました','success')}catch(e){setDriveStatus(escapeHtml(e.message),'err');showToast('取得失敗: '+e.message,'error')}});
-if($('driveFileList'))$('driveFileList').addEventListener('click',async(e)=>{
-  const open=e.target.closest('[data-drive-open]');
-  const overwrite=e.target.closest('[data-drive-overwrite]');
-  const del=e.target.closest('[data-drive-delete]');
+function saveProjectToLocal(show=false){
+  if(restoringProject||!menus.length)return;
   try{
-    if(open){if(!confirm('現在の編集中データを、Driveの保存データで置き換えますか？'))return;setDriveStatus('Driveから読み込み中です...');await openDriveProject(open.dataset.driveOpen,open.dataset.name);setDriveStatus('読み込みました：<code>'+escapeHtml(open.dataset.name||'')+'</code>','ok');showToast('Driveから読み込みました','success')}
-    if(overwrite){if(!confirm('現在の編集中データで、このDriveファイルを上書きしますか？'))return;currentDriveFileId=overwrite.dataset.driveOverwrite;currentDriveFileName=overwrite.dataset.name||'';const result=await uploadProjectToDrive(currentDriveFileId);setDriveStatus('上書き保存しました：<code>'+escapeHtml(result.name)+'</code>','ok');await listDriveProjects();showToast('上書き保存しました','success')}
-    if(del){if(!confirm('このDrive保存データを削除しますか？'))return;setDriveStatus('削除中です...');await deleteDriveProject(del.dataset.driveDelete);await listDriveProjects();renderDriveStatus();showToast('削除しました','success')}
-  }catch(err){setDriveStatus(escapeHtml(err.message),'err');showToast('Drive操作失敗: '+err.message,'error')}
-});
+    localStorage.setItem(LOCAL_PROJECT_KEY,JSON.stringify(projectData()));
+    updateSaveStatus(show?'このブラウザに保存しました。':'自動保存：有効です');
+    if(show)showToast('このブラウザに保存しました','success');
+  }catch(e){
+    updateSaveStatus('ブラウザ保存に失敗しました。画像が大きい可能性があります。プロジェクトファイル保存を使ってください。','error');
+    if(show)showToast('保存失敗: '+e.message,'error');
+  }
+}
+function scheduleAutoSave(){
+  if(restoringProject)return;
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer=setTimeout(()=>saveProjectToLocal(false),400);
+}
+function restoreProjectFromLocal(){
+  const raw=localStorage.getItem(LOCAL_PROJECT_KEY);
+  if(!raw){showToast('ブラウザ保存データがありません','error');return false}
+  if(menus.length&&!(menus.length===1&&menus[0].areas.length===0&&!menus[0].bgImageData)){
+    if(!confirm('現在の編集中データを、ブラウザ保存データで置き換えますか？'))return false;
+  }
+  try{loadProjectData(JSON.parse(raw));showToast('ブラウザ保存から復元しました','success');return true}
+  catch(e){showToast('復元失敗: '+e.message,'error');return false}
+}
+function clearLocalProject(){
+  if(!confirm('このブラウザに保存されたリッチメニュー＋の作業データを削除しますか？'))return;
+  localStorage.removeItem(LOCAL_PROJECT_KEY);
+  updateSaveStatus('ブラウザ保存データを削除しました。');
+  showToast('ブラウザ保存データを削除しました');
+}
+function downloadProjectFile(){
+  try{
+    const data=projectData();
+    data.projectName=($('projectFileName')&&$('projectFileName').value.trim())||(currentMenu()?.name)||'リッチメニュー';
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=projectFileName();
+    a.click();
+    URL.revokeObjectURL(a.href);
+    saveProjectToLocal(false);
+    showToast('プロジェクトファイルを保存しました','success');
+  }catch(e){showToast('ファイル保存失敗: '+e.message,'error')}
+}
+function readProjectFile(file){
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      if(!confirm('現在の編集中データを、読み込んだプロジェクトで置き換えますか？'))return;
+      loadProjectData(data);
+      if(data.projectName&&$('projectFileName'))$('projectFileName').value=data.projectName;
+      saveProjectToLocal(false);
+      showToast('プロジェクトファイルを読み込みました','success');
+    }catch(e){showToast('読み込み失敗: '+e.message,'error')}
+  };
+  reader.onerror=()=>showToast('ファイルを読み込めませんでした','error');
+  reader.readAsText(file);
+}
 
-createMenu('メインメニュー');
+// saveHistoryの後に自動保存も走らせる
+const originalSaveHistory=saveHistory;
+saveHistory=function(){originalSaveHistory();scheduleAutoSave();};
+
+if($('btnSaveLocalNow'))$('btnSaveLocalNow').addEventListener('click',()=>saveProjectToLocal(true));
+if($('btnRestoreLocal'))$('btnRestoreLocal').addEventListener('click',restoreProjectFromLocal);
+if($('btnClearLocalProject'))$('btnClearLocalProject').addEventListener('click',clearLocalProject);
+if($('btnDownloadProject'))$('btnDownloadProject').addEventListener('click',downloadProjectFile);
+if($('btnLoadProjectFile'))$('btnLoadProjectFile').addEventListener('click',()=>$('projectFileInput').click());
+if($('projectFileInput'))$('projectFileInput').addEventListener('change',e=>{if(e.target.files&&e.target.files[0])readProjectFile(e.target.files[0]);e.target.value='';});
+
+function initProject(){
+  const raw=localStorage.getItem(LOCAL_PROJECT_KEY);
+  if(raw){
+    try{loadProjectData(JSON.parse(raw));updateSaveStatus('前回の作業を自動復元しました。');return}
+    catch(e){console.warn(e);localStorage.removeItem(LOCAL_PROJECT_KEY)}
+  }
+  createMenu('メインメニュー');
+  updateSaveStatus('自動保存：有効です');
+}
+initProject();
 setTimeout(fitZoom,100);
+
 </script>
 </body>
 </html>
