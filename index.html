@@ -118,6 +118,38 @@
 #panel-save .browser-save-extra{display:none}
 @media(max-width:900px){.main{height:calc(100vh - 102px)}.left{height:auto}.right{height:auto}.header-status{max-width:260px}}
 
+
+/* balance tuning */
+.main{gap:12px;padding:12px;height:calc(100vh - 112px)}
+.left,.right{padding:0}
+.left{gap:12px}
+.right{width:350px;min-width:320px;background:transparent;border-left:none;gap:12px}
+.right-block,.canvas-wrap,.below-canvas-panel{background:#fff;border:1px solid #dde3ea;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.menu-tabs{margin-bottom:0}
+.canvas-wrap{padding:14px;min-height:420px;flex:0 0 auto}
+.canvas-info{margin-bottom:12px;font-size:13px}
+.canvas-scroll{min-height:360px;justify-content:center;align-items:flex-start;padding:14px;background:#f7f9fb}
+.below-canvas-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:12px}
+.below-canvas-panel{padding:16px}
+.panel h3,.right-block h3,.below-canvas-panel h3,.drawer-section h3{font-size:18px;margin-bottom:12px}
+.form-group{margin-bottom:12px}
+.form-group label{font-size:14px;margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{font-size:15px;padding:10px 12px}
+.btn{font-size:14px;padding:11px 14px}
+.button-row{margin:6px 0 10px}
+#bgColor{height:44px;padding:4px 6px}
+#panel-settings .form-row{gap:12px}
+#panel-settings .compact-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#panel-api .api-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#panel-api .api-main-action{margin-top:10px}
+#panel-save .button-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#panel-areas .area-list{max-height:calc(100vh - 270px);overflow:auto;padding-right:4px}
+.top-menu-row{padding:8px 12px;background:#f7f9fb;border-bottom:1px solid #e5e5e5}
+.header{padding:12px 16px}
+.token-accordion{max-width:620px}
+@media(max-width:1200px){.below-canvas-grid{grid-template-columns:1fr}.right{width:330px;min-width:300px}}
+@media(max-width:900px){.main{padding:10px;height:auto;display:block}.right{width:100%;min-width:0}.below-canvas-grid{grid-template-columns:1fr}.canvas-wrap{min-height:auto}.canvas-scroll{min-height:260px}}
+
 </style>
 </head>
 <body>
@@ -139,34 +171,33 @@
 <div class="left"><div class="menu-tabs" id="menuTabs"></div>
 <div class="canvas-wrap"><div class="canvas-info"><span id="sizeInfo">2500 × 1686 px</span><span class="upload-badge new" id="uploadStatus">未アップロード</span></div>
 <div class="canvas-scroll" id="canvasScroll"><div class="canvas-container"><canvas id="canvas" width="2500" height="1686"></canvas><div class="upload-overlay" id="uploadOverlay"><div class="upload-overlay-icon">📷</div><div class="upload-overlay-text">クリックまたはドラッグで画像をアップロード</div><input type="file" id="fileInput" accept="image/png,image/jpeg" style="display:none;"></div></div></div></div>
-<div class="below-canvas-panel"><div class="panel" id="panel-settings"><h3>基本設定</h3><div class="form-group"><label>メニュー名</label><input type="text" id="menuName"></div><div class="form-row"><div class="form-group"><label>エイリアスID</label><input type="text" id="menuAlias"></div><div class="form-group"><label>チャットバーテキスト</label><input type="text" id="chatBarText"></div></div><div class="form-row"><div class="form-group"><label>サイズ</label><select id="menuSize"><option value="large">Large (2500×1686)</option><option value="compact">Compact (2500×843)</option></select></div><div class="form-group"><label>背景色</label><input type="color" id="bgColor" value="#ffffff"></div></div>
+<div class="below-canvas-grid"><div class="below-canvas-panel"><div class="panel" id="panel-settings"><h3>基本設定</h3><div class="form-group"><label>メニュー名</label><input type="text" id="menuName"></div><div class="form-row"><div class="form-group"><label>エイリアスID</label><input type="text" id="menuAlias"></div><div class="form-group"><label>チャットバーテキスト</label><input type="text" id="chatBarText"></div></div><div class="form-row"><div class="form-group"><label>サイズ</label><select id="menuSize"><option value="large">Large (2500×1686)</option><option value="compact">Compact (2500×843)</option></select></div><div class="form-group"><label>背景色</label><input type="color" id="bgColor" value="#ffffff"></div></div>
 <div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="menuSelected" style="width:auto;"> トーク画面を開いた時にメニューを最初から表示する</label></div>
-<h3 style="margin-top:16px;">背景画像</h3><div class="image-controls"><button class="btn btn-primary btn-sm" id="btnChangeImage">📷 変更</button><button class="btn btn-danger btn-sm" id="btnRemoveImage">🗑 削除</button></div>
+<h3 style="margin-top:16px;">背景画像</h3><div class="image-controls compact-actions"><button class="btn btn-primary btn-sm" id="btnChangeImage">📷 変更</button><button class="btn btn-danger btn-sm" id="btnRemoveImage">🗑 削除</button></div>
 <button class="btn btn-danger btn-sm btn-block" id="btnClearAreas">全エリア削除</button></div></div>
 <div class="below-canvas-panel"><div class="panel" id="panel-api"><h3>LINE 反映</h3>
 <div class="form-group"><label>チャネルアクセストークン</label><input type="password" id="lineTokenInput" placeholder="チャネルアクセストークン"></div>
-<label style="display:flex;align-items:center;gap:8px;margin:-6px 0 12px;font-size:14px;color:#555;"><input type="checkbox" id="rememberLineToken" style="width:auto;" checked> このブラウザにトークンを保存する（次回から自動入力）</label>
-<div class="button-row" style="margin-bottom:10px;"><button class="btn btn-sm" id="btnSaveLineToken">トークン保存</button><button class="btn btn-sm" id="btnClearLineToken">トークン削除</button></div>
+<label style="display:flex;align-items:center;gap:8px;margin:-2px 0 12px;font-size:14px;color:#555;"><input type="checkbox" id="rememberLineToken" style="width:auto;" checked> このブラウザにトークンを保存する（次回から自動入力）</label>
+<div class="button-row api-actions" style="margin-bottom:10px;"><button class="btn btn-sm" id="btnSaveLineToken">トークン保存</button><button class="btn btn-sm" id="btnClearLineToken">トークン削除</button></div>
 <h3 style="margin-top:18px;">クライアント別トークン</h3>
 <div class="form-group"><label>クライアント選択</label><select id="clientSelect"><option value="">未選択</option></select></div>
 <div class="form-group"><label>クライアント名</label><input type="text" id="clientNameInput" placeholder="例: A店舗"></div>
-<div class="button-row" style="margin-bottom:10px;"><button class="btn btn-sm btn-primary" id="btnSaveClientToken">このクライアントで保存</button><button class="btn btn-sm" id="btnDeleteClientToken">選択中を削除</button></div>
-<button class="btn btn-primary btn-block" id="btnApiUpload">🚀 LINEに反映</button>
-<label style="display:flex;align-items:center;gap:8px;margin:10px 0 8px;font-size:15px;"><input type="checkbox" id="autoSetDefault" checked style="width:auto;"> 反映後に自動でデフォルトに設定する</label>
-<div class="button-row">
-<button class="btn btn-block" id="btnSetDefault">✅ このメニューをデフォルトに設定</button>
+<div class="button-row api-actions" style="margin-bottom:10px;"><button class="btn btn-sm btn-primary" id="btnSaveClientToken">このクライアントで保存</button><button class="btn btn-sm" id="btnDeleteClientToken">選択中を削除</button></div>
+<button class="btn btn-primary btn-block api-main-action" id="btnApiUpload">🚀 LINEに反映</button>
+<label style="display:flex;align-items:center;gap:8px;margin:10px 0 8px;font-size:14px;"><input type="checkbox" id="autoSetDefault" checked style="width:auto;"> 反映後に自動でデフォルトに設定する</label>
+<div class="button-row api-actions">
+<button class="btn btn-block" id="btnSetDefault">✅ デフォルトに設定</button>
 <button class="btn btn-danger btn-block" id="btnClearDefault">🧹 デフォルト解除</button>
 </div>
-
 <div class="token-guide" id="apiResult" style="display:none;"></div>
-</div></div>
+</div></div></div>
 </div>
 <div class="right"><div class="right-block"><div class="panel" id="panel-save"><h3>保存</h3>
 <div class="token-guide" id="saveStatus">自動保存：準備中</div>
 <div class="browser-save-extra"><div class="button-row"><button class="btn btn-primary" id="btnSaveLocalNow">今すぐブラウザに保存</button><button class="btn" id="btnRestoreLocal">ブラウザ保存から復元</button></div>
 <button class="btn btn-danger btn-block" id="btnClearLocalProject">このブラウザの保存データを削除</button></div>
 <div class="form-group"><label>保存ファイル名</label><input type="text" id="projectFileName" placeholder="例: 体験用リッチメニュー"></div>
-<div class="button-row"><button class="btn btn-primary" id="btnDownloadProject">ファイル保存</button><button class="btn" id="btnLoadProjectFile">読み込み</button></div>
+<div class="button-row"><button class="btn btn-primary" id="btnDownloadProject">プロジェクトファイル保存</button><button class="btn" id="btnLoadProjectFile">プロジェクトファイル読み込み</button></div>
 <input type="file" id="projectFileInput" accept="application/json,.json" style="display:none;"></div><div class="right-block"><h3>エリア設定</h3><div class="panel" id="panel-areas"><div class="area-list" id="areaListContainer"></div></div></div></div></div>
 <div class="ctx-menu" id="ctxMenu"><div class="ctx-menu-item" data-act="edit">✏️ 編集</div><div class="ctx-menu-item" data-act="action">🔗 アクション設定</div><div class="ctx-menu-item danger" data-act="delete">🗑 削除</div></div>
 <div class="toast" id="toast"></div>
@@ -1223,7 +1254,7 @@ function saveProjectToLocal(show=false){
     updateSaveStatus(show?'このブラウザに保存しました。':'自動保存：有効です');
     if(show)showToast('このブラウザに保存しました','success');
   }catch(e){
-    updateSaveStatus('ブラウザ保存に失敗しました。画像が大きい可能性があります。ファイル保存を使ってください。','error');
+    updateSaveStatus('ブラウザ保存に失敗しました。画像が大きい可能性があります。プロジェクトファイル保存を使ってください。','error');
     if(show)showToast('保存失敗: '+e.message,'error');
   }
 }
