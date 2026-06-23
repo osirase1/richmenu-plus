@@ -172,6 +172,29 @@
 .right-block.save-block h3{margin-bottom:10px}
 @media(max-width:900px){.client-project-row{grid-template-columns:1fr}.client-project-toggle{width:100%}}
 
+
+/* final right-card layout + front grid */
+.right{gap:12px}
+.right-expand-card{display:none;background:#fff;border:1px solid #dde3ea;border-radius:10px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.right-expand-card.open{display:block}
+.client-project-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
+.client-project-toggle{min-width:118px}
+.richmenu-accordion{border:1px solid #e5e5e5;border-radius:9px;background:#fff;margin:14px 0 0;overflow:hidden}
+.richmenu-accordion summary{cursor:pointer;font-weight:700;padding:12px 14px;background:#f8f9fa;list-style:none}
+.richmenu-accordion summary::-webkit-details-marker{display:none}
+.richmenu-accordion[open] summary{border-bottom:1px solid #e5e5e5}
+.richmenu-accordion-body{padding:12px}
+.canvas-container{position:relative}
+.canvas-grid-overlay{position:absolute;left:0;top:0;pointer-events:none;z-index:999;display:block}
+.canvas-grid-overlay.hidden{display:none}
+.canvas-grid-line{position:absolute;background:rgba(220,53,69,.86);box-shadow:0 0 0 1px rgba(255,255,255,.68)}
+.canvas-grid-line.v{top:0;bottom:0;width:2px}
+.canvas-grid-line.h{left:0;right:0;height:2px}
+.canvas-grid-label{position:absolute;background:rgba(220,53,69,.95);color:#fff;border-radius:999px;padding:2px 7px;font-size:12px;font-weight:800;line-height:1;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.grid-toggle-label{display:flex;align-items:center;gap:8px;font-size:13px;color:#555;margin:0 0 10px}
+.browser-save-extra{display:none!important}
+@media(max-width:900px){.client-project-row{grid-template-columns:1fr}.client-project-toggle{width:100%}}
+
 </style>
 </head>
 <body>
@@ -199,13 +222,30 @@
 <button class="btn btn-danger btn-sm btn-block" id="btnClearAreas">全エリア削除</button></div></div>
 </div>
 </div>
-<div class="right"><div class="right-block save-block"><h3>保存・操作</h3>
-<div class="client-project-row"><div class="form-group" style="margin:0;"><label>クライアント名</label><input type="text" id="clientProjectNameInput" placeholder="例: A店舗"></div><button class="btn client-project-toggle" id="btnProjectPanelToggle" type="button">下に展開 ▼</button></div>
-<div class="client-project-panel" id="clientProjectPanel">
-<div class="form-group"><label>保存ファイル名</label><input type="text" id="projectFileName" placeholder="例: 体験用リッチメニュー"></div>
-<div class="button-row"><button class="btn btn-primary" id="btnDownloadProject">プロジェクトファイル保存</button><button class="btn" id="btnLoadProjectFile">プロジェクトファイル読み込み</button></div>
-<input type="file" id="projectFileInput" accept="application/json,.json" style="display:none;">
-<div class="panel" id="panel-api"><h3>LINE 反映</h3>
+<div class="right">
+  <div class="right-block save-block">
+    <h3>保存・操作</h3>
+    <div class="client-project-row">
+      <div class="form-group" style="margin:0;">
+        <label>クライアント名</label>
+        <input type="text" id="clientProjectNameInput" placeholder="例: A店舗">
+      </div>
+      <button class="btn client-project-toggle" id="btnProjectPanelToggle" type="button">下に展開 ▼</button>
+    </div>
+  </div>
+
+  <div class="right-expand-card" id="clientProjectPanel">
+    <div class="form-group">
+      <label>保存ファイル名</label>
+      <input type="text" id="projectFileName" placeholder="例: 体験用リッチメニュー">
+    </div>
+    <div class="button-row">
+      <button class="btn btn-primary" id="btnDownloadProject">プロジェクトファイル保存</button>
+      <button class="btn" id="btnLoadProjectFile">プロジェクトファイル読み込み</button>
+    </div>
+    <input type="file" id="projectFileInput" accept="application/json,.json" style="display:none;">
+
+    <div class="panel" id="panel-api"><h3>LINE 反映</h3>
 <div class="form-group"><label>チャネルアクセストークン</label><input type="password" id="lineTokenInput" placeholder="チャネルアクセストークン"></div>
 <label style="display:flex;align-items:center;gap:8px;margin:-2px 0 12px;font-size:14px;color:#555;"><input type="checkbox" id="rememberLineToken" style="width:auto;" checked> このブラウザにトークンを保存する（次回から自動入力）</label>
 <div class="button-row api-actions" style="margin-bottom:10px;"><button class="btn btn-sm" id="btnSaveLineToken">トークン保存</button><button class="btn btn-sm" id="btnClearLineToken">トークン削除</button></div>
@@ -221,8 +261,18 @@
 </div>
 <div class="token-guide" id="apiResult" style="display:none;"></div>
 </div>
-<details class="richmenu-accordion" id="richMenuAreaAccordion"><summary>リッチメニュー名：<span id="richMenuAccordionTitle">メインメニュー</span></summary><div class="richmenu-accordion-body"><h3>エリア設定</h3><div class="panel" id="panel-areas"><div class="area-list" id="areaListContainer"></div></div></div></details>
-</div></div></div>
+
+    <details class="richmenu-accordion" id="richMenuAreaAccordion">
+      <summary>リッチメニュー名：<span id="richMenuAccordionTitle">メインメニュー</span></summary>
+      <div class="richmenu-accordion-body">
+        <h3>エリア設定</h3>
+        <div class="panel" id="panel-areas">
+          <div class="area-list" id="areaListContainer"></div>
+        </div>
+      </div>
+    </details>
+  </div>
+</div>
 <div class="ctx-menu" id="ctxMenu"><div class="ctx-menu-item" data-act="edit">✏️ 編集</div><div class="ctx-menu-item" data-act="action">🔗 アクション設定</div><div class="ctx-menu-item danger" data-act="delete">🗑 削除</div></div>
 <div class="toast" id="toast"></div>
 <script>
@@ -395,8 +445,8 @@ function renderGridOverlay(){
     const lab=document.createElement('div');
     lab.className='canvas-grid-label';
     lab.textContent=label;
-    if(type==='v'){lab.style.left=Math.min(pos*zoom+4,w*zoom-58)+'px';lab.style.top='4px';}
-    else{lab.style.left='4px';lab.style.top=Math.min(pos*zoom+4,h*zoom-18)+'px';}
+    if(type==='v'){lab.style.left=Math.min(pos*zoom+4,w*zoom-64)+'px';lab.style.top='4px';}
+    else{lab.style.left='4px';lab.style.top=Math.min(pos*zoom+4,h*zoom-20)+'px';}
     overlay.appendChild(lab);
   };
   for(let x=0;x<=w;x+=1000)addLine('v',x,x+'px');
@@ -1366,6 +1416,8 @@ function initProject(){
     catch(e){console.warn(e);localStorage.removeItem(LOCAL_PROJECT_KEY)}
   }
   
+
+
 function updateRightPanelTitles(){
   const m=currentMenu&&currentMenu();
   const title=$('richMenuAccordionTitle');
@@ -1410,7 +1462,6 @@ function setupClientProjectName(){
     f.addEventListener('input',()=>{f.dataset.manualName='1'});
   }
 }
-
 setupProjectPanelToggle();setupGridToggle();setupClientProjectName();
 createMenu('メインメニュー');
   updateSaveStatus('自動保存：有効です');
