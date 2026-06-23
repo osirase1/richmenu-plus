@@ -8,7 +8,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}html,body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#333;height:100%;overflow:hidden;font-size:15px}
 .header{background:#06c755;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.1);flex-wrap:wrap;gap:8px}
-.header h1{font-size:18px;font-weight:600;white-space:nowrap}.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.header h1{font-size:18px;font-weight:600;white-space:nowrap}.header-error{display:none;margin-left:10px;color:#fff;background:#dc3545;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;vertical-align:middle;max-width:520px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.header-actions{display:flex;gap:8px;flex-wrap:wrap}
 .main{display:flex;height:calc(100vh - 52px);min-height:0}
 .left{flex:1;padding:12px;overflow:auto;background:#e9ecef;display:flex;flex-direction:column;min-width:0}
 .right{width:32%;min-width:380px;background:#fff;border-left:1px solid #ddd;display:flex;flex-direction:column;min-height:0;flex-shrink:0}
@@ -91,12 +91,12 @@
 </head>
 <body>
 <div id="loginOverlay" class="login-overlay"><div class="login-card"><p style="font-size:18px;font-weight:700;color:#111;margin-bottom:14px;">パスワードを入力してください</p><input type="password" id="appPasswordInput" placeholder="パスワード" autocomplete="current-password"><button class="btn btn-primary btn-block" id="btnLogin">ログイン</button><div class="login-error" id="loginMsg"></div></div></div>
-<div class="header"><h1>🎨 リッチメニュープラス</h1><div class="header-actions"><button class="btn btn-sm" id="btnUndo">↶ 戻す</button><button class="btn btn-sm" id="btnRedo">↷ 進む</button><button class="btn btn-sm logout-mini" id="btnLogout">ログアウト</button></div></div>
+<div class="header"><h1>🎨 リッチメニュープラス <span id="headerError" class="header-error"></span></h1><div class="header-actions"><button class="btn btn-sm" id="btnUndo">↶ 戻す</button><button class="btn btn-sm" id="btnRedo">↷ 進む</button><button class="btn btn-sm logout-mini" id="btnLogout">ログアウト</button></div></div>
 <div class="main">
 <div class="left"><div class="menu-tabs" id="menuTabs"></div>
 <div class="canvas-wrap"><div class="canvas-info"><span id="sizeInfo">2500 × 1686 px</span><div class="zoom-controls"><button id="btnZoomOut">−</button><span class="zoom-val" id="zoomVal">100%</span><button id="btnZoomIn">＋</button><button id="btnZoomFit" style="width:auto;padding:0 10px;font-size:13px;">⤢ Fit</button></div><span class="upload-badge new" id="uploadStatus">未アップロード</span></div>
 <div class="canvas-scroll" id="canvasScroll"><div class="canvas-container"><canvas id="canvas" width="2500" height="1686"></canvas><div class="upload-overlay" id="uploadOverlay"><div class="upload-overlay-icon">📷</div><div class="upload-overlay-text">クリックまたはドラッグで画像をアップロード</div><input type="file" id="fileInput" accept="image/*" style="display:none;"></div></div></div></div></div>
-<div class="right"><div class="tabs"><div class="tab active" data-tab="settings">⚙ 設定</div><div class="tab" data-tab="areas">📦 エリア</div><div class="tab" data-tab="users">👤 ユーザー</div><div class="tab" data-tab="api">🔗 API</div><div class="tab" data-tab="save">💾 保存</div></div>
+<div class="right"><div class="tabs"><div class="tab active" data-tab="settings">⚙ 設定</div><div class="tab" data-tab="areas">📦 エリア</div><div class="tab" data-tab="users">👤 ユーザー</div><div class="tab" data-tab="api">💬 LINE</div><div class="tab" data-tab="save">💾 保存</div></div>
 <div class="panel-wrap">
 <div class="panel active" id="panel-settings"><h3>基本設定</h3><div class="form-group"><label>メニュー名</label><input type="text" id="menuName"></div><div class="form-row"><div class="form-group"><label>エイリアスID</label><input type="text" id="menuAlias"></div><div class="form-group"><label>チャットバーテキスト</label><input type="text" id="chatBarText"></div></div><div class="form-row"><div class="form-group"><label>サイズ</label><select id="menuSize"><option value="large">Large (2500×1686)</option><option value="compact">Compact (2500×843)</option></select></div><div class="form-group"><label>背景色</label><input type="color" id="bgColor" value="#ffffff"></div></div>
 <div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="menuSelected" style="width:auto;"> トーク画面を開いた時にメニューを最初から表示する</label></div>
@@ -107,8 +107,8 @@
 <div class="panel" id="panel-users"><h3>👤 ユーザーリンク</h3><div class="user-add-row"><div class="form-group" style="margin:0;"><label>ユーザー名（表示用）</label><input type="text" id="newUserName" placeholder="例: 山田 太郎"></div><div class="form-group" style="margin:0;"><label>ユーザーID</label><input type="text" id="newUserId" placeholder="例: U1234567890abcdef..."></div><button class="btn btn-primary btn-sm btn-block" id="btnAddUser">＋ 追加</button></div>
 <h3 style="margin-top:18px;">登録ユーザー <span id="userCount" style="color:#888;font-size:14px;font-weight:normal;"></span></h3><div class="user-list" id="userListContainer"></div>
 <h3 style="margin-top:18px;">適用 / 解除</h3><button class="btn btn-primary btn-sm btn-block" id="btnLinkUsers">🔗 登録ユーザー全員にリンク</button><button class="btn btn-sm btn-block" id="btnUnlinkUsers" style="margin-top:8px;">🔓 全員のリンクを解除</button></div>
-<div class="panel" id="panel-api"><h3>LINE API 連携</h3>
-<div class="info-box" id="modeInfo">起動モードを確認中です...</div>
+<div class="panel" id="panel-api"><h3>LINE 連携</h3>
+<div class="token-guide" id="tokenGuideBox"><h4>チャネルアクセストークンの取得方法</h4><ol><li>LINE Developers にログインします。</li><li>対象のプロバイダーと Messaging API チャネルを開きます。</li><li>「Messaging API設定」または「Messaging API」画面を開きます。</li><li>「チャネルアクセストークン（長期）」を発行または再発行します。</li><li>取得したトークンを、この画面の「チャネルアクセストークン」に貼り付けて保存します。</li></ol><div style="margin-top:8px;">※ クライアントごとに別のトークンを使用します。別アカウントに反映したい時は、そのアカウントのトークンに切り替えてください。</div></div>
 <div class="form-group"><label>チャネルアクセストークン</label><input type="password" id="lineTokenInput" placeholder="チャネルアクセストークン"></div>
 <label style="display:flex;align-items:center;gap:8px;margin:-6px 0 12px;font-size:14px;color:#555;"><input type="checkbox" id="rememberLineToken" style="width:auto;" checked> このブラウザにトークンを保存する（次回から自動入力）</label>
 <div class="button-row" style="margin-bottom:10px;"><button class="btn btn-sm" id="btnSaveLineToken">トークン保存</button><button class="btn btn-sm" id="btnClearLineToken">トークン削除</button></div>
@@ -116,8 +116,8 @@
 <div class="form-group"><label>クライアント選択</label><select id="clientSelect"><option value="">未選択</option></select></div>
 <div class="form-group"><label>クライアント名</label><input type="text" id="clientNameInput" placeholder="例: A店舗"></div>
 <div class="button-row" style="margin-bottom:10px;"><button class="btn btn-sm btn-primary" id="btnSaveClientToken">このクライアントで保存</button><button class="btn btn-sm" id="btnDeleteClientToken">選択中を削除</button></div>
-<button class="btn btn-primary btn-block" id="btnApiUpload">🚀 アップロード / 上書き</button>
-<label style="display:flex;align-items:center;gap:8px;margin:10px 0 8px;font-size:15px;"><input type="checkbox" id="autoSetDefault" checked style="width:auto;"> アップロード後に自動でデフォルトに設定する</label>
+<button class="btn btn-primary btn-block" id="btnApiUpload">🚀 LINEに反映</button>
+<label style="display:flex;align-items:center;gap:8px;margin:10px 0 8px;font-size:15px;"><input type="checkbox" id="autoSetDefault" checked style="width:auto;"> 反映後に自動でデフォルトに設定する</label>
 <div class="button-row">
 <button class="btn btn-block" id="btnSetDefault">✅ このメニューをデフォルトに設定</button>
 <button class="btn btn-danger btn-block" id="btnClearDefault">🧹 デフォルト解除</button>
@@ -167,6 +167,29 @@ const $=id=>document.getElementById(id);
 function uid(p='a'){return p+'_'+Math.random().toString(36).substr(2,9)}
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function showToast(msg,type=''){const t=$('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',2200)}
+function setHeaderError(msg){
+  const el=$('headerError');
+  if(!el)return;
+  el.textContent=msg||'';
+  el.title=msg||'';
+  el.style.display=msg?'inline-block':'none';
+}
+function clearHeaderError(){setHeaderError('')}
+function confirmDanger(message){
+  return confirm(message||'この操作を実行しますか？');
+}
+function hasUnsavedChanges(){
+  const m=currentMenu&&currentMenu();
+  if(!m)return false;
+  return menus.some(menu=>menu.uploadStatus==='new'||menu.uploadStatus==='modified');
+}
+window.addEventListener('beforeunload',e=>{
+  if(hasUnsavedChanges()){
+    e.preventDefault();
+    e.returnValue='変更内容が保存またはLINE反映されていません。このまま閉じますか？';
+    return e.returnValue;
+  }
+});
 function currentMenu(){return menus.find(m=>m.id===currentMenuId)}
 function getCanvasSize(){const m=currentMenu();return m&&m.size==='compact'?{w:2500,h:843}:{w:2500,h:1686}}
 
@@ -180,9 +203,7 @@ function getAppAuthToken(){return appAuthToken||localStorage.getItem(APP_AUTH_TO
 function showLogin(msg){$('loginOverlay').classList.remove('hidden'); if(msg)$('loginMsg').textContent=msg}
 function hideLogin(){$('loginOverlay').classList.add('hidden');$('loginMsg').textContent=''}
 function updateModeInfo(){
-  const el=$('modeInfo'); if(!el)return;
-  const mode=appMode==='owner'?'owner（自分用・パスワードなし）':'client（クライアント用・初回のみパスワード）';
-  el.innerHTML='<b>起動モード：</b>'+escapeHtml(mode)+'<br><small>モードはVercel環境変数 APP_MODE で切り替えます。</small>';
+  return;
 }
 async function fetchAppConfig(){
   try{
@@ -238,7 +259,7 @@ function createMenu(name){
 }
 function deleteMenu(id){
   if(menus.length<=1){showToast('最低1つは必要です','error');return}
-  if(!confirm('このメニューを削除しますか？'))return;
+  if(!confirmDanger('このメニューを削除します。削除すると元に戻せません。実行しますか？'))return;
   const idx=menus.findIndex(m=>m.id===id);
   menus.splice(idx,1);
   currentMenuId=menus[Math.max(0,idx-1)].id;
@@ -330,25 +351,51 @@ $('btnChangeImage').addEventListener('click',()=>fileInput.click());
 $('btnRemoveImage').addEventListener('click',()=>{
   const m=currentMenu();
   if(!m.bgImage&&!m.bgImageData){showToast('画像がありません','error');return}
-  if(!confirm('画像を削除しますか？'))return;
+  if(!confirmDanger('背景画像を削除します。実行しますか？'))return;
   m.bgImage=null;m.bgImageData=null;
   markModified();updateOverlay();render();saveHistory();
   showToast('画像を削除しました')
 });
+function validateImageFile(file,img){
+  const errors=[];
+  const allowed=['image/jpeg','image/png'];
+  const ratio=img.width/img.height;
+  if(!allowed.includes(file.type))errors.push('フォーマットはJPEGまたはPNGにしてください');
+  if(file.size>1024*1024)errors.push('ファイルサイズは1MB以内にしてください');
+  if(img.width<2500||img.height<843)errors.push('画像サイズは2500px × 843px以上にしてください');
+  if(img.width>2500||img.height>1686)errors.push('画像サイズは2500px × 1686px以内にしてください');
+  if(ratio<1.45)errors.push('画像アスペクト比（幅÷高さ）は1.45以上にしてください');
+  return errors;
+}
 function loadImage(file){
+  clearHeaderError();
   const reader=new FileReader();
   reader.onload=ev=>{
     const img=new Image();
     img.onload=()=>{
+      const errors=validateImageFile(file,img);
+      if(errors.length){
+        const msg='画像エラー：'+errors.join(' / ');
+        setHeaderError(msg);
+        showToast(msg,'error');
+        return;
+      }
       const{w,h}=getCanvasSize();
       if(img.width!==w||img.height!==h){
+        setHeaderError(`注意：${img.width}×${img.height}です。LINE条件は満たしていますが、現在のキャンバス推奨は${w}×${h}です。`);
         showToast(`⚠️ ${img.width}×${img.height} (推奨 ${w}×${h})`,'error')
       }else{
+        clearHeaderError();
         showToast('画像を読み込みました','success')
       }
       const m=currentMenu();
       m.bgImage=img;m.bgImageData=ev.target.result;
       markModified();updateOverlay();render();saveHistory()
+    };
+    img.onerror=()=>{
+      const msg='画像を読み込めませんでした。JPEGまたはPNGを使用してください。';
+      setHeaderError(msg);
+      showToast(msg,'error');
     };
     img.src=ev.target.result
   };
@@ -374,7 +421,7 @@ $('menuSize').addEventListener('change',e=>{
   applyCanvasSize();markModified();render();saveHistory()
 });
 $('btnClearAreas').addEventListener('click',()=>{
-  if(!confirm('全エリアを削除しますか？'))return;
+  if(!confirmDanger('全エリアを削除します。削除すると元に戻せません。実行しますか？'))return;
   currentMenu().areas=[];
   selectedAreaId=null;expandedAreaIds.clear();
   markModified();saveHistory();render();renderAreaList()
@@ -439,7 +486,7 @@ function renderAreaList(){
       })
     });
     body.querySelector('[data-act="delete"]').addEventListener('click',()=>{
-      if(!confirm('削除しますか？'))return;
+      if(!confirmDanger('このエリアを削除します。削除すると元に戻せません。実行しますか？'))return;
       m.areas=m.areas.filter(x=>x.id!==a.id);
       expandedAreaIds.delete(a.id);
       if(selectedAreaId===a.id)selectedAreaId=null;
@@ -474,7 +521,7 @@ function renderUserList(){
     el.className='user-item';
     el.innerHTML=`<div class="info"><div class="name">${escapeHtml(u.name)}</div><div class="uid">${escapeHtml(u.userId)}</div></div><button class="btn btn-danger btn-sm" data-uid="${u.id}">削除</button>`;
     el.querySelector('button').addEventListener('click',()=>{
-      if(!confirm(`「${u.name}」を削除しますか？`))return;
+      if(!confirmDanger(`「${u.name}」を削除します。実行しますか？`))return;
       m.users=m.users.filter(x=>x.id!==u.id);
       saveHistory();renderUserList();showToast('削除しました')
     });
@@ -999,12 +1046,12 @@ $('btnApiUpload').addEventListener('click',async()=>{
   if(!m.bgImageData){showToast('背景画像をアップロードしてください','error');return}
   if(m.areas.length===0){showToast('エリアが0件です','error');return}
   try{
-    setApiResult('アップロード準備中です...');
+    setApiResult('LINEに反映する準備中です...');
     const img=makeUploadImageDataUrl(m);
     if(img.bytes>1024*1024){
       throw new Error('画像サイズが1MBを超えています: '+formatBytes(img.bytes)+'。画像を軽くしてから再度お試しください。');
     }
-    setApiResult('LINEへアップロード中です...<br>画像サイズ: '+formatBytes(img.bytes)+' / JPEG品質: '+Math.round(img.quality*100)+'%');
+    setApiResult('LINEへ反映中です...<br>画像サイズ: '+formatBytes(img.bytes)+' / JPEG品質: '+Math.round(img.quality*100)+'%');
     const result=await appApi('/api/upload-richmenu',{
       richMenu:buildRichMenuJson(m),
       alias:m.alias||'',
@@ -1015,22 +1062,22 @@ $('btnApiUpload').addEventListener('click',async()=>{
     m.uploadStatus='uploaded';
     updateUploadBadge();
     saveHistory();
-    let msg='<b>アップロード成功</b><br>richMenuId: <code>'+escapeHtml(result.richMenuId)+'</code>'+(m.alias?'<br>alias: <code>'+escapeHtml(m.alias)+'</code>':'');
+    let msg='<b>LINEへの反映成功</b><br>richMenuId: <code>'+escapeHtml(result.richMenuId)+'</code>'+(m.alias?'<br>alias: <code>'+escapeHtml(m.alias)+'</code>':'');
     if($('autoSetDefault')&&$('autoSetDefault').checked){
       await appApi('/api/set-default-richmenu',{richMenuId:m.richMenuId});
       m.isDefault=true;msg+='<br><b>デフォルト設定成功</b>';
     }
     setApiResult(msg);
-    showToast('アップロード成功','success')
+    showToast('LINEに反映しました','success')
   }catch(e){
-    setApiResult('<b>アップロード失敗</b><br>'+escapeHtml(e.message),'error');
+    setApiResult('<b>LINEへの反映失敗</b><br>'+escapeHtml(e.message),'error');
     showToast('失敗: '+e.message,'error')
   }
 });
 
 $('btnSetDefault').addEventListener('click',async()=>{
   const m=currentMenu();
-  if(!m.richMenuId){showToast('先にアップロードしてください','error');return}
+  if(!m.richMenuId){showToast('先にLINEに反映してください','error');return}
   try{
     setApiResult('デフォルトに設定中です...');
     await appApi('/api/set-default-richmenu',{richMenuId:m.richMenuId});
@@ -1041,7 +1088,7 @@ $('btnSetDefault').addEventListener('click',async()=>{
 });
 
 $('btnClearDefault').addEventListener('click',async()=>{
-  if(!confirm('Messaging APIで設定したデフォルトリッチメニューを解除しますか？\n※ユーザー個別リンクがある場合、そのユーザーには個別リンク側が表示されます。'))return;
+  if(!confirmDanger('Messaging APIで設定したデフォルトリッチメニューを解除します。\n※ユーザー個別リンクがある場合、そのユーザーには個別リンク側が表示されます。\n実行しますか？'))return;
   try{
     setApiResult('デフォルト解除中です...');
     const result=await appApi('/api/clear-default-richmenu',{});
@@ -1083,7 +1130,7 @@ $('btnCheckReflectStatus').addEventListener('click',async()=>{
 
 $('btnLinkUsers').addEventListener('click',async()=>{
   const m=currentMenu();
-  if(!m.richMenuId){showToast('先にアップロードしてください','error');return}
+  if(!m.richMenuId){showToast('先にLINEに反映してください','error');return}
   if(m.users.length===0){showToast('ユーザーが登録されていません','error');return}
   try{
     const result=await appApi('/api/link-users',{richMenuId:m.richMenuId,userIds:m.users.map(u=>u.userId)});
