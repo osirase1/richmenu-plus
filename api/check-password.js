@@ -1,20 +1,31 @@
-function sendJson(res, statusCode, payload) {
-  res.statusCode = statusCode;
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.end(JSON.stringify(payload));
-}
+const { getAppMode, sendJson, createAuthToken, verifyAuthToken, checkPasswordValue } = require('./_auth');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return sendJson(res, 405, { ok: false, error: 'POSTで送信してください。' });
   }
-  const expected = process.env.APP_PASSWORD;
-  if (!expected) {
-    return sendJson(res, 500, { ok: false, error: 'Vercelの環境変数 APP_PASSWORD が未設定です。' });
+
+  try {
+    const mode = getAppMode();
+    if (mode === 'owner') {
+      return sendJson(res, 200, { ok: true, mode, passwordRequired: false });
+    }
+
+    const authToken = String(req.headers['x-app-auth'] || '').trim();
+    if (verifyAuthToken(authToken)) {
+      return sendJson(res, 200, { ok: true, mode, passwordRequired: true, authenticated: true });
+    }
+
+    const password = req.headers['x-app-password'] || '';
+    checkPasswordValue(password);
+    return sendJson(res, 200, {
+      ok: true,
+      mode,
+      passwordRequired: true,
+      authenticated: true,
+      authToken: createAuthToken(),
+    });
+  } catch (error) {
+    return sendJson(res, error.statusCode || 500, { ok: false, error: error.message || '認証に失敗しました。' });
   }
-  const actual = req.headers['x-app-password'] || '';
-  if (actual !== expected) {
-    return sendJson(res, 401, { ok: false, error: 'パスワードが違います。' });
-  }
-  return sendJson(res, 200, { ok: true });
 };

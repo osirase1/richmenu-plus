@@ -1,23 +1,4 @@
-function requireAppPassword(req) {
-  const expected = process.env.APP_PASSWORD;
-  if (!expected) {
-    const error = new Error('Vercelの環境変数 APP_PASSWORD が未設定です。');
-    error.statusCode = 500;
-    throw error;
-  }
-  const actual = req.headers['x-app-password'] || '';
-  if (actual !== expected) {
-    const error = new Error('パスワードが違うか、未ログインです。');
-    error.statusCode = 401;
-    throw error;
-  }
-}
-
-function sendJson(res, statusCode, payload) {
-  res.statusCode = statusCode;
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.end(JSON.stringify(payload));
-}
+const { requireAppAuth, sendJson } = require('./_auth');
 
 function readJsonBody(req) {
   return new Promise((resolve, reject) => {
@@ -65,7 +46,7 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 405, { ok: false, error: 'POSTで送信してください。' });
   }
   try {
-    requireAppPassword(req);
+    requireAppAuth(req);
     const body = await readJsonBody(req);
     const token = getToken(req);
     const richMenuId = body.richMenuId;

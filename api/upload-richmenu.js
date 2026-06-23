@@ -1,26 +1,6 @@
+const { requireAppAuth, sendJson } = require('./_auth');
 const MAX_IMAGE_BYTES = 1024 * 1024;
 
-
-function requireAppPassword(req) {
-  const expected = process.env.APP_PASSWORD;
-  if (!expected) {
-    const error = new Error('Vercelの環境変数 APP_PASSWORD が未設定です。');
-    error.statusCode = 500;
-    throw error;
-  }
-  const actual = req.headers['x-app-password'] || '';
-  if (actual !== expected) {
-    const error = new Error('パスワードが違うか、未ログインです。');
-    error.statusCode = 401;
-    throw error;
-  }
-}
-
-function sendJson(res, statusCode, payload) {
-  res.statusCode = statusCode;
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.end(JSON.stringify(payload));
-}
 
 function readJsonBody(req) {
   return new Promise((resolve, reject) => {
@@ -111,7 +91,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    requireAppPassword(req);
+    requireAppAuth(req);
   } catch (error) {
     return sendJson(res, error.statusCode || 401, { ok: false, error: error.message || '認証に失敗しました。' });
   }

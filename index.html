@@ -84,7 +84,6 @@
 .login-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#06c755,#0aa06b);display:flex;align-items:center;justify-content:center;z-index:5000;padding:20px}
 .login-overlay.hidden{display:none}.login-card{width:min(440px,100%);background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.24);padding:28px}.login-card h2{font-size:24px;margin-bottom:8px;color:#111}.login-card p{font-size:14px;line-height:1.7;color:#555;margin-bottom:16px}.login-card input{width:100%;padding:14px 16px;border:1px solid #ddd;border-radius:8px;font-size:18px;margin-bottom:12px}.login-card .login-error{color:#dc3545;font-size:14px;min-height:20px;margin-top:10px}.logout-mini{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.5)}
 .button-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}.button-row .btn{flex:1}
-.drive-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}.drive-item{border:1px solid #ddd;border-radius:8px;background:#fff;padding:12px}.drive-item strong{display:block;font-size:15px;margin-bottom:4px;word-break:break-all}.drive-item small{color:#666}.drive-item .button-row{margin-top:10px}.drive-status{font-size:14px;line-height:1.7;color:#333;background:#f8f9fa;border:1px solid #e0e0e0;border-radius:6px;padding:12px;margin:10px 0}.drive-status.ok{border-left:4px solid #06c755}.drive-status.err{border-left:4px solid #dc3545}.drive-current{font-size:13px;color:#666;word-break:break-all;margin:8px 0}
 @media(max-width:900px){.tab{font-size:14px;padding:12px 4px}}
 
 @media(max-width:900px){.main{flex-direction:column}.left{width:100%;height:55%;flex:none}.right{width:100%;height:45%;min-width:0;border-left:none;border-top:1px solid #ddd}}
@@ -109,9 +108,14 @@
 <h3 style="margin-top:18px;">登録ユーザー <span id="userCount" style="color:#888;font-size:14px;font-weight:normal;"></span></h3><div class="user-list" id="userListContainer"></div>
 <h3 style="margin-top:18px;">適用 / 解除</h3><button class="btn btn-primary btn-sm btn-block" id="btnLinkUsers">🔗 登録ユーザー全員にリンク</button><button class="btn btn-sm btn-block" id="btnUnlinkUsers" style="margin-top:8px;">🔓 全員のリンクを解除</button></div>
 <div class="panel" id="panel-api"><h3>LINE API 連携</h3>
+<div class="info-box" id="modeInfo">起動モードを確認中です...</div>
 <div class="form-group"><label>チャネルアクセストークン</label><input type="password" id="lineTokenInput" placeholder="チャネルアクセストークン"></div>
-<label style="display:flex;align-items:center;gap:8px;margin:-6px 0 12px;font-size:14px;color:#555;"><input type="checkbox" id="rememberLineToken" style="width:auto;"> このブラウザにトークンを保存する（次回から自動入力）</label>
+<label style="display:flex;align-items:center;gap:8px;margin:-6px 0 12px;font-size:14px;color:#555;"><input type="checkbox" id="rememberLineToken" style="width:auto;" checked> このブラウザにトークンを保存する（次回から自動入力）</label>
 <div class="button-row" style="margin-bottom:10px;"><button class="btn btn-sm" id="btnSaveLineToken">トークン保存</button><button class="btn btn-sm" id="btnClearLineToken">トークン削除</button></div>
+<h3 style="margin-top:18px;">クライアント別トークン</h3>
+<div class="form-group"><label>クライアント選択</label><select id="clientSelect"><option value="">未選択</option></select></div>
+<div class="form-group"><label>クライアント名</label><input type="text" id="clientNameInput" placeholder="例: A店舗"></div>
+<div class="button-row" style="margin-bottom:10px;"><button class="btn btn-sm btn-primary" id="btnSaveClientToken">このクライアントで保存</button><button class="btn btn-sm" id="btnDeleteClientToken">選択中を削除</button></div>
 <button class="btn btn-primary btn-block" id="btnApiUpload">🚀 アップロード / 上書き</button>
 <label style="display:flex;align-items:center;gap:8px;margin:10px 0 8px;font-size:15px;"><input type="checkbox" id="autoSetDefault" checked style="width:auto;"> アップロード後に自動でデフォルトに設定する</label>
 <div class="button-row">
@@ -166,26 +170,64 @@ function showToast(msg,type=''){const t=$('toast');t.textContent=msg;t.className
 function currentMenu(){return menus.find(m=>m.id===currentMenuId)}
 function getCanvasSize(){const m=currentMenu();return m&&m.size==='compact'?{w:2500,h:843}:{w:2500,h:1686}}
 
-const PASSWORD_STORAGE_KEY='richmenu_plus_app_password';
-let appPassword=sessionStorage.getItem(PASSWORD_STORAGE_KEY)||'';
-function getAppPassword(){return appPassword||sessionStorage.getItem(PASSWORD_STORAGE_KEY)||''}
+const APP_AUTH_TOKEN_KEY='richmenu_plus_app_auth_token_v1';
+const APP_MODE_KEY='richmenu_plus_app_mode_v1';
+let appMode='client';
+let appPassword='';
+let appAuthToken=localStorage.getItem(APP_AUTH_TOKEN_KEY)||'';
+function getAppPassword(){return appPassword||''}
+function getAppAuthToken(){return appAuthToken||localStorage.getItem(APP_AUTH_TOKEN_KEY)||''}
 function showLogin(msg){$('loginOverlay').classList.remove('hidden'); if(msg)$('loginMsg').textContent=msg}
 function hideLogin(){$('loginOverlay').classList.add('hidden');$('loginMsg').textContent=''}
+function updateModeInfo(){
+  const el=$('modeInfo'); if(!el)return;
+  const mode=appMode==='owner'?'owner（自分用・パスワードなし）':'client（クライアント用・初回のみパスワード）';
+  el.innerHTML='<b>起動モード：</b>'+escapeHtml(mode)+'<br><small>モードはVercel環境変数 APP_MODE で切り替えます。</small>';
+}
+async function fetchAppConfig(){
+  try{
+    const res=await fetch('/api/app-config',{method:'GET'});
+    const data=await res.json().catch(()=>({ok:false}));
+    if(data&&data.ok){appMode=data.mode||'client';localStorage.setItem(APP_MODE_KEY,appMode);updateModeInfo();return data;}
+  }catch(e){}
+  updateModeInfo();
+  return{ok:false,mode:'client',passwordRequired:true};
+}
 async function checkPassword(password){
-  const res=await fetch('/api/check-password',{method:'POST',headers:{'Content-Type':'application/json','X-App-Password':password||''},body:'{}'});
+  const headers={'Content-Type':'application/json'};
+  if(password)headers['X-App-Password']=password;
+  const token=getAppAuthToken();
+  if(token)headers['X-App-Auth']=token;
+  const res=await fetch('/api/check-password',{method:'POST',headers,body:'{}'});
   const data=await res.json().catch(()=>({ok:false,error:'認証確認に失敗しました。'}));
   if(!res.ok||data.ok===false)throw new Error(data.error||'パスワードが違います。');
+  if(data.mode){appMode=data.mode;localStorage.setItem(APP_MODE_KEY,appMode);updateModeInfo();}
+  if(data.authToken){appAuthToken=data.authToken;localStorage.setItem(APP_AUTH_TOKEN_KEY,data.authToken);}
   return true;
 }
 $('btnLogin').addEventListener('click',async()=>{
   const pw=$('appPasswordInput').value;
   if(!pw){$('loginMsg').textContent='パスワードを入力してください。';return}
-  try{ $('loginMsg').textContent='確認中です...'; await checkPassword(pw); appPassword=pw; sessionStorage.setItem(PASSWORD_STORAGE_KEY,pw); hideLogin(); showToast('ログインしました','success') }
-  catch(e){ $('loginMsg').textContent=e.message||'ログインできませんでした。' }
+  try{ $('loginMsg').textContent='確認中です...'; appPassword=pw; await checkPassword(pw); hideLogin(); showToast('ログインしました。次回からこのブラウザではパスワード不要です。','success') }
+  catch(e){ appPassword=''; $('loginMsg').textContent=e.message||'ログインできませんでした。' }
 });
 $('appPasswordInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnLogin').click()});
-$('btnLogout').addEventListener('click',()=>{sessionStorage.removeItem(PASSWORD_STORAGE_KEY);appPassword='';$('appPasswordInput').value='';showLogin('ログアウトしました。')});
-if(appPassword){checkPassword(appPassword).then(hideLogin).catch(()=>{sessionStorage.removeItem(PASSWORD_STORAGE_KEY);appPassword='';showLogin('もう一度ログインしてください。')})}else{showLogin()}
+$('btnLogout').addEventListener('click',()=>{localStorage.removeItem(APP_AUTH_TOKEN_KEY);appAuthToken='';appPassword='';$('appPasswordInput').value='';showLogin('ログアウトしました。')});
+async function initializeAuth(){
+  const cfg=await fetchAppConfig();
+  if((cfg.mode||appMode)==='owner'){
+    hideLogin();
+    if($('btnLogout'))$('btnLogout').style.display='none';
+    return;
+  }
+  if(getAppAuthToken()){
+    try{await checkPassword('');hideLogin();return}
+    catch(e){localStorage.removeItem(APP_AUTH_TOKEN_KEY);appAuthToken='';showLogin('もう一度ログインしてください。')}
+  }else{
+    showLogin();
+  }
+}
+initializeAuth();
 
 
 function createMenu(name){
@@ -793,6 +835,19 @@ function makeUploadImageDataUrl(m){
 
 const LINE_TOKEN_SESSION_KEY='richmenu_plus_line_token_session';
 const LINE_TOKEN_LOCAL_KEY='richmenu_plus_line_token_local';
+const CLIENTS_LOCAL_KEY='richmenu_plus_clients_v1';
+let currentClientId='';
+function getSavedClients(){
+  try{const data=JSON.parse(localStorage.getItem(CLIENTS_LOCAL_KEY)||'[]');return Array.isArray(data)?data:[]}
+  catch(e){return[]}
+}
+function setSavedClients(clients){localStorage.setItem(CLIENTS_LOCAL_KEY,JSON.stringify(clients||[]))}
+function renderClientSelect(){
+  const select=$('clientSelect');if(!select)return;
+  const clients=getSavedClients();
+  select.innerHTML='<option value="">未選択</option>'+clients.map(c=>`<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
+  select.value=currentClientId||'';
+}
 function loadLineToken(){
   const local=localStorage.getItem(LINE_TOKEN_LOCAL_KEY)||'';
   const session=sessionStorage.getItem(LINE_TOKEN_SESSION_KEY)||'';
@@ -800,7 +855,8 @@ function loadLineToken(){
   const input=$('lineTokenInput');
   if(input)input.value=saved;
   const remember=$('rememberLineToken');
-  if(remember)remember.checked=!!local;
+  if(remember)remember.checked=true;
+  renderClientSelect();
 }
 function getLineToken(){
   const input=$('lineTokenInput');
@@ -823,9 +879,53 @@ function saveLineTokenFromInput(){
 function clearLineToken(){
   localStorage.removeItem(LINE_TOKEN_LOCAL_KEY);
   sessionStorage.removeItem(LINE_TOKEN_SESSION_KEY);
+  currentClientId='';
   if($('lineTokenInput'))$('lineTokenInput').value='';
-  if($('rememberLineToken'))$('rememberLineToken').checked=false;
+  if($('clientNameInput'))$('clientNameInput').value='';
+  if($('rememberLineToken'))$('rememberLineToken').checked=true;
+  renderClientSelect();
   showToast('トークンを削除しました');
+}
+function saveClientToken(){
+  const name=($('clientNameInput')&&$('clientNameInput').value.trim())||'';
+  const token=getLineToken();
+  if(!name){showToast('クライアント名を入力してください','error');return}
+  if(!token){showToast('チャネルアクセストークンを入力してください','error');return}
+  const clients=getSavedClients();
+  let client=clients.find(c=>c.id===currentClientId);
+  if(!client){client={id:uid('client'),name:'',channelAccessToken:''};clients.push(client);currentClientId=client.id;}
+  client.name=name;
+  client.channelAccessToken=token;
+  setSavedClients(clients);
+  localStorage.setItem(LINE_TOKEN_LOCAL_KEY,token);
+  sessionStorage.removeItem(LINE_TOKEN_SESSION_KEY);
+  if($('rememberLineToken'))$('rememberLineToken').checked=true;
+  renderClientSelect();
+  showToast('クライアント別トークンを保存しました','success');
+}
+function deleteClientToken(){
+  if(!currentClientId){showToast('削除するクライアントを選択してください','error');return}
+  if(!confirm('選択中のクライアント設定を削除しますか？'))return;
+  const clients=getSavedClients().filter(c=>c.id!==currentClientId);
+  setSavedClients(clients);
+  currentClientId='';
+  if($('clientNameInput'))$('clientNameInput').value='';
+  renderClientSelect();
+  showToast('クライアント設定を削除しました');
+}
+function selectClientToken(id){
+  currentClientId=id||'';
+  const client=getSavedClients().find(c=>c.id===currentClientId);
+  if(client){
+    if($('clientNameInput'))$('clientNameInput').value=client.name||'';
+    if($('lineTokenInput'))$('lineTokenInput').value=client.channelAccessToken||'';
+    localStorage.setItem(LINE_TOKEN_LOCAL_KEY,client.channelAccessToken||'');
+    sessionStorage.removeItem(LINE_TOKEN_SESSION_KEY);
+    showToast('クライアントを切り替えました','success');
+  }else{
+    if($('clientNameInput'))$('clientNameInput').value='';
+  }
+  renderClientSelect();
 }
 
 
@@ -865,7 +965,11 @@ function formatRichMenuStatus(data,mode){
 }
 
 async function appApi(path,payload){
-  const headers={'Content-Type':'application/json','X-App-Password':getAppPassword()};
+  const headers={'Content-Type':'application/json'};
+  const authToken=getAppAuthToken();
+  if(authToken)headers['X-App-Auth']=authToken;
+  const password=getAppPassword();
+  if(password)headers['X-App-Password']=password;
   const token=getLineToken();
   if(token)headers['X-Line-Token']=token;
   const res=await fetch(path,{
@@ -885,6 +989,9 @@ async function appApi(path,payload){
 if($('btnSaveLineToken'))$('btnSaveLineToken').addEventListener('click',saveLineTokenFromInput);
 if($('btnClearLineToken'))$('btnClearLineToken').addEventListener('click',clearLineToken);
 if($('lineTokenInput'))$('lineTokenInput').addEventListener('change',()=>{if(getLineToken())saveLineTokenFromInput()});
+if($('clientSelect'))$('clientSelect').addEventListener('change',e=>selectClientToken(e.target.value));
+if($('btnSaveClientToken'))$('btnSaveClientToken').addEventListener('click',saveClientToken);
+if($('btnDeleteClientToken'))$('btnDeleteClientToken').addEventListener('click',deleteClientToken);
 loadLineToken();
 
 $('btnApiUpload').addEventListener('click',async()=>{
@@ -999,12 +1106,26 @@ $('btnUnlinkUsers').addEventListener('click',async()=>{
 const LOCAL_PROJECT_KEY='richmenu_plus_project_autosave_v1';
 let restoringProject=false;
 let autoSaveTimer=null;
+let hasProjectFileUnsavedChanges=false;
+function markProjectFileDirty(){ if(!restoringProject)hasProjectFileUnsavedChanges=true; }
+function markProjectFileSaved(){ hasProjectFileUnsavedChanges=false; }
+window.addEventListener('beforeunload',e=>{
+  if(!hasProjectFileUnsavedChanges)return;
+  e.preventDefault();
+  e.returnValue='変更をプロジェクトファイルとして保存していません。閉じますか？';
+});
 
 function projectData(){
   return {
     app:'richmenu-plus',
-    version:'2.0-local',
+    version:'3.0-vercel-mode',
+    exportType:'project',
+    tokenIncluded:true,
     savedAt:new Date().toISOString(),
+    appMode,
+    currentClientId,
+    channelAccessToken:getLineToken(),
+    clients:getSavedClients(),
     currentMenuId,
     menus:menus.map(m=>{const copy={...m};delete copy.bgImage;return copy;})
   };
@@ -1012,6 +1133,17 @@ function projectData(){
 function loadProjectData(data){
   if(!data||data.app!=='richmenu-plus'||!Array.isArray(data.menus)||!data.menus.length)throw new Error('リッチメニュープラスの保存データではありません。');
   restoringProject=true;
+  if(data.channelAccessToken&&$('lineTokenInput')){
+    $('lineTokenInput').value=data.channelAccessToken;
+    localStorage.setItem(LINE_TOKEN_LOCAL_KEY,data.channelAccessToken);
+    sessionStorage.removeItem(LINE_TOKEN_SESSION_KEY);
+    if($('rememberLineToken'))$('rememberLineToken').checked=true;
+  }
+  if(Array.isArray(data.clients)){
+    setSavedClients(data.clients);
+    currentClientId=data.currentClientId||'';
+    renderClientSelect();
+  }
   menus.length=0;
   data.menus.forEach(d=>menus.push({...d,bgImage:null}));
   currentMenuId=(data.currentMenuId&&menus.some(m=>m.id===data.currentMenuId))?data.currentMenuId:menus[0].id;
@@ -1075,6 +1207,7 @@ function downloadProjectFile(){
     a.click();
     URL.revokeObjectURL(a.href);
     saveProjectToLocal(false);
+    markProjectFileSaved();
     showToast('プロジェクトファイルを保存しました','success');
   }catch(e){showToast('ファイル保存失敗: '+e.message,'error')}
 }
@@ -1087,6 +1220,7 @@ function readProjectFile(file){
       loadProjectData(data);
       if(data.projectName&&$('projectFileName'))$('projectFileName').value=data.projectName;
       saveProjectToLocal(false);
+      markProjectFileSaved();
       showToast('プロジェクトファイルを読み込みました','success');
     }catch(e){showToast('読み込み失敗: '+e.message,'error')}
   };
@@ -1108,11 +1242,12 @@ if($('projectFileInput'))$('projectFileInput').addEventListener('change',e=>{if(
 function initProject(){
   const raw=localStorage.getItem(LOCAL_PROJECT_KEY);
   if(raw){
-    try{loadProjectData(JSON.parse(raw));updateSaveStatus('前回の作業を自動復元しました。');return}
+    try{loadProjectData(JSON.parse(raw));updateSaveStatus('前回の作業を自動復元しました。');markProjectFileSaved();return}
     catch(e){console.warn(e);localStorage.removeItem(LOCAL_PROJECT_KEY)}
   }
   createMenu('メインメニュー');
   updateSaveStatus('自動保存：有効です');
+  markProjectFileSaved();
 }
 initProject();
 setTimeout(fitZoom,100);
