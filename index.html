@@ -150,6 +150,28 @@
 @media(max-width:1200px){.below-canvas-grid{grid-template-columns:1fr}.right{width:330px;min-width:300px}}
 @media(max-width:900px){.main{padding:10px;height:auto;display:block}.right{width:100%;min-width:0}.below-canvas-grid{grid-template-columns:1fr}.canvas-wrap{min-height:auto}.canvas-scroll{min-height:260px}}
 
+
+/* requested project panel + grid guide */
+.client-project-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-bottom:12px}
+.client-project-toggle{min-width:120px}
+.client-project-panel{display:none;margin-top:10px}
+.client-project-panel.open{display:block}
+.richmenu-accordion{border:1px solid #e5e5e5;border-radius:8px;background:#fff;margin:12px 0 0;overflow:hidden}
+.richmenu-accordion summary{cursor:pointer;font-weight:700;padding:12px 14px;background:#f8f9fa;list-style:none}
+.richmenu-accordion summary::-webkit-details-marker{display:none}
+.richmenu-accordion[open] summary{border-bottom:1px solid #e5e5e5}
+.richmenu-accordion-body{padding:12px}
+.canvas-grid-overlay{position:absolute;inset:0;pointer-events:none;z-index:20;display:block}
+.canvas-grid-overlay.hidden{display:none}
+.canvas-grid-line{position:absolute;background:rgba(220,53,69,.72)}
+.canvas-grid-line.v{top:0;bottom:0;width:2px}
+.canvas-grid-line.h{left:0;right:0;height:2px}
+.canvas-grid-label{position:absolute;background:rgba(220,53,69,.9);color:#fff;border-radius:999px;padding:2px 7px;font-size:12px;font-weight:700;line-height:1;white-space:nowrap}
+.grid-toggle-label{display:flex;align-items:center;gap:8px;font-size:13px;color:#555;margin:0 0 10px}
+#saveStatus,.browser-save-extra{display:none!important}
+.right-block.save-block h3{margin-bottom:10px}
+@media(max-width:900px){.client-project-row{grid-template-columns:1fr}.client-project-toggle{width:100%}}
+
 </style>
 </head>
 <body>
@@ -169,13 +191,21 @@
 <h3 style="margin-top:18px;">適用 / 解除</h3><button class="btn btn-primary btn-sm btn-block" id="btnLinkUsers">🔗 登録ユーザー全員にリンク</button><button class="btn btn-sm btn-block" id="btnUnlinkUsers" style="margin-top:8px;">🔓 全員のリンクを解除</button></div></div></div>
 <div class="main">
 <div class="left"><div class="menu-tabs" id="menuTabs"></div>
-<div class="canvas-wrap"><div class="canvas-info"><span id="sizeInfo">2500 × 1686 px</span><span class="upload-badge new" id="uploadStatus">未アップロード</span></div>
-<div class="canvas-scroll" id="canvasScroll"><div class="canvas-container"><canvas id="canvas" width="2500" height="1686"></canvas><div class="upload-overlay" id="uploadOverlay"><div class="upload-overlay-icon">📷</div><div class="upload-overlay-text">クリックまたはドラッグで画像をアップロード</div><input type="file" id="fileInput" accept="image/png,image/jpeg" style="display:none;"></div></div></div></div>
+<div class="canvas-wrap"><div class="canvas-info"><span id="sizeInfo">2500 × 1686 px</span><span class="upload-badge new" id="uploadStatus">未アップロード</span></div><label class="grid-toggle-label"><input type="checkbox" id="showGridGuide" checked> 1000pxガイドを表示</label>
+<div class="canvas-scroll" id="canvasScroll"><div class="canvas-container"><canvas id="canvas" width="2500" height="1686"></canvas><div id="canvasGridOverlay" class="canvas-grid-overlay"></div><div class="upload-overlay" id="uploadOverlay"><div class="upload-overlay-icon">📷</div><div class="upload-overlay-text">クリックまたはドラッグで画像をアップロード</div><input type="file" id="fileInput" accept="image/png,image/jpeg" style="display:none;"></div></div></div></div>
 <div class="below-canvas-grid"><div class="below-canvas-panel"><div class="panel" id="panel-settings"><h3>基本設定</h3><div class="form-group"><label>メニュー名</label><input type="text" id="menuName"></div><div class="form-row"><div class="form-group"><label>エイリアスID</label><input type="text" id="menuAlias"></div><div class="form-group"><label>チャットバーテキスト</label><input type="text" id="chatBarText"></div></div><div class="form-row"><div class="form-group"><label>サイズ</label><select id="menuSize"><option value="large">Large (2500×1686)</option><option value="compact">Compact (2500×843)</option></select></div><div class="form-group"><label>背景色</label><input type="color" id="bgColor" value="#ffffff"></div></div>
 <div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="menuSelected" style="width:auto;"> トーク画面を開いた時にメニューを最初から表示する</label></div>
 <h3 style="margin-top:16px;">背景画像</h3><div class="image-controls compact-actions"><button class="btn btn-primary btn-sm" id="btnChangeImage">📷 変更</button><button class="btn btn-danger btn-sm" id="btnRemoveImage">🗑 削除</button></div>
 <button class="btn btn-danger btn-sm btn-block" id="btnClearAreas">全エリア削除</button></div></div>
-<div class="below-canvas-panel"><div class="panel" id="panel-api"><h3>LINE 反映</h3>
+</div>
+</div>
+<div class="right"><div class="right-block save-block"><h3>保存・操作</h3>
+<div class="client-project-row"><div class="form-group" style="margin:0;"><label>クライアント名</label><input type="text" id="clientProjectNameInput" placeholder="例: A店舗"></div><button class="btn client-project-toggle" id="btnProjectPanelToggle" type="button">下に展開 ▼</button></div>
+<div class="client-project-panel" id="clientProjectPanel">
+<div class="form-group"><label>保存ファイル名</label><input type="text" id="projectFileName" placeholder="例: 体験用リッチメニュー"></div>
+<div class="button-row"><button class="btn btn-primary" id="btnDownloadProject">プロジェクトファイル保存</button><button class="btn" id="btnLoadProjectFile">プロジェクトファイル読み込み</button></div>
+<input type="file" id="projectFileInput" accept="application/json,.json" style="display:none;">
+<div class="panel" id="panel-api"><h3>LINE 反映</h3>
 <div class="form-group"><label>チャネルアクセストークン</label><input type="password" id="lineTokenInput" placeholder="チャネルアクセストークン"></div>
 <label style="display:flex;align-items:center;gap:8px;margin:-2px 0 12px;font-size:14px;color:#555;"><input type="checkbox" id="rememberLineToken" style="width:auto;" checked> このブラウザにトークンを保存する（次回から自動入力）</label>
 <div class="button-row api-actions" style="margin-bottom:10px;"><button class="btn btn-sm" id="btnSaveLineToken">トークン保存</button><button class="btn btn-sm" id="btnClearLineToken">トークン削除</button></div>
@@ -190,15 +220,9 @@
 <button class="btn btn-danger btn-block" id="btnClearDefault">🧹 デフォルト解除</button>
 </div>
 <div class="token-guide" id="apiResult" style="display:none;"></div>
-</div></div></div>
 </div>
-<div class="right"><div class="right-block"><div class="panel" id="panel-save"><h3>保存</h3>
-<div class="token-guide" id="saveStatus">自動保存：準備中</div>
-<div class="browser-save-extra"><div class="button-row"><button class="btn btn-primary" id="btnSaveLocalNow">今すぐブラウザに保存</button><button class="btn" id="btnRestoreLocal">ブラウザ保存から復元</button></div>
-<button class="btn btn-danger btn-block" id="btnClearLocalProject">このブラウザの保存データを削除</button></div>
-<div class="form-group"><label>保存ファイル名</label><input type="text" id="projectFileName" placeholder="例: 体験用リッチメニュー"></div>
-<div class="button-row"><button class="btn btn-primary" id="btnDownloadProject">プロジェクトファイル保存</button><button class="btn" id="btnLoadProjectFile">プロジェクトファイル読み込み</button></div>
-<input type="file" id="projectFileInput" accept="application/json,.json" style="display:none;"></div><div class="right-block"><h3>エリア設定</h3><div class="panel" id="panel-areas"><div class="area-list" id="areaListContainer"></div></div></div></div></div>
+<details class="richmenu-accordion" id="richMenuAreaAccordion"><summary>リッチメニュー名：<span id="richMenuAccordionTitle">メインメニュー</span></summary><div class="richmenu-accordion-body"><h3>エリア設定</h3><div class="panel" id="panel-areas"><div class="area-list" id="areaListContainer"></div></div></div></details>
+</div></div></div>
 <div class="ctx-menu" id="ctxMenu"><div class="ctx-menu-item" data-act="edit">✏️ 編集</div><div class="ctx-menu-item" data-act="action">🔗 アクション設定</div><div class="ctx-menu-item danger" data-act="delete">🗑 削除</div></div>
 <div class="toast" id="toast"></div>
 <script>
@@ -351,7 +375,32 @@ function applyZoom(){
   const{w,h}=getCanvasSize();
   canvas.style.width=(w*zoom)+'px';
   canvas.style.height=(h*zoom)+'px';
-  if($('zoomVal'))$('zoomVal').textContent=Math.round(zoom*100)+'%'
+  renderGridOverlay();
+}
+function renderGridOverlay(){
+  const overlay=$('canvasGridOverlay');
+  if(!overlay)return;
+  const cb=$('showGridGuide');
+  overlay.classList.toggle('hidden', cb && !cb.checked);
+  overlay.innerHTML='';
+  const{w,h}=getCanvasSize();
+  overlay.style.width=(w*zoom)+'px';
+  overlay.style.height=(h*zoom)+'px';
+  const addLine=(type,pos,label)=>{
+    const line=document.createElement('div');
+    line.className='canvas-grid-line '+type;
+    if(type==='v')line.style.left=(pos*zoom)+'px';
+    else line.style.top=(pos*zoom)+'px';
+    overlay.appendChild(line);
+    const lab=document.createElement('div');
+    lab.className='canvas-grid-label';
+    lab.textContent=label;
+    if(type==='v'){lab.style.left=(pos*zoom+4)+'px';lab.style.top='4px';}
+    else{lab.style.left='4px';lab.style.top=(pos*zoom+4)+'px';}
+    overlay.appendChild(lab);
+  };
+  for(let x=1000;x<w;x+=1000)addLine('v',x,x+'px');
+  for(let y=1000;y<h;y+=1000)addLine('h',y,y+'px');
 }
 function fitZoom(){
   zoom=0.2;
@@ -438,7 +487,7 @@ function bindInput(id,key,opts={}){
   $(id).addEventListener('input',e=>{
     if(suppressRender)return;
     currentMenu()[key]=e.target.value;
-    if(opts.refreshTabs)renderMenuTabs();
+    if(opts.refreshTabs){renderMenuTabs();updateRightPanelTitles();}
     markModified();
     if(opts.render)render()
   })
@@ -589,6 +638,7 @@ function render(){
     ctx.strokeRect(r.x,r.y,r.w,r.h);
     ctx.setLineDash([])
   }
+  renderGridOverlay();
 }
 function drawArea(a,selected){
   ctx.fillStyle=a.color+(selected?'C0':'CE');
@@ -803,9 +853,6 @@ ctxMenu.querySelectorAll('.ctx-menu-item').forEach(item=>{
   })
 });
 
-if($('btnZoomIn'))$('btnZoomIn').addEventListener('click',()=>{zoom=0.2;applyZoom()});
-if($('btnZoomOut'))$('btnZoomOut').addEventListener('click',()=>{zoom=0.2;applyZoom()});
-if($('btnZoomFit'))$('btnZoomFit').addEventListener('click',fitZoom);
 
 function saveHistory(){
   const snap=JSON.stringify(menus.map(m=>({...m,bgImage:null})));
@@ -1239,14 +1286,7 @@ function projectFileName(){
   const n=($('projectFileName')&&$('projectFileName').value.trim())||(currentMenu()?.name)||'リッチメニュー';
   return 'richmenu-project-'+safeFileName(n)+'.json';
 }
-function updateSaveStatus(msg,type=''){
-  const el=$('saveStatus'); if(!el)return;
-  const saved=localStorage.getItem(LOCAL_PROJECT_KEY);
-  let last='';
-  if(saved){try{const d=JSON.parse(saved); if(d.savedAt)last='<br>最終自動保存：'+escapeHtml(new Date(d.savedAt).toLocaleString('ja-JP'));}catch(e){}}
-  el.innerHTML=escapeHtml(msg||'自動保存：有効です')+last;
-  el.style.borderLeftColor=type==='error'?'#dc3545':'#06c755';
-}
+function updateSaveStatus(msg,type=''){ return; }
 function saveProjectToLocal(show=false){
   if(restoringProject||!menus.length)return;
   try{
@@ -1314,9 +1354,6 @@ function readProjectFile(file){
 const originalSaveHistory=saveHistory;
 saveHistory=function(){originalSaveHistory();scheduleAutoSave();};
 
-if($('btnSaveLocalNow'))$('btnSaveLocalNow').addEventListener('click',()=>saveProjectToLocal(true));
-if($('btnRestoreLocal'))$('btnRestoreLocal').addEventListener('click',restoreProjectFromLocal);
-if($('btnClearLocalProject'))$('btnClearLocalProject').addEventListener('click',clearLocalProject);
 if($('btnDownloadProject'))$('btnDownloadProject').addEventListener('click',downloadProjectFile);
 if($('btnLoadProjectFile'))$('btnLoadProjectFile').addEventListener('click',()=>$('projectFileInput').click());
 if($('projectFileInput'))$('projectFileInput').addEventListener('change',e=>{if(e.target.files&&e.target.files[0])readProjectFile(e.target.files[0]);e.target.value='';});
@@ -1327,7 +1364,54 @@ function initProject(){
     try{loadProjectData(JSON.parse(raw));updateSaveStatus('前回の作業を自動復元しました。');markProjectFileSaved();return}
     catch(e){console.warn(e);localStorage.removeItem(LOCAL_PROJECT_KEY)}
   }
-  createMenu('メインメニュー');
+  
+function updateRightPanelTitles(){
+  const m=currentMenu&&currentMenu();
+  const title=$('richMenuAccordionTitle');
+  if(title&&m)title.textContent=m.name||'メインメニュー';
+  const clientInput=$('clientProjectNameInput');
+  const fileInput=$('projectFileName');
+  if(clientInput&&fileInput&&!fileInput.value&&clientInput.value.trim()){
+    fileInput.value=clientInput.value.trim()+' リッチメニュー';
+  }
+}
+function setupProjectPanelToggle(){
+  const btn=$('btnProjectPanelToggle');
+  const panel=$('clientProjectPanel');
+  if(!btn||!panel||btn.dataset.bound)return;
+  btn.dataset.bound='1';
+  btn.addEventListener('click',()=>{
+    const open=!panel.classList.contains('open');
+    panel.classList.toggle('open',open);
+    btn.textContent=open?'上に閉じる ▲':'下に展開 ▼';
+    if(open)renderAreaList();
+  });
+}
+function setupGridToggle(){
+  const cb=$('showGridGuide');
+  if(cb&&!cb.dataset.bound){
+    cb.dataset.bound='1';
+    cb.addEventListener('change',renderGridOverlay);
+  }
+}
+function setupClientProjectName(){
+  const input=$('clientProjectNameInput');
+  if(input&&!input.dataset.bound){
+    input.dataset.bound='1';
+    input.addEventListener('input',()=>{
+      const f=$('projectFileName');
+      if(f&&!f.dataset.manualName)f.value=input.value.trim()?input.value.trim()+' リッチメニュー':'';
+    });
+  }
+  const f=$('projectFileName');
+  if(f&&!f.dataset.boundManual){
+    f.dataset.boundManual='1';
+    f.addEventListener('input',()=>{f.dataset.manualName='1'});
+  }
+}
+
+setupProjectPanelToggle();setupGridToggle();setupClientProjectName();
+createMenu('メインメニュー');
   updateSaveStatus('自動保存：有効です');
   markProjectFileSaved();
 }
