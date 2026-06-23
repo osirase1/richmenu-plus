@@ -8,7 +8,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}html,body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#333;height:100%;overflow:hidden;font-size:15px}
 .header{background:#06c755;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.1);flex-wrap:wrap;gap:8px}
-.header h1{font-size:18px;font-weight:600;white-space:nowrap}.header-error{display:none;margin-left:10px;color:#fff;background:#dc3545;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;vertical-align:middle;max-width:520px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.header h1{font-size:18px;font-weight:600;white-space:nowrap}.header-actions{display:flex;gap:8px;flex-wrap:wrap}
 .main{display:flex;height:calc(100vh - 52px);min-height:0}
 .left{flex:1;padding:12px;overflow:auto;background:#e9ecef;display:flex;flex-direction:column;min-width:0}
 .right{width:32%;min-width:380px;background:#fff;border-left:1px solid #ddd;display:flex;flex-direction:column;min-height:0;flex-shrink:0}
@@ -87,28 +87,63 @@
 @media(max-width:900px){.tab{font-size:14px;padding:12px 4px}}
 
 @media(max-width:900px){.main{flex-direction:column}.left{width:100%;height:55%;flex:none}.right{width:100%;height:45%;min-width:0;border-left:none;border-top:1px solid #ddd}}
+
+/* リッチメニュー＋ layout update */
+.header{align-items:flex-start}
+.header-title-wrap{display:flex;flex-direction:column;gap:6px;min-width:0}
+.header-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.header-status{display:none;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.45);color:#fff;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;max-width:520px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.header-status.error{background:#dc3545;border-color:#dc3545}
+.token-accordion{font-size:13px;line-height:1.7;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:6px 10px;max-width:720px}
+.token-accordion summary{cursor:pointer;font-weight:700;color:#fff}
+.token-accordion ol{padding-left:20px;margin:6px 0 0}
+.token-accordion a{color:#fff;text-decoration:underline}
+.top-menu-row{background:#fff;border-bottom:1px solid #ddd;padding:8px 12px;display:flex;align-items:center;gap:8px}
+.menu-icon-btn{width:42px;height:38px;border:1px solid #ddd;background:#fff;border-radius:8px;cursor:pointer;font-size:22px;line-height:1}
+.side-drawer{position:fixed;top:0;left:0;height:100vh;width:min(430px,92vw);background:#fff;box-shadow:8px 0 28px rgba(0,0,0,.22);z-index:3500;transform:translateX(-105%);transition:transform .22s ease;display:flex;flex-direction:column}
+.side-drawer.open{transform:translateX(0)}
+.drawer-head{padding:14px 16px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;background:#06c755;color:#fff}
+.drawer-body{padding:14px;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.drawer-section{border:1px solid #e5e5e5;border-radius:10px;padding:14px;background:#fff}
+.drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:3400;display:none}
+.drawer-backdrop.show{display:block}
+.left{gap:12px}
+.below-canvas-panel{background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:14px}
+.right{padding:12px;gap:12px;overflow:auto}
+.right-block{background:#fff;border:1px solid #e5e5e5;border-radius:8px;padding:14px}
+.right-block h3,.below-canvas-panel h3,.drawer-section h3{font-size:18px;margin-bottom:12px}
+.zoom-controls{display:none!important}
+.canvas-scroll{align-items:flex-start;justify-content:flex-start}
+#panel-settings,#panel-api,#panel-save,#panel-areas,#panel-users{display:block!important;padding:0;overflow:visible}
+#panel-save .browser-save-extra{display:none}
+@media(max-width:900px){.main{height:calc(100vh - 102px)}.left{height:auto}.right{height:auto}.header-status{max-width:260px}}
+
 </style>
 </head>
 <body>
 <div id="loginOverlay" class="login-overlay"><div class="login-card"><p style="font-size:18px;font-weight:700;color:#111;margin-bottom:14px;">パスワードを入力してください</p><input type="password" id="appPasswordInput" placeholder="パスワード" autocomplete="current-password"><button class="btn btn-primary btn-block" id="btnLogin">ログイン</button><div class="login-error" id="loginMsg"></div></div></div>
-<div class="header"><h1>🎨 リッチメニュープラス <span id="headerError" class="header-error"></span></h1><div class="header-actions"><button class="btn btn-sm" id="btnUndo">↶ 戻す</button><button class="btn btn-sm" id="btnRedo">↷ 進む</button><button class="btn btn-sm logout-mini" id="btnLogout">ログアウト</button></div></div>
+<div class="header"><div class="header-title-wrap"><div class="header-title-row"><h1>🎨 リッチメニュープラス</h1><span id="headerStatus" class="header-status"></span></div><details class="token-accordion"><summary>チャネルアクセストークンの取得方法</summary><ol><li><a href="https://developers.line.biz/console/" target="_blank" rel="noopener">LINE Developers</a> にログインします。</li><li>対象のプロバイダーとMessaging APIチャネルを開きます。</li><li>「Messaging API設定」を開きます。</li><li>「チャネルアクセストークン（長期）」を発行または再発行します。</li><li>取得したトークンを、この画面の「チャネルアクセストークン」に貼り付けて保存します。</li></ol></details></div><div class="header-actions"><button class="btn btn-sm" id="btnUndo">↶ 戻す</button><button class="btn btn-sm" id="btnRedo">↷ 進む</button><button class="btn btn-sm logout-mini" id="btnLogout">ログアウト</button></div></div>
+<div class="top-menu-row"><button class="menu-icon-btn" id="btnSideMenu" title="メニュー">☰</button><span style="font-size:14px;color:#555;">メニュー</span></div>
+<div class="drawer-backdrop" id="drawerBackdrop"></div><div class="side-drawer" id="sideDrawer"><div class="drawer-head"><strong>メニュー</strong><button class="btn btn-sm" id="btnCloseDrawer">閉じる</button></div><div class="drawer-body"><div class="drawer-section" id="drawer-status-section"><h3>反映状態確認</h3>
+<div class="form-group"><label>確認用ユーザーID（自分のUから始まるID）</label><input type="text" id="statusUserId" placeholder="例: U1234567890abcdef..."></div>
+<div class="button-row">
+<button class="btn btn-sm" id="btnCheckDefault">🔎 現在のデフォルトrichMenuId確認</button>
+<button class="btn btn-sm" id="btnCheckUserRichMenu">👤 自分に個別リンク中のrichMenuId確認</button>
+</div>
+<div class="button-row">
+<button class="btn btn-sm btn-primary" id="btnCheckReflectStatus">🧭 デフォルト＋個別リンクをまとめて確認</button>
+</div></div><div class="panel drawer-section" id="panel-users"><h3>👤 ユーザーリンク</h3><div class="user-add-row"><div class="form-group" style="margin:0;"><label>ユーザー名（表示用）</label><input type="text" id="newUserName" placeholder="例: 山田 太郎"></div><div class="form-group" style="margin:0;"><label>ユーザーID</label><input type="text" id="newUserId" placeholder="例: U1234567890abcdef..."></div><button class="btn btn-primary btn-sm btn-block" id="btnAddUser">＋ 追加</button></div>
+<h3 style="margin-top:18px;">登録ユーザー <span id="userCount" style="color:#888;font-size:14px;font-weight:normal;"></span></h3><div class="user-list" id="userListContainer"></div>
+<h3 style="margin-top:18px;">適用 / 解除</h3><button class="btn btn-primary btn-sm btn-block" id="btnLinkUsers">🔗 登録ユーザー全員にリンク</button><button class="btn btn-sm btn-block" id="btnUnlinkUsers" style="margin-top:8px;">🔓 全員のリンクを解除</button></div></div></div>
 <div class="main">
 <div class="left"><div class="menu-tabs" id="menuTabs"></div>
-<div class="canvas-wrap"><div class="canvas-info"><span id="sizeInfo">2500 × 1686 px</span><div class="zoom-controls"><button id="btnZoomOut">−</button><span class="zoom-val" id="zoomVal">100%</span><button id="btnZoomIn">＋</button><button id="btnZoomFit" style="width:auto;padding:0 10px;font-size:13px;">⤢ Fit</button></div><span class="upload-badge new" id="uploadStatus">未アップロード</span></div>
-<div class="canvas-scroll" id="canvasScroll"><div class="canvas-container"><canvas id="canvas" width="2500" height="1686"></canvas><div class="upload-overlay" id="uploadOverlay"><div class="upload-overlay-icon">📷</div><div class="upload-overlay-text">クリックまたはドラッグで画像をアップロード</div><input type="file" id="fileInput" accept="image/*" style="display:none;"></div></div></div></div></div>
-<div class="right"><div class="tabs"><div class="tab active" data-tab="settings">⚙ 設定</div><div class="tab" data-tab="areas">📦 エリア</div><div class="tab" data-tab="users">👤 ユーザー</div><div class="tab" data-tab="api">💬 LINE</div><div class="tab" data-tab="save">💾 保存</div></div>
-<div class="panel-wrap">
-<div class="panel active" id="panel-settings"><h3>基本設定</h3><div class="form-group"><label>メニュー名</label><input type="text" id="menuName"></div><div class="form-row"><div class="form-group"><label>エイリアスID</label><input type="text" id="menuAlias"></div><div class="form-group"><label>チャットバーテキスト</label><input type="text" id="chatBarText"></div></div><div class="form-row"><div class="form-group"><label>サイズ</label><select id="menuSize"><option value="large">Large (2500×1686)</option><option value="compact">Compact (2500×843)</option></select></div><div class="form-group"><label>背景色</label><input type="color" id="bgColor" value="#ffffff"></div></div>
+<div class="canvas-wrap"><div class="canvas-info"><span id="sizeInfo">2500 × 1686 px</span><span class="upload-badge new" id="uploadStatus">未アップロード</span></div>
+<div class="canvas-scroll" id="canvasScroll"><div class="canvas-container"><canvas id="canvas" width="2500" height="1686"></canvas><div class="upload-overlay" id="uploadOverlay"><div class="upload-overlay-icon">📷</div><div class="upload-overlay-text">クリックまたはドラッグで画像をアップロード</div><input type="file" id="fileInput" accept="image/png,image/jpeg" style="display:none;"></div></div></div></div>
+<div class="below-canvas-panel"><div class="panel" id="panel-settings"><h3>基本設定</h3><div class="form-group"><label>メニュー名</label><input type="text" id="menuName"></div><div class="form-row"><div class="form-group"><label>エイリアスID</label><input type="text" id="menuAlias"></div><div class="form-group"><label>チャットバーテキスト</label><input type="text" id="chatBarText"></div></div><div class="form-row"><div class="form-group"><label>サイズ</label><select id="menuSize"><option value="large">Large (2500×1686)</option><option value="compact">Compact (2500×843)</option></select></div><div class="form-group"><label>背景色</label><input type="color" id="bgColor" value="#ffffff"></div></div>
 <div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" id="menuSelected" style="width:auto;"> トーク画面を開いた時にメニューを最初から表示する</label></div>
 <h3 style="margin-top:16px;">背景画像</h3><div class="image-controls"><button class="btn btn-primary btn-sm" id="btnChangeImage">📷 変更</button><button class="btn btn-danger btn-sm" id="btnRemoveImage">🗑 削除</button></div>
-<button class="btn btn-danger btn-sm btn-block" id="btnClearAreas">全エリア削除</button></div>
-
-<div class="panel" id="panel-areas"><div class="area-list" id="areaListContainer"></div></div>
-<div class="panel" id="panel-users"><h3>👤 ユーザーリンク</h3><div class="user-add-row"><div class="form-group" style="margin:0;"><label>ユーザー名（表示用）</label><input type="text" id="newUserName" placeholder="例: 山田 太郎"></div><div class="form-group" style="margin:0;"><label>ユーザーID</label><input type="text" id="newUserId" placeholder="例: U1234567890abcdef..."></div><button class="btn btn-primary btn-sm btn-block" id="btnAddUser">＋ 追加</button></div>
-<h3 style="margin-top:18px;">登録ユーザー <span id="userCount" style="color:#888;font-size:14px;font-weight:normal;"></span></h3><div class="user-list" id="userListContainer"></div>
-<h3 style="margin-top:18px;">適用 / 解除</h3><button class="btn btn-primary btn-sm btn-block" id="btnLinkUsers">🔗 登録ユーザー全員にリンク</button><button class="btn btn-sm btn-block" id="btnUnlinkUsers" style="margin-top:8px;">🔓 全員のリンクを解除</button></div>
-<div class="panel" id="panel-api"><h3>LINE 連携</h3>
-<div class="token-guide" id="tokenGuideBox"><h4>チャネルアクセストークンの取得方法</h4><ol><li>LINE Developers にログインします。</li><li>対象のプロバイダーと Messaging API チャネルを開きます。</li><li>「Messaging API設定」または「Messaging API」画面を開きます。</li><li>「チャネルアクセストークン（長期）」を発行または再発行します。</li><li>取得したトークンを、この画面の「チャネルアクセストークン」に貼り付けて保存します。</li></ol><div style="margin-top:8px;">※ クライアントごとに別のトークンを使用します。別アカウントに反映したい時は、そのアカウントのトークンに切り替えてください。</div></div>
+<button class="btn btn-danger btn-sm btn-block" id="btnClearAreas">全エリア削除</button></div></div>
+<div class="below-canvas-panel"><div class="panel" id="panel-api"><h3>LINE 反映</h3>
 <div class="form-group"><label>チャネルアクセストークン</label><input type="password" id="lineTokenInput" placeholder="チャネルアクセストークン"></div>
 <label style="display:flex;align-items:center;gap:8px;margin:-6px 0 12px;font-size:14px;color:#555;"><input type="checkbox" id="rememberLineToken" style="width:auto;" checked> このブラウザにトークンを保存する（次回から自動入力）</label>
 <div class="button-row" style="margin-bottom:10px;"><button class="btn btn-sm" id="btnSaveLineToken">トークン保存</button><button class="btn btn-sm" id="btnClearLineToken">トークン削除</button></div>
@@ -122,41 +157,29 @@
 <button class="btn btn-block" id="btnSetDefault">✅ このメニューをデフォルトに設定</button>
 <button class="btn btn-danger btn-block" id="btnClearDefault">🧹 デフォルト解除</button>
 </div>
-<h3 style="margin-top:18px;">反映状態確認</h3>
-<div class="form-group"><label>確認用ユーザーID（自分のUから始まるID）</label><input type="text" id="statusUserId" placeholder="例: U1234567890abcdef..."></div>
-<div class="button-row">
-<button class="btn btn-sm" id="btnCheckDefault">🔎 現在のデフォルトrichMenuId確認</button>
-<button class="btn btn-sm" id="btnCheckUserRichMenu">👤 自分に個別リンク中のrichMenuId確認</button>
-</div>
-<div class="button-row">
-<button class="btn btn-sm btn-primary" id="btnCheckReflectStatus">🧭 デフォルト＋個別リンクをまとめて確認</button>
-</div>
-<div class="token-guide" id="apiResult" style="display:none;"></div>
-</div>
 
-<div class="panel" id="panel-save"><h3>💾 保存</h3>
-<div class="token-guide" id="saveStatus">自動保存：準備中</div>
-<h3 style="margin-top:18px;">このブラウザに保存</h3>
-<div class="button-row"><button class="btn btn-primary" id="btnSaveLocalNow">今すぐブラウザに保存</button><button class="btn" id="btnRestoreLocal">ブラウザ保存から復元</button></div>
-<button class="btn btn-danger btn-block" id="btnClearLocalProject">このブラウザの保存データを削除</button>
-<h3 style="margin-top:22px;">ファイルで保存・読み込み</h3>
-<div class="form-group"><label>保存ファイル名</label><input type="text" id="projectFileName" placeholder="例: 体験用リッチメニュー"></div>
-<div class="button-row"><button class="btn btn-primary" id="btnDownloadProject">プロジェクトファイル保存</button><button class="btn" id="btnLoadProjectFile">プロジェクトファイル読み込み</button></div>
-<input type="file" id="projectFileInput" accept="application/json,.json" style="display:none;">
+<div class="token-guide" id="apiResult" style="display:none;"></div>
+</div></div>
 </div>
-</div></div></div>
+<div class="right"><div class="right-block"><div class="panel" id="panel-save"><h3>保存</h3>
+<div class="token-guide" id="saveStatus">自動保存：準備中</div>
+<div class="browser-save-extra"><div class="button-row"><button class="btn btn-primary" id="btnSaveLocalNow">今すぐブラウザに保存</button><button class="btn" id="btnRestoreLocal">ブラウザ保存から復元</button></div>
+<button class="btn btn-danger btn-block" id="btnClearLocalProject">このブラウザの保存データを削除</button></div>
+<div class="form-group"><label>保存ファイル名</label><input type="text" id="projectFileName" placeholder="例: 体験用リッチメニュー"></div>
+<div class="button-row"><button class="btn btn-primary" id="btnDownloadProject">ファイル保存</button><button class="btn" id="btnLoadProjectFile">読み込み</button></div>
+<input type="file" id="projectFileInput" accept="application/json,.json" style="display:none;"></div><div class="right-block"><h3>エリア設定</h3><div class="panel" id="panel-areas"><div class="area-list" id="areaListContainer"></div></div></div></div></div>
 <div class="ctx-menu" id="ctxMenu"><div class="ctx-menu-item" data-act="edit">✏️ 編集</div><div class="ctx-menu-item" data-act="action">🔗 アクション設定</div><div class="ctx-menu-item danger" data-act="delete">🗑 削除</div></div>
 <div class="toast" id="toast"></div>
 <script>
 const COLORS=['#FF6B6B','#4ECDC4','#45B7D1','#FFA07A','#98D8C8','#F7DC6F','#BB8FCE','#85C1E2','#F8B739'];
-const MIN_ZOOM=0.1,MAX_ZOOM=3.0;
+const MIN_ZOOM=0.2,MAX_ZOOM=0.2;
 const menus=[];
 let currentMenuId=null,selectedAreaId=null,ctxTargetId=null;
 let expandedAreaIds=new Set();
 let history=[],historyIndex=-1;
 let mode='idle',drawStart=null,drawCurrent=null,dragOffset=null,resizeHandle=null,dragOriginal=null;
 let suppressRender=false;
-let zoom=1.0;
+let zoom=0.2;
 
 const canvas=document.getElementById('canvas');
 const ctx=canvas.getContext('2d');
@@ -167,29 +190,16 @@ const $=id=>document.getElementById(id);
 function uid(p='a'){return p+'_'+Math.random().toString(36).substr(2,9)}
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function showToast(msg,type=''){const t=$('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',2200)}
-function setHeaderError(msg){
-  const el=$('headerError');
-  if(!el)return;
-  el.textContent=msg||'';
-  el.title=msg||'';
+function setHeaderStatus(msg,type=''){
+  const el=$('headerStatus'); if(!el)return;
+  el.textContent=msg||''; el.title=msg||'';
+  el.className='header-status '+(type||'');
   el.style.display=msg?'inline-block':'none';
 }
-function clearHeaderError(){setHeaderError('')}
-function confirmDanger(message){
-  return confirm(message||'この操作を実行しますか？');
-}
-function hasUnsavedChanges(){
-  const m=currentMenu&&currentMenu();
-  if(!m)return false;
-  return menus.some(menu=>menu.uploadStatus==='new'||menu.uploadStatus==='modified');
-}
-window.addEventListener('beforeunload',e=>{
-  if(hasUnsavedChanges()){
-    e.preventDefault();
-    e.returnValue='変更内容が保存またはLINE反映されていません。このまま閉じますか？';
-    return e.returnValue;
-  }
-});
+function clearHeaderStatus(){setHeaderStatus('')}
+function confirmDanger(message){return confirm(message||'この操作を実行しますか？')}
+function hasUnsavedChanges(){return menus&&menus.some(m=>m.uploadStatus==='new'||m.uploadStatus==='modified')}
+window.addEventListener('beforeunload',e=>{if(hasUnsavedChanges()){e.preventDefault();e.returnValue='変更内容が保存またはLINE反映されていません。このまま閉じますか？';return e.returnValue;}})
 function currentMenu(){return menus.find(m=>m.id===currentMenuId)}
 function getCanvasSize(){const m=currentMenu();return m&&m.size==='compact'?{w:2500,h:843}:{w:2500,h:1686}}
 
@@ -202,9 +212,7 @@ function getAppPassword(){return appPassword||''}
 function getAppAuthToken(){return appAuthToken||localStorage.getItem(APP_AUTH_TOKEN_KEY)||''}
 function showLogin(msg){$('loginOverlay').classList.remove('hidden'); if(msg)$('loginMsg').textContent=msg}
 function hideLogin(){$('loginOverlay').classList.add('hidden');$('loginMsg').textContent=''}
-function updateModeInfo(){
-  return;
-}
+function updateModeInfo(){return;}
 async function fetchAppConfig(){
   try{
     const res=await fetch('/api/app-config',{method:'GET'});
@@ -312,13 +320,10 @@ function applyZoom(){
   const{w,h}=getCanvasSize();
   canvas.style.width=(w*zoom)+'px';
   canvas.style.height=(h*zoom)+'px';
-  $('zoomVal').textContent=Math.round(zoom*100)+'%'
+  if($('zoomVal'))$('zoomVal').textContent=Math.round(zoom*100)+'%'
 }
 function fitZoom(){
-  const{w,h}=getCanvasSize();
-  const sw=canvasScroll.clientWidth-24;
-  const sh=canvasScroll.clientHeight-24;
-  zoom=Math.max(MIN_ZOOM,Math.min(MAX_ZOOM,Math.min(sw/w,sh/h)));
+  zoom=0.2;
   applyZoom()
 }
 function updateOverlay(){
@@ -368,7 +373,7 @@ function validateImageFile(file,img){
   return errors;
 }
 function loadImage(file){
-  clearHeaderError();
+  clearHeaderStatus();
   const reader=new FileReader();
   reader.onload=ev=>{
     const img=new Image();
@@ -376,27 +381,23 @@ function loadImage(file){
       const errors=validateImageFile(file,img);
       if(errors.length){
         const msg='画像エラー：'+errors.join(' / ');
-        setHeaderError(msg);
+        setHeaderStatus(msg,'error');
         showToast(msg,'error');
         return;
       }
       const{w,h}=getCanvasSize();
       if(img.width!==w||img.height!==h){
-        setHeaderError(`注意：${img.width}×${img.height}です。LINE条件は満たしていますが、現在のキャンバス推奨は${w}×${h}です。`);
+        setHeaderStatus(`注意：${img.width}×${img.height}です。LINE条件は満たしていますが、現在のキャンバス推奨は${w}×${h}です。`);
         showToast(`⚠️ ${img.width}×${img.height} (推奨 ${w}×${h})`,'error')
       }else{
-        clearHeaderError();
+        clearHeaderStatus();
         showToast('画像を読み込みました','success')
       }
       const m=currentMenu();
       m.bgImage=img;m.bgImageData=ev.target.result;
       markModified();updateOverlay();render();saveHistory()
     };
-    img.onerror=()=>{
-      const msg='画像を読み込めませんでした。JPEGまたはPNGを使用してください。';
-      setHeaderError(msg);
-      showToast(msg,'error');
-    };
+    img.onerror=()=>{const msg='画像を読み込めませんでした。JPEGまたはPNGを使用してください。';setHeaderStatus(msg,'error');showToast(msg,'error')};
     img.src=ev.target.result
   };
   reader.readAsDataURL(file)
@@ -521,7 +522,7 @@ function renderUserList(){
     el.className='user-item';
     el.innerHTML=`<div class="info"><div class="name">${escapeHtml(u.name)}</div><div class="uid">${escapeHtml(u.userId)}</div></div><button class="btn btn-danger btn-sm" data-uid="${u.id}">削除</button>`;
     el.querySelector('button').addEventListener('click',()=>{
-      if(!confirmDanger(`「${u.name}」を削除します。実行しますか？`))return;
+      if(!confirm(`「${u.name}」を削除しますか？`))return;
       m.users=m.users.filter(x=>x.id!==u.id);
       saveHistory();renderUserList();showToast('削除しました')
     });
@@ -771,16 +772,9 @@ ctxMenu.querySelectorAll('.ctx-menu-item').forEach(item=>{
   })
 });
 
-$('btnZoomIn').addEventListener('click',()=>{zoom=Math.min(MAX_ZOOM,zoom+0.1);applyZoom()});
-$('btnZoomOut').addEventListener('click',()=>{zoom=Math.max(MIN_ZOOM,zoom-0.1);applyZoom()});
-$('btnZoomFit').addEventListener('click',fitZoom);
-canvasScroll.addEventListener('wheel',e=>{
-  if(e.ctrlKey){
-    e.preventDefault();
-    zoom=Math.max(MIN_ZOOM,Math.min(MAX_ZOOM,zoom+(e.deltaY<0?0.1:-0.1)));
-    applyZoom()
-  }
-},{passive:false});
+if($('btnZoomIn'))$('btnZoomIn').addEventListener('click',()=>{zoom=0.2;applyZoom()});
+if($('btnZoomOut'))$('btnZoomOut').addEventListener('click',()=>{zoom=0.2;applyZoom()});
+if($('btnZoomFit'))$('btnZoomFit').addEventListener('click',fitZoom);
 
 function saveHistory(){
   const snap=JSON.stringify(menus.map(m=>({...m,bgImage:null})));
@@ -815,7 +809,7 @@ document.addEventListener('keydown',e=>{
   else if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.shiftKey&&e.key==='Z'))){e.preventDefault();$('btnRedo').click()}
   else if(e.key==='Delete'&&selectedAreaId){
     const m=currentMenu();
-    if(confirm('選択中のエリアを削除しますか？')){
+    if(confirmDanger('選択中のエリアを削除します。削除すると元に戻せません。実行しますか？')){
       m.areas=m.areas.filter(x=>x.id!==selectedAreaId);
       expandedAreaIds.delete(selectedAreaId);
       selectedAreaId=null;
@@ -856,10 +850,13 @@ function formatBytes(bytes){
 }
 function setApiResult(html,type=''){
   const box=$('apiResult');
-  if(!box)return;
-  box.style.display='block';
-  box.innerHTML=html;
-  box.style.borderLeftColor=type==='error'?'#dc3545':'#06c755';
+  if(box){
+    box.style.display='block';
+    box.innerHTML=html;
+    box.style.borderLeftColor=type==='error'?'#dc3545':'#06c755';
+  }
+  const plain=String(html||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+  if(plain)setHeaderStatus(plain,type==='error'?'error':'');
 }
 function makeUploadImageDataUrl(m){
   const{w,h}=getCanvasSize();
@@ -1041,9 +1038,16 @@ if($('btnSaveClientToken'))$('btnSaveClientToken').addEventListener('click',save
 if($('btnDeleteClientToken'))$('btnDeleteClientToken').addEventListener('click',deleteClientToken);
 loadLineToken();
 
+function openSideDrawer(){if($('sideDrawer'))$('sideDrawer').classList.add('open');if($('drawerBackdrop'))$('drawerBackdrop').classList.add('show')}
+function closeSideDrawer(){if($('sideDrawer'))$('sideDrawer').classList.remove('open');if($('drawerBackdrop'))$('drawerBackdrop').classList.remove('show')}
+if($('btnSideMenu'))$('btnSideMenu').addEventListener('click',openSideDrawer);
+if($('btnCloseDrawer'))$('btnCloseDrawer').addEventListener('click',closeSideDrawer);
+if($('drawerBackdrop'))$('drawerBackdrop').addEventListener('click',closeSideDrawer);
+
+
 $('btnApiUpload').addEventListener('click',async()=>{
   const m=currentMenu();if(!m)return;
-  if(!m.bgImageData){showToast('背景画像をアップロードしてください','error');return}
+  if(!m.bgImageData){showToast('背景画像を設定してください','error');return}
   if(m.areas.length===0){showToast('エリアが0件です','error');return}
   try{
     setApiResult('LINEに反映する準備中です...');
@@ -1140,7 +1144,7 @@ $('btnLinkUsers').addEventListener('click',async()=>{
 $('btnUnlinkUsers').addEventListener('click',async()=>{
   const m=currentMenu();
   if(m.users.length===0){showToast('ユーザーが登録されていません','error');return}
-  if(!confirm(`${m.users.length}名のリンクを解除しますか？`))return;
+  if(!confirmDanger(`${m.users.length}名のリンクを解除します。実行しますか？`))return;
   try{
     const result=await appApi('/api/unlink-users',{userIds:m.users.map(u=>u.userId)});
     showToast(`成功:${result.okCount} / 失敗:${result.ngCount}`,result.ngCount===0?'success':'error')
@@ -1219,7 +1223,7 @@ function saveProjectToLocal(show=false){
     updateSaveStatus(show?'このブラウザに保存しました。':'自動保存：有効です');
     if(show)showToast('このブラウザに保存しました','success');
   }catch(e){
-    updateSaveStatus('ブラウザ保存に失敗しました。画像が大きい可能性があります。プロジェクトファイル保存を使ってください。','error');
+    updateSaveStatus('ブラウザ保存に失敗しました。画像が大きい可能性があります。ファイル保存を使ってください。','error');
     if(show)showToast('保存失敗: '+e.message,'error');
   }
 }
