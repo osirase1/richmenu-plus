@@ -131,7 +131,6 @@ body.auth-lock .main,body.auth-lock .header{filter:blur(2px);pointer-events:none
         <label>クライアント名</label>
         <input type="text" id="clientProjectNameInput" placeholder="例: A店舗">
       </div>
-      <button class="btn client-project-toggle" id="btnProjectPanelToggle" type="button">下に展開 ▼</button>
     </div>
   </div>
 
@@ -1469,8 +1468,21 @@ if($('btnSideMenu'))$('btnSideMenu').addEventListener('click',openSideDrawer);
 if($('btnCloseDrawer'))$('btnCloseDrawer').addEventListener('click',closeSideDrawer);
 if($('drawerBackdrop'))$('drawerBackdrop').addEventListener('click',closeSideDrawer);
 
-bindLineButton('btnApiUpload',uploadCurrentMenuToLine);
-bindLineButton('btnSetDefault',setCurrentMenuDefault);
+// お手軽保存はブラウザ保存のみ。LINE APIへの反映は btnSetDefault（LINEに反映）で行います。
+if($('btnApiUpload'))$('btnApiUpload').addEventListener('click',e=>{
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  try{
+    if(typeof saveProjectToLocal==='function')saveProjectToLocal(true);
+    if(typeof markProjectFileSaved==='function')markProjectFileSaved();
+    if(typeof updateProjectSaveStatus==='function')updateProjectSaveStatus('お手軽保存済み '+(typeof formatSaveTime==='function'?formatSaveTime(new Date()):''),'saved');
+    showToast('保存しました','success');
+  }catch(error){
+    const msg=(error&&error.message)||'保存に失敗しました。';
+    showToast(msg,'error');
+  }
+});
+bindLineButton('btnSetDefault',uploadCurrentMenuToLine);
 bindLineButton('btnClearDefault',clearDefaultRichMenu);
 bindLineButton('btnCheckDefault',()=>checkReflectStatus('default'));
 bindLineButton('btnCheckUserRichMenu',()=>checkReflectStatus('user'));
@@ -2723,7 +2735,8 @@ function setupRightThreeTabs(){
   }
   const mini=document.createElement('div');
   mini.className='line-mini-note';
-  mini.textContent='お手軽保存はこのブラウザ内に保存します。ただし、セキュリティソフトや容量管理ソフトでブラウザ容量が削除されると、保存データが消える可能性があります。定期的にバックアップ保存も行ってください。違うブラウザなどで開くと反映されない場合があるため、Google Chromeで開くようにお願いします。';
+  mini.style.whiteSpace='pre-line';
+  mini.textContent='LINEに反映を押した後に確認されたい場合は、LINEアプリを落としてください。\nまれに、反映されるのに、数分お時間がかかる時があります。\nそれでも反映されない時は、LINE表示を停止を押し、リッチメニューが消えてるかを確認後、再度LINEに反映を押してください。';
   panes.line.appendChild(mini);
   const auto=$('autoSetDefault');
   if(auto){
@@ -3280,7 +3293,7 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
       }
     }
     const mini=qs('.line-mini-note');
-    if(mini)mini.textContent='お手軽保存はこのブラウザ内に保存します。ただし、セキュリティソフトや容量管理ソフトでブラウザ容量が削除されると、保存データが消える可能性があります。定期的にバックアップ保存も行ってください。違うブラウザなどで開くと反映されない場合があるため、Google Chromeで開くようにお願いします。';
+    if(mini){mini.style.whiteSpace='pre-line';mini.textContent='LINEに反映を押した後に確認されたい場合は、LINEアプリを落としてください。\nまれに、反映されるのに、数分お時間がかかる時があります。\nそれでも反映されない時は、LINE表示を停止を押し、リッチメニューが消えてるかを確認後、再度LINEに反映を押してください。';}
     const apiTitle=qs('#panel-api > h3');
     if(apiTitle)apiTitle.remove();
   }
@@ -4119,6 +4132,7 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
           '<li>Largeは2500×1686px、Compactは2500×843pxが推奨サイズです。</li>'+
           '<li>画像サイズは2500×843px以上、2500×1686px以内で使用してください。</li>'+
           '<li>基本設定では、メニュー名・エイリアスID・サイズ・背景色・チャットバーテキスト・画像変更/削除を設定します。</li>'+
+          '<li>「トーク画面を開いた時にメニューを最初から表示する」は、そのリッチメニューが表示対象になった時に、トーク画面でメニューを開いた状態にする設定です。複数メニューでONにしても同時に複数表示されるわけではなく、実際に表示中の1枚にだけ効きます。</li>'+
           '<li>エイリアスIDは、リッチメニュー切替で使う目印です。切替先として使うメニューには、分かりやすく重複しないIDを設定してください。</li>'+
           '<li>エイリアスIDを後から変更すると、切替先エイリアスに設定済みのエリアがつながらなくなる場合があります。変更した時は、切替元のエリア設定も確認してください。</li>'+
           '<li>エイリアスIDは半角英数字・ハイフン・アンダーバー中心で作成すると管理しやすいです。日本語や記号を混ぜると、あとから確認しにくくなります。</li>'+
@@ -4844,7 +4858,7 @@ function loadProject(req) {
     }
   }
   function bind(){
-    ['btnApiUpload','btnSetDefault'].forEach(function(id){
+    ['btnSetDefault'].forEach(function(id){
       var btn=byId(id);
       if(!btn || btn.dataset.lineReflectConfirmBound==='1')return;
       btn.dataset.lineReflectConfirmBound='1';
@@ -4866,6 +4880,116 @@ function loadProject(req) {
 })();
 </script>
 
+
+
+<!-- MASTER_BASIC_SETTINGS_NO_EXPAND_START -->
+<style id="masterBasicSettingsNoExpandStyle">
+  /* マスター版：基本設定は展開式にせず、常時表示に固定 */
+  #canvasSaveOperationCard .save-basic-settings-details.no-expand-basic-settings{
+    display:block!important;
+    grid-column:2!important;
+    width:100%!important;
+    min-width:0!important;
+    overflow:visible!important;
+    position:relative!important;
+  }
+  #canvasSaveOperationCard .save-basic-settings-details.no-expand-basic-settings > summary{
+    display:none!important;
+  }
+  #canvasSaveOperationCard .save-basic-settings-details.no-expand-basic-settings > summary::before,
+  #canvasSaveOperationCard .save-basic-settings-details.no-expand-basic-settings > summary.basic-settings-exact-summary::before,
+  #canvasSaveOperationCard .save-basic-settings-details.no-expand-basic-settings > summary.basic-settings-summary::before{
+    content:''!important;
+    display:none!important;
+  }
+  #canvasSaveOperationCard .save-basic-settings-details.no-expand-basic-settings .basic-selected-exact-label{
+    position:static!important;
+    top:auto!important;
+    left:auto!important;
+    z-index:auto!important;
+    display:inline-flex!important;
+    width:auto!important;
+    max-width:100%!important;
+    margin:0 0 8px!important;
+    cursor:pointer!important;
+  }
+  #canvasSaveOperationCard .save-basic-settings-details.no-expand-basic-settings .basic-settings-exact-grid{
+    margin-top:0!important;
+  }
+</style>
+<script id="masterBasicSettingsNoExpandScript">
+(function(){
+  'use strict';
+  function removeBasicSettingsExpandable(){
+    var card=document.getElementById('canvasSaveOperationCard');
+    if(!card)return;
+    var details=card.querySelector('.save-basic-settings-details');
+    if(!details)return;
+    details.setAttribute('open','');
+    details.classList.add('no-expand-basic-settings');
+    var summaries=details.querySelectorAll(':scope > summary');
+    summaries.forEach(function(summary){summary.remove();});
+  }
+  function scheduleCleanup(){
+    removeBasicSettingsExpandable();
+    [50,200,500,900].forEach(function(ms){setTimeout(removeBasicSettingsExpandable,ms);});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scheduleCleanup,{once:true});
+  else scheduleCleanup();
+  window.addEventListener('load',scheduleCleanup,{once:true,passive:true});
+})();
+</script>
+<!-- MASTER_BASIC_SETTINGS_NO_EXPAND_END -->
+
+<!-- MASTER_SAVE_ONLY_PATCH_START -->
+<style id="masterSaveOnlyPatchStyle">
+  .line-mini-note{white-space:pre-line!important;}
+</style>
+<script id="masterSaveOnlyPatchScript">
+(function(){
+  'use strict';
+  function byId(id){return document.getElementById(id)}
+  function saveOnly(){
+    var btn=byId('btnApiUpload');
+    if(!btn || btn.dataset.masterSaveOnlyApplied==='1')return;
+    var clone=btn.cloneNode(true);
+    clone.dataset.masterSaveOnlyApplied='1';
+    clone.textContent='💾 お手軽保存';
+    clone.title='このブラウザ内に作業データを保存します。LINEには反映しません。';
+    btn.parentNode.replaceChild(clone,btn);
+    clone.addEventListener('click',function(e){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      try{
+        if(typeof saveProjectToLocal==='function')saveProjectToLocal(true);
+        if(typeof markProjectFileSaved==='function')markProjectFileSaved();
+        if(typeof updateProjectSaveStatus==='function'){
+          var time=(typeof formatSaveTime==='function')?formatSaveTime(new Date()):'';
+          updateProjectSaveStatus('お手軽保存済み '+time,'saved');
+        }
+        if(typeof showToast==='function')showToast('保存しました','success');
+      }catch(error){
+        var msg=(error&&error.message)||'保存に失敗しました。';
+        if(typeof showToast==='function')showToast(msg,'error');
+        else alert(msg);
+      }
+    },true);
+  }
+  function updateSaveNote(){
+    var mini=document.querySelector('.line-mini-note');
+    if(mini){
+      mini.style.whiteSpace='pre-line';
+      mini.textContent='LINEに反映を押した後に確認されたい場合は、LINEアプリを落としてください。\nまれに、反映されるのに、数分お時間がかかる時があります。\nそれでも反映されない時は、LINE表示を停止を押し、リッチメニューが消えてるかを確認後、再度LINEに反映を押してください。';
+    }
+  }
+  function run(){saveOnly();updateSaveNote();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});
+  else run();
+  window.addEventListener('load',run,{once:true,passive:true});
+  [100,300,800].forEach(function(ms){setTimeout(run,ms);});
+})();
+</script>
+<!-- MASTER_SAVE_ONLY_PATCH_END -->
 
 </body>
 </html>
