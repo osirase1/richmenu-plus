@@ -1,9 +1,13 @@
 {
-  "name": "richmenu-plus-vercel",
-  "version": "3.0.0",
+  "name": "richmenu-plus-master",
+  "version": "3.1.1-master",
   "private": true,
-  "description": "LINE rich menu editor with Vercel API proxy, owner/client modes, first-login auth, and token-included project export",
+  "description": "Master version of Rich Menu Plus for owner use with LINE API proxy and no app password screen.",
   "engines": {
     "node": ">=18"
+  },
+  "scripts": {
+    "check": "node --check api/*.js",
+    "start": "vercel dev"
   }
 }

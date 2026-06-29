@@ -1,47 +1,5 @@
 const { requireAppAuth, sendJson } = require('./_auth');
-
-function readJsonBody(req) {
-  return new Promise((resolve, reject) => {
-    if (req.body && typeof req.body === 'object') return resolve(req.body);
-    let raw = '';
-    req.on('data', chunk => {
-      raw += chunk;
-      if (raw.length > 1024 * 1024) {
-        reject(new Error('送信データが大きすぎます。'));
-        req.destroy();
-      }
-    });
-    req.on('end', () => {
-      try { resolve(raw ? JSON.parse(raw) : {}); }
-      catch (_) { reject(new Error('JSONの読み込みに失敗しました。')); }
-    });
-    req.on('error', reject);
-  });
-}
-
-function getToken(req) {
-  const fromHeader = String(req.headers['x-line-token'] || '').trim();
-  const token = fromHeader || process.env.LINE_CHANNEL_ACCESS_TOKEN;
-  if (!token) throw new Error('チャネルアクセストークンがありません。画面のAPIタブに入力するか、Vercelの環境変数 LINE_CHANNEL_ACCESS_TOKEN に設定してください。');
-  return token;
-}
-
-async function lineApi(path, method, token) {
-  const response = await fetch(`https://api.line.me${path}`, {
-    method,
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const text = await response.text();
-  let data;
-  try { data = text ? JSON.parse(text) : {}; } catch (_) { data = { message: text }; }
-  return { ok: response.ok, status: response.status, data, text };
-}
-
-function normalizeLineError(result, fallback) {
-  if (result.status === 404) return null;
-  const msg = result.data && result.data.message ? result.data.message : result.text;
-  return msg || fallback || `LINE API error: ${result.status}`;
-}
+const { readJsonBody, getLineToken, requestLineApi, normalizeLineError } = require('./_line');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -51,10 +9,10 @@ module.exports = async function handler(req, res) {
   try {
     requireAppAuth(req);
     const body = await readJsonBody(req);
-    const token = getToken(req);
+    const token = getLineToken(req);
     const userId = String(body.userId || '').trim();
 
-    const defaultResult = await lineApi('/v2/bot/user/all/richmenu', 'GET', token);
+    const defaultResult = await requestLineApi('/v2/bot/user/all/richmenu', 'GET', token);
     let defaultRichMenuId = null;
     let defaultStatus = 'not_set';
     let defaultMessage = 'Messaging APIで設定されたデフォルトリッチメニューはありません。';
@@ -78,7 +36,7 @@ module.exports = async function handler(req, res) {
     let userMessage = userId ? '' : 'ユーザーIDが未入力のため、個別リンク確認はスキップしました。';
 
     if (userId) {
-      const userResult = await lineApi(`/v2/bot/user/${encodeURIComponent(userId)}/richmenu`, 'GET', token);
+      const userResult = await requestLineApi(`/v2/bot/user/${encodeURIComponent(userId)}/richmenu`, 'GET', token);
       if (userResult.ok) {
         userRichMenuId = userResult.data.richMenuId || null;
         userStatus = userRichMenuId ? 'linked' : 'not_linked';

@@ -1,24 +1,5 @@
 const { requireAppAuth, sendJson } = require('./_auth');
-
-function readJsonBody(req) {
-  return new Promise((resolve, reject) => {
-    if (req.body && typeof req.body === 'object') return resolve(req.body);
-    let raw = '';
-    req.on('data', chunk => { raw += chunk; });
-    req.on('end', () => {
-      try { resolve(raw ? JSON.parse(raw) : {}); }
-      catch (_) { reject(new Error('JSONの読み込みに失敗しました。')); }
-    });
-    req.on('error', reject);
-  });
-}
-
-function getToken(req) {
-  const fromHeader = String(req.headers['x-line-token'] || '').trim();
-  const token = fromHeader || process.env.LINE_CHANNEL_ACCESS_TOKEN;
-  if (!token) throw new Error('チャネルアクセストークンがありません。画面のAPIタブに入力するか、Vercelの環境変数 LINE_CHANNEL_ACCESS_TOKEN に設定してください。');
-  return token;
-}
+const { readJsonBody, getLineToken } = require('./_line');
 
 async function unlinkUser(userId, token) {
   const response = await fetch(`https://api.line.me/v2/bot/user/${encodeURIComponent(userId)}/richmenu`, {
@@ -35,9 +16,8 @@ module.exports = async function handler(req, res) {
   try {
     requireAppAuth(req);
     const body = await readJsonBody(req);
-    const token = getToken(req);
+    const token = getLineToken(req);
     const userIds = Array.isArray(body.userIds) ? body.userIds.map(x => String(x).trim()).filter(Boolean) : [];
-
     if (userIds.length === 0) throw new Error('ユーザーIDがありません。');
 
     const results = [];

@@ -1,52 +1,6 @@
 const { requireAppAuth, sendJson } = require('./_auth');
+const { readJsonBody, getLineToken, assertLineApi } = require('./_line');
 const MAX_IMAGE_BYTES = 1024 * 1024;
-
-
-function readJsonBody(req) {
-  return new Promise((resolve, reject) => {
-    if (req.body && typeof req.body === 'object') return resolve(req.body);
-    let raw = '';
-    req.on('data', chunk => {
-      raw += chunk;
-      if (raw.length > 6 * 1024 * 1024) {
-        reject(new Error('送信データが大きすぎます。画像を軽くしてください。'));
-        req.destroy();
-      }
-    });
-    req.on('end', () => {
-      try {
-        resolve(raw ? JSON.parse(raw) : {});
-      } catch (error) {
-        reject(new Error('JSONの読み込みに失敗しました。'));
-      }
-    });
-    req.on('error', reject);
-  });
-}
-
-function getToken(req) {
-  const fromHeader = String(req.headers['x-line-token'] || '').trim();
-  const token = fromHeader || process.env.LINE_CHANNEL_ACCESS_TOKEN;
-  if (!token) throw new Error('チャネルアクセストークンがありません。画面のAPIタブに入力するか、Vercelの環境変数 LINE_CHANNEL_ACCESS_TOKEN に設定してください。');
-  return token;
-}
-
-async function lineApi(path, method, body, token) {
-  const headers = { Authorization: `Bearer ${token}` };
-  const options = { method, headers };
-  if (body !== undefined) {
-    headers['Content-Type'] = 'application/json';
-    options.body = JSON.stringify(body);
-  }
-  const response = await fetch(`https://api.line.me${path}`, options);
-  const text = await response.text();
-  let data;
-  try { data = text ? JSON.parse(text) : {}; } catch (_) { data = { message: text }; }
-  if (!response.ok) {
-    throw new Error(data.message || text || `LINE API error: ${response.status}`);
-  }
-  return data;
-}
 
 async function uploadRichMenuImage(richMenuId, imageBuffer, contentType, token) {
   const response = await fetch(`https://api-data.line.me/v2/bot/richmenu/${encodeURIComponent(richMenuId)}/content`, {
@@ -98,44 +52,34 @@ module.exports = async function handler(req, res) {
 
   let createdRichMenuId = '';
   try {
-    const body = await readJsonBody(req);
-    const token = getToken(req);
+    const body = await readJsonBody(req, 6 * 1024 * 1024);
+    const token = getLineToken(req);
     const { richMenu, imageDataUrl, alias = '', oldRichMenuId = '' } = body;
 
     validateRichMenu(richMenu);
     const image = parseImageDataUrl(imageDataUrl);
 
-    const created = await lineApi('/v2/bot/richmenu', 'POST', richMenu, token);
+    const created = await assertLineApi('/v2/bot/richmenu', 'POST', token, richMenu);
     createdRichMenuId = created.richMenuId;
 
     await uploadRichMenuImage(createdRichMenuId, image.buffer, image.contentType, token);
 
     if (alias) {
-      try {
-        await lineApi(`/v2/bot/richmenu/alias/${encodeURIComponent(alias)}`, 'DELETE', undefined, token);
-      } catch (_) {}
-      await lineApi('/v2/bot/richmenu/alias', 'POST', {
-        richMenuAliasId: alias,
-        richMenuId: createdRichMenuId,
-      }, token);
+      try { await assertLineApi(`/v2/bot/richmenu/alias/${encodeURIComponent(alias)}`, 'DELETE', token); }
+      catch (_) {}
+      await assertLineApi('/v2/bot/richmenu/alias', 'POST', token, { richMenuAliasId: alias, richMenuId: createdRichMenuId });
     }
 
     if (oldRichMenuId && oldRichMenuId !== createdRichMenuId) {
-      try {
-        await lineApi(`/v2/bot/richmenu/${encodeURIComponent(oldRichMenuId)}`, 'DELETE', undefined, token);
-      } catch (_) {}
+      try { await assertLineApi(`/v2/bot/richmenu/${encodeURIComponent(oldRichMenuId)}`, 'DELETE', token); }
+      catch (_) {}
     }
 
-    return sendJson(res, 200, {
-      ok: true,
-      richMenuId: createdRichMenuId,
-      alias: alias || null,
-    });
+    return sendJson(res, 200, { ok: true, richMenuId: createdRichMenuId, alias: alias || null });
   } catch (error) {
     if (createdRichMenuId) {
-      try {
-        await lineApi(`/v2/bot/richmenu/${encodeURIComponent(createdRichMenuId)}`, 'DELETE', undefined, getToken(req));
-      } catch (_) {}
+      try { await assertLineApi(`/v2/bot/richmenu/${encodeURIComponent(createdRichMenuId)}`, 'DELETE', getLineToken(req)); }
+      catch (_) {}
     }
     return sendJson(res, 500, { ok: false, error: error.message || 'アップロードに失敗しました。' });
   }
