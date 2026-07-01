@@ -4190,18 +4190,51 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
           '<li>Apps Script URLを変更すると保存先が変わります。別の保存先に切り替える時は、URLが正しいか接続テストで確認してください。</li>'+
           '<li>Googleアカウント側のスプレッドシートやDrive内の保存ファイルを削除すると、アプリから読み込めなくなります。</li>'+
         '</ol></div></details>'+ 
-        '<details class="usage-accordion"><summary>⑩ Apps Script設定手順</summary><div class="usage-section-body"><ol>'+
-          '<li>管理カードの「保存管理（クライアント管理）を開く」を開き、クラウド保存の中にある「Apps Script用コードを開く」を押します。</li>'+
-          '<li>「コードをコピー」を押して、Apps Script用コードをコピーします。</li>'+
-          '<li><a href="https://script.google.com/" target="_blank" rel="noopener">Google Apps Script</a>で新しいプロジェクトを作成します。</li>'+
-          '<li>最初から入っているコードをすべて削除し、コピーしたコードを貼り付けて保存します。</li>'+
-          '<li>右上の「デプロイ」から「新しいデプロイ」を選び、種類は「ウェブアプリ」を選択します。</li>'+
-          '<li>「次のユーザーとして実行」は自分、「アクセスできるユーザー」は全員に設定してデプロイします。</li>'+
-          '<li>初回はGoogleの権限確認が出るため、内容を確認して許可します。</li>'+
-          '<li>発行されたウェブアプリURLをコピーし、リッチメニュープラスの「Apps Script URL」欄に貼り付けます。</li>'+
-          '<li>接続テストでOKが出たら設定完了です。Apps Script URLはお手軽保存・バックアップ保存・クラウド保存データにも保存されます。</li>'+
-          '<li>URLを変更すると保存先が変わるため、変更後は必ず接続テストを行ってください。</li>'+
-        '</ol></div></details>'+ 
+        '<details class="usage-accordion"><summary>⑩ Apps Script設定手順</summary><div class="usage-section-body">'+
+          '<p><strong>最初に1回だけ行う設定です。</strong><br>この設定をすると、画像込みプロジェクトをGoogle Driveへ保存し、保存一覧をGoogleスプレッドシートで管理できるようになります。</p>'+
+          '<ol>'+
+            '<li>リッチメニュープラス右側の「保存管理（クライアント管理）を開く」を開きます。</li>'+
+            '<li>「クラウド保存（Googleスプレッドシート）」を開きます。</li>'+
+            '<li>「Apps Script用コードを開く」を押します。</li>'+
+            '<li>「コードをコピー」を押して、表示されたコードをコピーします。</li>'+
+            '<li><a href="https://script.google.com/" target="_blank" rel="noopener">Google Apps Script</a>を開きます。</li>'+
+            '<li>「新しいプロジェクト」を押します。</li>'+
+            '<li>プロジェクト名を「リッチメニュープラス_クラウド保存」など、分かりやすい名前に変更します。</li>'+
+            '<li>最初から入っている <code>function myFunction()</code> などのコードをすべて削除します。</li>'+
+            '<li>先ほどコピーしたApps Script用コードを貼り付けます。</li>'+
+            '<li>上部の保存アイコン、または <code>Ctrl + S</code> で保存します。</li>'+
+            '<li>右上の「デプロイ」→「新しいデプロイ」を押します。</li>'+
+            '<li>種類の選択で歯車アイコン、または「種類を選択」から「ウェブアプリ」を選びます。</li>'+
+            '<li>説明欄には「リッチメニュープラス クラウド保存」などを入力します。</li>'+
+            '<li>「次のユーザーとして実行」は「自分」を選びます。これにより、保存用のスプレッドシートとDriveフォルダが自分のGoogleアカウント内に作成されます。</li>'+
+            '<li>「アクセスできるユーザー」は「全員」を選びます。リッチメニュープラスから呼び出すため、この設定が必要です。</li>'+
+            '<li>「デプロイ」を押します。</li>'+
+            '<li>初回はGoogleの承認画面が出ます。「アクセスを承認」を押します。</li>'+
+            '<li>「このアプリはGoogleで確認されていません」と表示された場合は、「詳細」→「プロジェクト名に移動」を押し、内容を確認して許可します。</li>'+
+            '<li>承認後に表示される「ウェブアプリURL」をコピーします。URLの末尾は通常 <code>/exec</code> です。</li>'+
+            '<li>リッチメニュープラスに戻り、「Apps Script URL」欄にコピーしたURLを貼り付けます。</li>'+
+            '<li>「接続テスト」を押します。</li>'+
+            '<li>「接続OK」と表示されたら設定完了です。この時点で、Google Driveに <code>RichMenuPlus_CloudData</code> フォルダ、Googleスプレッドシートに <code>リッチメニュープラス_クラウド保存</code> が作成されます。</li>'+
+            '<li>クライアント名と保存ファイル名を入力し、「クラウドに保存」を押すと、画像込みプロジェクトがGoogle Driveに保存されます。</li>'+
+            '<li>次回以降は「クラウド保存一覧を更新」→保存データを選択→「クラウドから読み込み」で復元できます。</li>'+
+          '</ol>'+
+          '<p><strong>2回目以降の使い方</strong></p>'+
+          '<ol>'+
+            '<li>リッチメニュープラスを開きます。</li>'+
+            '<li>保存管理のクラウド保存を開きます。</li>'+
+            '<li>Apps Script URLが入っていることを確認します。</li>'+
+            '<li>「クラウド保存一覧を更新」を押します。</li>'+
+            '<li>読み込みたいクライアント・保存データを選び、「クラウドから読み込み」を押します。</li>'+
+          '</ol>'+
+          '<p><strong>うまく接続できない時</strong></p>'+
+          '<ul>'+
+            '<li>Apps Script URLが <code>/exec</code> で終わっているか確認してください。<code>/dev</code> のURLではなく、デプロイ後のウェブアプリURLを使います。</li>'+
+            '<li>デプロイ設定の「次のユーザーとして実行」が「自分」になっているか確認してください。</li>'+
+            '<li>「アクセスできるユーザー」が「全員」になっているか確認してください。</li>'+
+            '<li>コードを修正した場合は、Apps Scriptの「デプロイを管理」から新しいバージョンとして再デプロイしてください。</li>'+
+            '<li>保存先のスプレッドシートやDriveフォルダを削除した場合は、接続テストを押すと再作成されます。</li>'+
+          '</ul>'+
+        '</div></details>'+ 
       '</div>';
     guide.appendChild(backdrop);
     guide.appendChild(panel);
