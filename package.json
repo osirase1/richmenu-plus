@@ -1,13 +1,14 @@
 {
-  "name": "richmenu-plus-master",
-  "version": "3.1.1-master",
+  "name": "richmenu-plus-master-cloud",
+  "version": "3.3.0-master-cloud",
   "private": true,
-  "description": "Master version of Rich Menu Plus for owner use with LINE API proxy and no app password screen.",
+  "description": "Master version of Rich Menu Plus with LINE API proxy and Apps Script cloud save for image-included projects.",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
     "check": "node --check api/*.js",
+    "check:cloud": "node --check apps-script/cloud-save.js",
     "start": "vercel dev"
   }
 }
