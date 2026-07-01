@@ -5024,5 +5024,153 @@ function loadProject(req) {
 </script>
 <!-- MASTER_SAVE_ONLY_PATCH_END -->
 
+
+
+<!-- LOCAL_SAVE_RECOVERY_PATCH_START -->
+<style id="localSaveRecoveryPatchStyle">
+  .local-recovery-box{margin-top:10px;border:1px dashed var(--line);border-radius:8px;background:#fff;overflow:hidden;}
+  .local-recovery-box>summary{padding:9px 10px;cursor:pointer;font-size:12px;font-weight:900;color:#374151;list-style:none;background:#fffdf7;}
+  .local-recovery-box>summary::-webkit-details-marker{display:none;}
+  .local-recovery-box>summary::before{content:'▶ ';color:#b45309;}
+  .local-recovery-box[open]>summary::before{content:'▼ ';}
+  .local-recovery-body{display:grid;gap:8px;padding:0 10px 10px;}
+  .local-recovery-note{font-size:12px;line-height:1.55;color:#374151;background:#fffbeb;border-left:4px solid #f59e0b;border-radius:7px;padding:8px;}
+  .local-recovery-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .local-recovery-actions button,.local-recovery-item button{min-height:32px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:12px;font-weight:900;cursor:pointer;}
+  .local-recovery-actions .primary,.local-recovery-item .primary{background:var(--brand);border-color:var(--brand);color:#fff;}
+  .local-recovery-list{display:grid;gap:7px;max-height:220px;overflow:auto;}
+  .local-recovery-item{border:1px solid var(--line-soft);border-radius:8px;background:#f8fafc;padding:8px;display:grid;gap:7px;}
+  .local-recovery-title{font-size:12px;font-weight:900;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .local-recovery-meta{font-size:11px;font-weight:800;color:#64748b;line-height:1.45;}
+  .local-recovery-buttons{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+  @media(max-width:760px){.local-recovery-actions,.local-recovery-buttons{grid-template-columns:1fr;}}
+</style>
+<script id="localSaveRecoveryPatchScript">
+(function(){
+  'use strict';
+  var LOCAL_PROJECT_KEY='richmenu_plus_project_autosave_v1';
+  var LOCAL_PROJECT_CLIENT_INDEX_KEY='richmenu_plus_project_autosave_client_index_v1';
+  function byId(id){return document.getElementById(id)}
+  function toast(msg,type){if(typeof showToast==='function')showToast(msg,type||'');else alert(msg)}
+  function parseJson(raw){try{return raw?JSON.parse(raw):null}catch(e){return null}}
+  function fmt(iso){
+    if(!iso)return '保存日時不明';
+    var d=new Date(iso);if(isNaN(d.getTime()))return '保存日時不明';
+    return d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
+  function decodeClientKeyName(key){
+    var prefix=LOCAL_PROJECT_KEY+'::client::';
+    if(String(key||'').indexOf(prefix)!==0)return '';
+    try{return decodeURIComponent(String(key).slice(prefix.length))}catch(e){return String(key).slice(prefix.length)}
+  }
+  function projectLooksValid(data){return data && data.app==='richmenu-plus' && Array.isArray(data.menus) && data.menus.length}
+  function collectLocalSaves(){
+    var found=[];var seen={};
+    function add(key,name,source){
+      if(!key||seen[key])return;seen[key]=true;
+      var raw='';try{raw=localStorage.getItem(key)||''}catch(e){}
+      var data=parseJson(raw);if(!projectLooksValid(data))return;
+      found.push({key:key,name:name||data.clientProjectName||data.projectName||decodeClientKeyName(key)||'ブラウザ保存データ',savedAt:data.savedAt||'',menus:Array.isArray(data.menus)?data.menus.length:0,images:Array.isArray(data.menus)?data.menus.filter(function(m){return m&&m.bgImageData}).length:0,source:source||'scan'});
+    }
+    try{
+      var pointer=parseJson(localStorage.getItem(LOCAL_PROJECT_KEY)||'');
+      if(pointer&&pointer.app==='richmenu-plus-autosave-pointer'&&pointer.key)add(pointer.key,pointer.name||'', '現在の保存先');
+      else if(projectLooksValid(pointer)){
+        found.push({key:LOCAL_PROJECT_KEY,name:pointer.clientProjectName||pointer.projectName||'旧お手軽保存',savedAt:pointer.savedAt||'',menus:pointer.menus.length,images:pointer.menus.filter(function(m){return m&&m.bgImageData}).length,source:'旧形式'});
+        seen[LOCAL_PROJECT_KEY]=true;
+      }
+    }catch(e){}
+    try{
+      var idx=parseJson(localStorage.getItem(LOCAL_PROJECT_CLIENT_INDEX_KEY)||'[]');
+      if(Array.isArray(idx))idx.forEach(function(item){if(item&&item.key)add(item.key,item.name||'', '保存管理一覧')});
+    }catch(e){}
+    try{
+      for(var i=0;i<localStorage.length;i++){
+        var key=localStorage.key(i)||'';
+        if(key.indexOf(LOCAL_PROJECT_KEY+'::client::')===0)add(key,decodeClientKeyName(key),'ブラウザ内検索');
+      }
+    }catch(e){}
+    found.sort(function(a,b){return String(b.savedAt||'').localeCompare(String(a.savedAt||''))});
+    return found;
+  }
+  function loadLocalSave(key){
+    var raw='';try{raw=localStorage.getItem(key)||''}catch(e){}
+    var data=parseJson(raw);
+    if(!projectLooksValid(data)){toast('復旧できる保存データが見つかりません','error');return false;}
+    if(typeof loadClientProjectFromStorage==='function' && key.indexOf(LOCAL_PROJECT_KEY+'::client::')===0){
+      return loadClientProjectFromStorage(key);
+    }
+    if(typeof loadProjectData!=='function'){toast('読み込み処理が見つかりません','error');return false;}
+    if(!confirm('現在の画面を、選択したブラウザ保存データで置き換えますか？'))return false;
+    loadProjectData(data);
+    if(typeof renderMenuTabs==='function')renderMenuTabs();
+    if(typeof loadCurrentMenu==='function')loadCurrentMenu();
+    if(typeof renderAreaList==='function')renderAreaList();
+    if(typeof renderUserList==='function')renderUserList();
+    if(typeof updateUploadBadge==='function')updateUploadBadge();
+    if(typeof render==='function')render();
+    setTimeout(function(){if(typeof fitZoom==='function')fitZoom();},100);
+    toast('ブラウザ保存から復旧しました','success');
+    return true;
+  }
+  function migrateLocalSave(key){
+    if(!loadLocalSave(key))return;
+    setTimeout(function(){
+      var urlInput=byId('cloudSaveEndpointInput');
+      if(!urlInput||!urlInput.value.trim()){toast('Apps Script URLを設定してからクラウド保存してください','error');return;}
+      var btn=byId('btnCloudSave');
+      if(btn){btn.click();toast('クラウド保存を開始しました','success');}
+      else toast('クラウド保存ボタンが見つかりません','error');
+    },700);
+  }
+  function renderList(){
+    var list=byId('localRecoveryList');if(!list)return;
+    var saves=collectLocalSaves();
+    if(!saves.length){
+      list.innerHTML='<div class="local-recovery-note">このURLのブラウザ内には、復旧できる保存データが見つかりませんでした。昨日と違うVercelのURLを開いている場合は、昨日使ったURLで開くか、保存済みのプロジェクトJSONを読み込んでください。</div>';
+      return;
+    }
+    list.innerHTML=saves.map(function(item,idx){
+      return '<div class="local-recovery-item" data-key="'+String(item.key).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">'+
+        '<div class="local-recovery-title">'+String(item.name||'ブラウザ保存データ').replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div>'+ 
+        '<div class="local-recovery-meta">'+fmt(item.savedAt)+'｜メニュー '+item.menus+'件｜画像 '+item.images+'件｜'+item.source+'</div>'+ 
+        '<div class="local-recovery-buttons"><button type="button" class="primary" data-act="open" data-i="'+idx+'">開く</button><button type="button" data-act="cloud" data-i="'+idx+'">クラウドへ移行</button></div>'+ 
+      '</div>';
+    }).join('');
+    list.querySelectorAll('button[data-act]').forEach(function(btn){
+      btn.addEventListener('click',function(e){
+        e.preventDefault();e.stopPropagation();
+        var item=saves[parseInt(btn.getAttribute('data-i'),10)];if(!item)return;
+        if(btn.getAttribute('data-act')==='open')loadLocalSave(item.key);
+        else migrateLocalSave(item.key);
+      });
+    });
+  }
+  function ensureUi(){
+    var cloudBody=document.querySelector('#cloudSaveDetails .cloud-save-body')||document.querySelector('#projectClientMenuPanel .client-manager-body')||document.querySelector('.project-meta-card .project-meta-grid');
+    if(!cloudBody||byId('localSaveRecoveryBox'))return;
+    var details=document.createElement('details');
+    details.id='localSaveRecoveryBox';
+    details.className='local-recovery-box';
+    details.innerHTML='<summary>🛟 昨日のお手軽保存を復旧・クラウド移行</summary>'+ 
+      '<div class="local-recovery-body">'+
+        '<div class="local-recovery-note">クラウド保存を追加しても、昨日のお手軽保存は自動ではクラウドに移りません。ここから同じURL内のブラウザ保存を開くか、クラウドへ移行できます。</div>'+ 
+        '<div class="local-recovery-actions"><button type="button" id="btnLocalRecoveryRefresh" class="primary">保存データを探す</button><button type="button" id="btnLocalRecoveryOpenLatest">最新を開く</button></div>'+ 
+        '<div id="localRecoveryList" class="local-recovery-list"></div>'+ 
+      '</div>';
+    cloudBody.appendChild(details);
+    var refresh=byId('btnLocalRecoveryRefresh');if(refresh)refresh.addEventListener('click',function(e){e.preventDefault();renderList();});
+    var latest=byId('btnLocalRecoveryOpenLatest');if(latest)latest.addEventListener('click',function(e){e.preventDefault();var saves=collectLocalSaves();if(!saves.length){renderList();return;}loadLocalSave(saves[0].key);});
+    details.addEventListener('toggle',function(){if(details.open)renderList();});
+    renderList();
+  }
+  function run(){ensureUi();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true}); else run();
+  window.addEventListener('load',run,{once:true,passive:true});
+  [300,800,1500,3000].forEach(function(ms){setTimeout(run,ms);});
+})();
+</script>
+<!-- LOCAL_SAVE_RECOVERY_PATCH_END -->
+
 </body>
 </html>
