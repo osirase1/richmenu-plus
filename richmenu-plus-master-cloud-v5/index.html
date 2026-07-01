@@ -1693,7 +1693,7 @@ function projectData(options={}){
   const imageCount=externalImages?externalImageList.length:exportedMenus.filter(m=>!!m.bgImageData).length;
   return {
     app:'richmenu-plus',
-    version:'3.2-cloud',
+    version:'3.2-cloud-v5.1',
     exportType:saveKind==='backup'?'project-backup':'project',
     backupSaveMode:saveKind==='backup'?(externalImages?'json-plus-png':'full-with-images'):'',
     browserSaveMode:includeImages?'full':'compact-no-images',
@@ -4232,7 +4232,7 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
           '<li>Apps Script用コードをコピーし、Google Apps Scriptに貼り付けてWebアプリとして公開します。</li>'+
           '<li>公開後に発行されたApps Script URLを、クラウド保存のURL欄へ貼り付けます。</li>'+
           '<li>最初に接続テストを行い、接続OKになってからクラウドに保存してください。</li>'+
-          '<li>「保存先シートを開く」を押すと、Apps Scriptで作成された保存先スプレッドシートを直接開けます。</li>'+
+          '<li>クラウド保存欄は初期状態で開いたまま表示されます。上部の「📊 保存先スプレッドシートを開く」ボタンから、保存先スプレッドシートを直接開けます。</li>'+
           '<li>クラウドに保存すると、クライアント名・保存ファイル名・メニュー情報・画像・チャネルアクセストークンを含む作業データを保存できます。</li>'+
           '<li>クラウドから読み込む時は、現在の編集中データが置き換わるため、必要に応じて先にお手軽保存またはバックアップ保存を行ってください。</li>'+
           '<li>Apps Script URLを変更すると保存先が変わります。別の保存先に切り替える時は、URLが正しいか接続テストで確認してください。</li>'+
@@ -4825,7 +4825,8 @@ function loadProject(req) {
     details=document.createElement('details');
     details.id='cloudSaveDetails';
     details.className='cloud-save-details';
-    details.innerHTML='<summary>☁ クラウド保存（Googleスプレッドシート）</summary>'+
+    details.open=true;
+    details.innerHTML='<summary>☁ クラウド保存（Apps Script・Googleスプレッドシート）</summary>'+
       '<div class="cloud-save-body">'+
         '<div class="cloud-save-note">Apps ScriptのWebアプリURLを設定すると、クライアント別データをクラウドに保存できます。ブラウザ保存はそのまま残り、クライアント数が増えた時の管理用として使えます。</div>'+
         '<div class="cloud-save-grid">'+
@@ -4833,11 +4834,11 @@ function loadProject(req) {
           '<div class="cloud-save-field"><label for="cloudProjectSelect">クラウド保存データ</label><select id="cloudProjectSelect"><option value="">クラウド保存データを選択</option></select></div>'+
         '</div>'+
         '<div class="cloud-save-actions">'+
+          '<button type="button" id="btnCloudOpenSheet" class="cloud-primary">📊 保存先スプレッドシートを開く</button>'+
           '<button type="button" id="btnCloudSaveTest">接続テスト</button>'+
           '<button type="button" id="btnCloudSave" class="cloud-primary">クラウドに保存</button>'+
           '<button type="button" id="btnCloudLoad">クラウドから読み込み</button>'+
           '<button type="button" id="btnCloudList">一覧取得</button>'+
-          '<button type="button" id="btnCloudOpenSheet">保存先シートを開く</button>'+
         '</div>'+
         '<div class="cloud-save-status" id="cloudSaveStatus"></div>'+
         '<details class="cloud-script-details"><summary>Apps Script用コードを開く</summary><div class="cloud-script-inner">'+
