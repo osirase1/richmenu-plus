@@ -1,6 +1,6 @@
 {
   "name": "richmenu-plus-master-cloud",
-  "version": "3.4.0-master-cloud",
+  "version": "3.4.1-master-cloud",
   "private": true,
   "description": "Master version of Rich Menu Plus with LINE API proxy and Apps Script cloud save for image-included projects.",
   "engines": {

@@ -4411,6 +4411,9 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
   .cloud-save-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0;}
   .cloud-save-actions button{width:100%;min-width:0;height:34px;border:1px solid var(--line);border-radius:7px;background:#fff;color:#111827;font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .cloud-save-actions .cloud-primary{background:var(--brand);border-color:var(--brand);color:#fff;}
+
+  .cloud-sheet-open-row{grid-template-columns:1fr!important;margin-top:2px;}
+  .cloud-sheet-open-row button{height:38px!important;font-size:13px!important;}
   .cloud-save-actions .cloud-danger{border-color:#f2b8bf;color:var(--danger);}
   .cloud-save-status{display:none;padding:8px 9px;border-left:4px solid var(--brand);border-radius:7px;background:#f8fafc;color:#334155;font-size:12px;font-weight:800;line-height:1.5;}
   .cloud-save-status.show{display:block;}
@@ -4806,6 +4809,27 @@ function loadProject(req) {
       setStatus('コピーできない場合は、コード欄を選択してコピーしてください。','error');
     }
   }
+  function bindCloudOpenSheetButtons(){
+    const top=$('btnCloudOpenSheetTop');
+    if(top && !top.dataset.bound){top.dataset.bound='1';top.addEventListener('click',cloudOpenSpreadsheet);}
+    const old=$('btnCloudOpenSheet');
+    if(old && !old.dataset.bound){old.dataset.bound='1';old.addEventListener('click',cloudOpenSpreadsheet);}
+  }
+  function ensureVisibleOpenSheetButton(){
+    const body=qs('#cloudSaveDetails .cloud-save-body');
+    if(!body)return;
+    let row=$('cloudOpenSheetTopRow');
+    if(!row){
+      row=document.createElement('div');
+      row.id='cloudOpenSheetTopRow';
+      row.className='cloud-save-actions cloud-sheet-open-row';
+      row.innerHTML='<button type="button" id="btnCloudOpenSheetTop" class="cloud-primary">📊 保存先スプレッドシートを開く</button>';
+      const note=body.querySelector('.cloud-save-note');
+      if(note && note.nextSibling)body.insertBefore(row,note.nextSibling);
+      else body.insertBefore(row,body.firstChild);
+    }
+    bindCloudOpenSheetButtons();
+  }
   function ensureCloudSaveUi(){
     const body=qs('#projectClientMenuPanel .client-manager-body');
     const metaGrid=qs('.project-meta-card .project-meta-grid');
@@ -4820,6 +4844,7 @@ function loadProject(req) {
       }else if(!body && metaGrid && details.parentElement!==metaGrid){
         metaGrid.appendChild(details);
       }
+      ensureVisibleOpenSheetButton();
       return;
     }
     details=document.createElement('details');
@@ -4829,6 +4854,7 @@ function loadProject(req) {
     details.innerHTML='<summary>☁ クラウド保存（Apps Script・Googleスプレッドシート）</summary>'+
       '<div class="cloud-save-body">'+
         '<div class="cloud-save-note">Apps ScriptのWebアプリURLを設定すると、クライアント別データをクラウドに保存できます。ブラウザ保存はそのまま残り、クライアント数が増えた時の管理用として使えます。</div>'+
+        '<div class="cloud-save-actions cloud-sheet-open-row" id="cloudOpenSheetTopRow"><button type="button" id="btnCloudOpenSheetTop" class="cloud-primary">📊 保存先スプレッドシートを開く</button></div>'+
         '<div class="cloud-save-grid">'+
           '<div class="cloud-save-field"><label for="cloudSaveEndpointInput">Apps Script URL</label><input type="url" id="cloudSaveEndpointInput" placeholder="https://script.google.com/macros/s/xxxxx/exec"></div>'+
           '<div class="cloud-save-field"><label for="cloudProjectSelect">クラウド保存データ</label><select id="cloudProjectSelect"><option value="">クラウド保存データを選択</option></select></div>'+
@@ -4872,7 +4898,8 @@ function loadProject(req) {
     const save=$('btnCloudSave'); if(save)save.addEventListener('click',cloudSave);
     const load=$('btnCloudLoad'); if(load)load.addEventListener('click',cloudLoad);
     const list=$('btnCloudList'); if(list)list.addEventListener('click',()=>cloudList(true));
-    const openSheet=$('btnCloudOpenSheet'); if(openSheet)openSheet.addEventListener('click',cloudOpenSpreadsheet);
+    bindCloudOpenSheetButtons();
+    ensureVisibleOpenSheetButton();
     const copy=$('btnCopyCloudScript'); if(copy)copy.addEventListener('click',copyScriptCode);
   }
   function start(){ensureCloudSaveUi();setTimeout(ensureCloudSaveUi,150);setTimeout(ensureCloudSaveUi,600);}
