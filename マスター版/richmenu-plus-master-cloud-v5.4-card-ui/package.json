@@ -1,0 +1,13 @@
+{
+  "name": "richmenu-plus-master-cloud",
+  "version": "3.4.2-master-cloud",
+  "private": true,
+  "description": "Master version of Rich Menu Plus with LINE API proxy and Apps Script cloud save for image-included projects.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "check": "node --check api/*.js",
+    "start": "vercel dev"
+  }
+}
