@@ -4519,6 +4519,12 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
 
   .cloud-sheet-open-row{grid-template-columns:1fr!important;margin-top:2px;}
   .cloud-sheet-open-row button{height:38px!important;font-size:13px!important;}
+  .cloud-sheet-direct-row{display:none;grid-template-columns:1fr;gap:8px;padding:9px;border:1px solid #bfdbfe;border-radius:8px;background:#eff6ff;}
+  .cloud-sheet-direct-row.show{display:grid;}
+  .cloud-sheet-direct-row a,.cloud-sheet-direct-row button{display:flex;align-items:center;justify-content:center;min-height:36px;border-radius:7px;font-size:12px;font-weight:900;text-decoration:none;}
+  .cloud-sheet-direct-row a{background:#2563eb;color:#fff;border:1px solid #2563eb;}
+  .cloud-sheet-direct-row button{background:#fff;color:#1e3a8a;border:1px solid #bfdbfe;cursor:pointer;}
+  .cloud-sheet-direct-help{font-size:11px;font-weight:800;line-height:1.55;color:#1e3a8a;}
   .cloud-save-actions .cloud-danger{border-color:#f2b8bf;color:var(--danger);}
   .cloud-save-status{display:none;padding:8px 9px;border-left:4px solid var(--brand);border-radius:7px;background:#f8fafc;color:#334155;font-size:12px;font-weight:800;line-height:1.5;}
   .cloud-save-status.show{display:block;}
@@ -4878,18 +4884,42 @@ function loadProject(req) {
       toast('クラウドから読み込みました','success');
     }catch(e){setStatus('読み込み失敗：'+e.message,'error');}
   }
+  function showSpreadsheetDirectLink(sheetUrl,message){
+    if(!sheetUrl)return;
+    try{localStorage.setItem(SPREADSHEET_URL_KEY,sheetUrl);}catch(_){ }
+    ensureCloudSheetDirectRow();
+    bindCloudSheetDirectControls();
+    const row=$('cloudSheetDirectRow');
+    const link=$('cloudSheetDirectLink');
+    if(link){
+      link.href=sheetUrl;
+      link.textContent='📊 スプレッドシートを開く';
+    }
+    if(row){
+      row.classList.add('show');
+      row.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+    if(message)setStatus(message);
+  }
+  async function copySpreadsheetUrl(){
+    const link=$('cloudSheetDirectLink');
+    const url=(link&&link.href&&link.href!=='#')?link.href:(localStorage.getItem(SPREADSHEET_URL_KEY)||'');
+    if(!url){setStatus('コピーできるスプレッドシートURLがまだありません。先に「保存先スプレッドシートを開く」を押してください。','error');return;}
+    try{
+      await navigator.clipboard.writeText(url);
+      toast('スプレッドシートURLをコピーしました','success');
+      setStatus('スプレッドシートURLをコピーしました。');
+    }catch(e){
+      setStatus('コピーできませんでした。表示されたリンクを右クリックしてURLをコピーしてください。','error');
+    }
+  }
   async function cloudOpenSpreadsheet(){
     const url=requireEndpoint(); if(!url)return;
     const cached=localStorage.getItem(SPREADSHEET_URL_KEY)||'';
-    // すでにURLが分かっている場合は、ユーザー操作の瞬間に直接開きます。
-    // これでブラウザのポップアップ制限を避けられます。
-    let opened=null;
     if(cached){
-      opened=window.open(cached,'_blank','noopener');
-      setStatus('保存済みのURLでスプレッドシートを開きました。最新URLを確認中...');
+      showSpreadsheetDirectLink(cached,'保存済みのスプレッドシートURLを表示しました。青いリンクをクリックして開いてください。最新URLも確認中です。');
     }else{
-      opened=window.open('about:blank','_blank');
-      setStatus('保存先スプレッドシートを取得中...');
+      setStatus('保存先スプレッドシートURLを取得中...');
     }
     try{
       let result;
@@ -4897,24 +4927,19 @@ function loadProject(req) {
       if(!result.ok)throw new Error(result.message||'保存先スプレッドシートを取得できませんでした。');
       const sheetUrl=rememberSpreadsheetUrl(result);
       if(!sheetUrl)throw new Error('スプレッドシートURLが返ってきませんでした。Apps Scriptコードを最新版に更新してください。');
-      if(!cached){
-        if(opened){try{opened.opener=null;}catch(_){} opened.location.href=sheetUrl;}
-        else window.open(sheetUrl,'_blank','noopener');
-      }
-      setStatus('保存先スプレッドシートを開きました。');
-      toast('保存先スプレッドシートを開きました','success');
+      showSpreadsheetDirectLink(sheetUrl,'保存先スプレッドシートURLを表示しました。青いリンクをクリックして開いてください。');
+      toast('保存先スプレッドシートURLを取得しました','success');
     }catch(e){
-      if(!cached&&opened)opened.close();
       if(cached){
-        setStatus('保存済みURLで開いています。最新URL確認は失敗しました：'+e.message);
+        showSpreadsheetDirectLink(cached,'最新URL確認は失敗しましたが、保存済みURLを表示しています：'+e.message);
         return;
       }
       const box=$('cloudSaveStatus');
       if(box){
-        box.innerHTML='スプレッドシートを開けませんでした：'+escapeText(e.message)+'<br>接続テストを押してから、もう一度「シートを開く」を押してください。';
+        box.innerHTML='スプレッドシートURLを取得できませんでした：'+escapeText(e.message)+'<br>接続テストを押してから、もう一度「シートを開く」を押してください。';
         box.classList.add('show','error');
       }else{
-        setStatus('スプレッドシートを開けませんでした：'+e.message,'error');
+        setStatus('スプレッドシートURLを取得できませんでした：'+e.message,'error');
       }
     }
   }
@@ -4959,6 +4984,29 @@ function loadProject(req) {
     if(grid && row.nextElementSibling!==grid)body.insertBefore(row,grid);
     else if(!row.parentElement)body.insertBefore(row,body.firstChild);
     bindCloudOpenSheetButtons();
+    ensureCloudSheetDirectRow();
+    bindCloudSheetDirectControls();
+  }
+  function ensureCloudSheetDirectRow(){
+    const body=qs('#cloudSaveDetails .cloud-save-body');
+    if(!body)return;
+    let row=$('cloudSheetDirectRow');
+    if(!row){
+      row=document.createElement('div');
+      row.id='cloudSheetDirectRow';
+      row.className='cloud-sheet-direct-row';
+      row.innerHTML='<a id="cloudSheetDirectLink" href="#" target="_blank" rel="noopener">📊 スプレッドシートを開く</a><button type="button" id="btnCopyCloudSheetUrl">URLをコピー</button><div class="cloud-sheet-direct-help">新しいタブがすぐ閉じる場合の対策として、取得したURLをここに表示します。この青いリンクを直接クリックしてください。</div>';
+    }
+    const openRow=$('cloudOpenSheetTopRow');
+    if(openRow&&openRow.parentElement===body&&row.previousElementSibling!==openRow){
+      body.insertBefore(row,openRow.nextSibling);
+    }else if(!row.parentElement){
+      body.insertBefore(row,body.firstChild);
+    }
+  }
+  function bindCloudSheetDirectControls(){
+    const btn=$('btnCopyCloudSheetUrl');
+    if(btn&&!btn.dataset.bound){btn.dataset.bound='1';btn.addEventListener('click',copySpreadsheetUrl);}
   }
   function ensureCloudSaveUi(){
     const body=qs('#projectClientMenuPanel .client-manager-body');
@@ -4990,6 +5038,7 @@ function loadProject(req) {
       '<div class="cloud-save-body">'+
         '<div class="cloud-save-note">Apps ScriptのWebアプリURLを設定すると、クライアント別データをクラウドに保存できます。ブラウザ保存はそのまま残り、クライアント数が増えた時の管理用として使えます。</div>'+
         '<div class="cloud-save-actions cloud-sheet-open-row" id="cloudOpenSheetTopRow"><button type="button" id="btnCloudOpenSheetTop" class="cloud-primary">📊 保存先スプレッドシートを開く</button></div>'+
+        '<div class="cloud-sheet-direct-row" id="cloudSheetDirectRow"><a id="cloudSheetDirectLink" href="#" target="_blank" rel="noopener">📊 スプレッドシートを開く</a><button type="button" id="btnCopyCloudSheetUrl">URLをコピー</button><div class="cloud-sheet-direct-help">新しいタブがすぐ閉じる場合の対策として、取得したURLをここに表示します。この青いリンクを直接クリックしてください。</div></div>'+
         '<div class="cloud-save-grid">'+
           '<div class="cloud-save-field"><label for="cloudSaveEndpointInput">Apps Script URL</label><input type="url" id="cloudSaveEndpointInput" placeholder="https://script.google.com/macros/s/xxxxx/exec"></div>'+
           '<div class="cloud-save-field"><label for="cloudProjectSelect">クラウド保存データ</label><select id="cloudProjectSelect"><option value="">クラウド保存データを選択</option></select></div>'+

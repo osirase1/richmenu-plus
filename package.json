@@ -1,8 +1,8 @@
 {
   "name": "richmenu-plus-master-cloud",
-  "version": "3.1.7-master-cloud-sheet-open-fix",
+  "version": "3.1.9-master-cloud-sheet-link-safe",
   "private": true,
-  "description": "Master version of Rich Menu Plus with LINE API proxy, Apps Script cloud save, and checked clean file/DOM structure and direct spreadsheet open fix.",
+  "description": "Master version of Rich Menu Plus with LINE API proxy, Apps Script cloud save, and safe spreadsheet link display without auto popup tabs.",
   "engines": {
     "node": ">=18"
   },
