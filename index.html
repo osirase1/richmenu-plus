@@ -114,6 +114,12 @@ body.auth-lock .main,body.auth-lock .header{filter:blur(2px);pointer-events:none
 #projectClientMenuPanel .master-card-quick-actions button{height:34px!important;border-radius:8px!important;border:1px solid #cbd5e1!important;background:#fff!important;color:#0f172a!important;font-size:12px!important;font-weight:900!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
 #projectClientMenuPanel .master-card-quick-actions button.primary{background:#06c755!important;border-color:#06c755!important;color:#fff!important;}
 #projectClientMenuPanel .master-card-quick-actions button.cloud{background:#eff6ff!important;border-color:#93c5fd!important;color:#1d4ed8!important;}
+#projectClientMenuPanel .master-quick-sheet-result{display:none!important;gap:7px!important;padding:8px!important;border:1px solid #bfdbfe!important;border-radius:9px!important;background:#eff6ff!important;color:#1e3a8a!important;font-size:11.5px!important;font-weight:800!important;line-height:1.45!important;}
+#projectClientMenuPanel .master-quick-sheet-result.show{display:grid!important;}
+#projectClientMenuPanel .master-quick-sheet-result.error{border-color:#fecaca!important;background:#fff7f7!important;color:#991b1b!important;}
+#projectClientMenuPanel .master-quick-sheet-result a,#projectClientMenuPanel .master-quick-sheet-result button{display:flex!important;align-items:center!important;justify-content:center!important;min-height:34px!important;border-radius:8px!important;font-size:12px!important;font-weight:900!important;text-decoration:none!important;}
+#projectClientMenuPanel .master-quick-sheet-result a{background:#2563eb!important;color:#fff!important;border:1px solid #2563eb!important;}
+#projectClientMenuPanel .master-quick-sheet-result button{background:#fff!important;color:#1e3a8a!important;border:1px solid #bfdbfe!important;cursor:pointer!important;}
 #projectClientMenuPanel .client-manager-note{margin:0!important;padding:8px 10px!important;border-radius:8px!important;background:#fff!important;border:1px solid #e2e8f0!important;color:#475569!important;font-size:11.5px!important;line-height:1.55!important;}
 #projectClientMenuPanel .cloud-save-details{border:1px solid #dbeafe!important;border-radius:10px!important;background:#fff!important;margin:0!important;overflow:hidden!important;}
 #projectClientMenuPanel .cloud-save-details>summary{min-height:36px!important;display:flex!important;align-items:center!important;padding:9px 10px!important;background:#f1f5f9!important;color:#334155!important;font-size:12px!important;font-weight:900!important;cursor:pointer!important;}
@@ -2240,7 +2246,8 @@ function createMasterCardQuickZone(){
       '<button type="button" class="primary" id="masterQuickCloudSave">☁ クラウド保存</button>'+
       '<button type="button" id="masterQuickCloudLoad">📥 読み込み</button>'+
       '<button type="button" id="masterQuickCloudList">🔄 一覧更新</button>'+
-    '</div>';
+    '</div>'+
+    '<div class="master-quick-sheet-result" id="masterQuickSheetResult" aria-live="polite"></div>';
   const bind=(selector,handler)=>{const btn=quick.querySelector(selector);if(btn)btn.addEventListener('click',handler)};
   bind('#masterQuickOpenSheet',e=>{
     e.preventDefault();
@@ -4733,6 +4740,60 @@ function loadProject(req) {
   function escapeText(value){
     return String(value||'').replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];});
   }
+  function escapeAttr(value){
+    return String(value||'').replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];});
+  }
+  function ensureMasterQuickSheetResult(){
+    let box=$('masterQuickSheetResult');
+    const quick=$('masterCardQuickZone');
+    if(!box&&quick){
+      box=document.createElement('div');
+      box.id='masterQuickSheetResult';
+      box.className='master-quick-sheet-result';
+      box.setAttribute('aria-live','polite');
+      quick.appendChild(box);
+    }
+    return box;
+  }
+  async function copyUrlToClipboard(url){
+    if(!url)throw new Error('コピーできるURLがありません。');
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(url);
+      return;
+    }
+    const ta=document.createElement('textarea');
+    ta.value=url;
+    ta.style.position='fixed';
+    ta.style.left='-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+  }
+  function showMasterQuickSheetResult(sheetUrl,message,type){
+    const box=ensureMasterQuickSheetResult();
+    if(!box)return;
+    const isError=type==='error';
+    box.classList.add('show');
+    box.classList.toggle('error',isError);
+    if(sheetUrl){
+      const safeUrl=escapeAttr(sheetUrl);
+      box.innerHTML='<a href="'+safeUrl+'" target="_blank" rel="noopener">📊 スプレッドシートを開く</a>'+
+        '<button type="button" id="btnCopyMasterQuickSheetUrl">URLをコピー</button>'+
+        '<div>'+escapeText(message||'URLを取得しました。青いリンクをクリックして開いてください。')+'</div>';
+      const btn=$('btnCopyMasterQuickSheetUrl');
+      if(btn){
+        btn.addEventListener('click',async function(e){
+          e.preventDefault();
+          try{await copyUrlToClipboard(sheetUrl);toast('スプレッドシートURLをコピーしました','success');}
+          catch(err){toast('URLをコピーできませんでした：'+(err&&err.message?err.message:err),'error');}
+        });
+      }
+    }else{
+      box.innerHTML='<div>'+escapeText(message||'処理中です...')+'</div>';
+    }
+  }
   function cloudIdFromCurrent(){
     const base=currentClientName()+'::'+currentProjectName();
     let hash=0;
@@ -4765,7 +4826,11 @@ function loadProject(req) {
   }
   function requireEndpoint(){
     const url=endpoint();
-    if(!url){setStatus('Apps ScriptのURLを入力してください。','error');return ''}
+    if(!url){
+      showMasterQuickSheetResult('', 'Apps Script URLを設定してください。', 'error');
+      setStatus('Apps ScriptのURLを入力してください。','error');
+      return '';
+    }
     saveEndpoint();
     return url;
   }
@@ -4886,6 +4951,9 @@ function loadProject(req) {
   }
   function showSpreadsheetDirectLink(sheetUrl,message){
     if(!sheetUrl)return;
+    showMasterQuickSheetResult(sheetUrl, message||'URLを取得しました。青いリンクをクリックして開いてください。');
+    const details=$('cloudSaveDetails');
+    if(details)details.setAttribute('open','');
     try{localStorage.setItem(SPREADSHEET_URL_KEY,sheetUrl);}catch(_){ }
     ensureCloudSheetDirectRow();
     bindCloudSheetDirectControls();
@@ -4919,6 +4987,7 @@ function loadProject(req) {
     if(cached){
       showSpreadsheetDirectLink(cached,'保存済みのスプレッドシートURLを表示しました。青いリンクをクリックして開いてください。最新URLも確認中です。');
     }else{
+      showMasterQuickSheetResult('', '保存先スプレッドシートURLを取得中です...');
       setStatus('保存先スプレッドシートURLを取得中...');
     }
     try{
@@ -4941,6 +5010,7 @@ function loadProject(req) {
       }else{
         setStatus('スプレッドシートURLを取得できませんでした：'+e.message,'error');
       }
+      showMasterQuickSheetResult('', 'スプレッドシートURLを取得できませんでした：'+(e&&e.message?e.message:e), 'error');
     }
   }
   async function copyScriptCode(){
