@@ -1,5 +1,8 @@
-const SHEET_NAME = 'richmenu_plus_cloud_index';
+const SHEET_NAME = 'クラウド保存一覧';
+const LEGACY_SHEET_NAME = 'richmenu_plus_cloud_index';
 const FOLDER_NAME = 'RichMenuPlus_CloudData';
+const HEADERS_JA = ['クラウドID','クライアント名','保存名','更新日時','DriveファイルID','トークン保存','メニュー数','メモ'];
+const FIELD_KEYS = ['cloudId','clientName','projectName','updatedAt','fileId','tokenIncluded','menuCount','note'];
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
@@ -37,6 +40,7 @@ function handleRequest(req) {
   if (action === 'save') return saveProject(req);
   if (action === 'list') return listProjects();
   if (action === 'load') return loadProject(req);
+  if (action === 'spreadsheet') return getSpreadsheetInfo();
   return { ok:false, message:'未対応の処理です: ' + action };
 }
 
@@ -52,10 +56,26 @@ function getSpreadsheet() {
 function getSheet() {
   const ss = getSpreadsheet();
   let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.getSheetByName(LEGACY_SHEET_NAME);
+    if (sheet) {
+      try { sheet.setName(SHEET_NAME); } catch (_) {}
+    }
+  }
   if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
-  const headers = ['cloudId','clientName','projectName','updatedAt','fileId','tokenIncluded','menuCount','note'];
-  if (sheet.getLastRow() === 0) sheet.appendRow(headers);
+  ensureJapaneseHeaders(sheet);
   return sheet;
+}
+
+function ensureJapaneseHeaders(sheet) {
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(HEADERS_JA);
+    return;
+  }
+  const range = sheet.getRange(1, 1, 1, HEADERS_JA.length);
+  const current = range.getValues()[0].map(v => String(v || ''));
+  const needsUpdate = HEADERS_JA.some((h, i) => current[i] !== h);
+  if (needsUpdate) range.setValues([HEADERS_JA]);
 }
 
 function getFolder() {
@@ -67,20 +87,24 @@ function getFolder() {
   return folder;
 }
 
-function testConnection() {
+function getSpreadsheetInfo() {
   const ss = getSpreadsheet();
   getSheet();
   getFolder();
-  return { ok:true, message:'接続OK', spreadsheetUrl:ss.getUrl() };
+  return { ok:true, message:'保存先スプレッドシートを取得しました', spreadsheetUrl:ss.getUrl(), spreadsheetId:ss.getId() };
+}
+
+function testConnection() {
+  const info = getSpreadsheetInfo();
+  return { ok:true, message:'接続OK', spreadsheetUrl:info.spreadsheetUrl, spreadsheetId:info.spreadsheetId };
 }
 
 function rowsAsObjects(sheet) {
   const values = sheet.getDataRange().getValues();
   if (values.length < 2) return [];
-  const headers = values[0];
   return values.slice(1).filter(r => r[0]).map((row, i) => {
     const obj = { rowNumber:i + 2 };
-    headers.forEach((h, idx) => obj[h] = row[idx]);
+    FIELD_KEYS.forEach((key, idx) => obj[key] = row[idx]);
     return obj;
   });
 }

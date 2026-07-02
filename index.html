@@ -97,6 +97,47 @@ body.auth-lock .main,body.auth-lock .header{filter:blur(2px);pointer-events:none
 
 
 
+
+<style id="masterManagementCardUiFixedV55Style">
+/* マスター版専用：2タブや外側レイアウトには触れず、管理カード内だけを見やすく整理 */
+#projectClientMenuPanel .client-manager-body{display:grid!important;gap:10px!important;padding:10px!important;background:#f8fafc!important;}
+#projectClientMenuPanel .client-manager-actions{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;}
+#projectClientMenuPanel .client-manager-new-btn{height:38px!important;border-radius:8px!important;background:#06c755!important;border-color:#06c755!important;color:#fff!important;font-weight:900!important;}
+#projectClientMenuPanel .client-manager-search{height:36px!important;border-radius:8px!important;}
+#projectClientMenuPanel .master-card-quick-zone{display:grid!important;gap:8px!important;padding:10px!important;border:1px solid #93c5fd!important;border-radius:10px!important;background:#f8fcff!important;box-shadow:0 1px 3px rgba(15,23,42,.06)!important;}
+#projectClientMenuPanel .master-card-quick-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;}
+#projectClientMenuPanel .master-card-quick-head strong{font-size:12px!important;color:#075985!important;}
+#projectClientMenuPanel .master-card-cloud-status{font-size:10.5px!important;font-weight:900!important;border-radius:999px!important;padding:2px 7px!important;background:#fff!important;border:1px solid #cbd5e1!important;color:#64748b!important;white-space:nowrap!important;}
+#projectClientMenuPanel .master-card-cloud-status.ready{background:#ecfdf5!important;border-color:#86efac!important;color:#047857!important;}
+#projectClientMenuPanel .master-card-cloud-status.empty{background:#fff7ed!important;border-color:#fed7aa!important;color:#9a3412!important;}
+#projectClientMenuPanel .master-card-quick-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;}
+#projectClientMenuPanel .master-card-quick-actions button{height:34px!important;border-radius:8px!important;border:1px solid #cbd5e1!important;background:#fff!important;color:#0f172a!important;font-size:12px!important;font-weight:900!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+#projectClientMenuPanel .master-card-quick-actions button.primary{background:#06c755!important;border-color:#06c755!important;color:#fff!important;}
+#projectClientMenuPanel .master-card-quick-actions button.cloud{background:#eff6ff!important;border-color:#93c5fd!important;color:#1d4ed8!important;}
+#projectClientMenuPanel .client-manager-note{margin:0!important;padding:8px 10px!important;border-radius:8px!important;background:#fff!important;border:1px solid #e2e8f0!important;color:#475569!important;font-size:11.5px!important;line-height:1.55!important;}
+#projectClientMenuPanel .cloud-save-details{border:1px solid #dbeafe!important;border-radius:10px!important;background:#fff!important;margin:0!important;overflow:hidden!important;}
+#projectClientMenuPanel .cloud-save-details>summary{min-height:36px!important;display:flex!important;align-items:center!important;padding:9px 10px!important;background:#f1f5f9!important;color:#334155!important;font-size:12px!important;font-weight:900!important;cursor:pointer!important;}
+#projectClientMenuPanel .cloud-save-details>summary::after{content:'設定';margin-left:auto;font-size:10.5px;font-weight:900;color:#64748b;background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:2px 7px;}
+#projectClientMenuPanel .cloud-save-body{padding:8px!important;display:grid!important;gap:8px!important;}
+#projectClientMenuPanel .cloud-save-note{font-size:11.5px!important;line-height:1.55!important;}
+#projectClientMenuPanel .cloud-save-grid{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;}
+#projectClientMenuPanel .cloud-save-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;}
+#projectClientMenuPanel .cloud-save-actions button{height:34px!important;border-radius:8px!important;font-size:12px!important;font-weight:900!important;}
+#projectClientMenuPanel .master-card-section-title{display:flex!important;align-items:baseline!important;justify-content:space-between!important;gap:8px!important;margin:2px 0 -2px!important;color:#334155!important;}
+#projectClientMenuPanel .master-card-section-title span{font-size:12px!important;font-weight:900!important;}
+#projectClientMenuPanel .master-card-section-title small{font-size:10.5px!important;color:#64748b!important;font-weight:800!important;}
+#projectClientMenuPanel .client-manager-list{display:grid!important;gap:8px!important;max-height:none!important;overflow:visible!important;}
+#projectClientMenuPanel .client-manager-card{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;padding:10px!important;border:1px solid #e2e8f0!important;border-radius:10px!important;background:#fff!important;box-shadow:0 1px 2px rgba(15,23,42,.05)!important;}
+#projectClientMenuPanel .client-manager-card:hover{border-color:#93c5fd!important;box-shadow:0 4px 12px rgba(15,23,42,.08)!important;}
+#projectClientMenuPanel .client-manager-name{font-size:13px!important;font-weight:900!important;color:#0f172a!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+#projectClientMenuPanel .client-manager-meta,#projectClientMenuPanel .client-manager-state{font-size:10.5px!important;font-weight:800!important;color:#64748b!important;line-height:1.35!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+#projectClientMenuPanel .client-manager-card-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important;width:100%!important;}
+#projectClientMenuPanel .client-manager-card-actions button{height:32px!important;border-radius:8px!important;font-size:11.5px!important;font-weight:900!important;min-width:0!important;padding:0 8px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+#projectClientMenuPanel .client-manager-open-btn{grid-column:1 / -1!important;background:#06c755!important;border-color:#06c755!important;color:#fff!important;}
+#projectClientMenuPanel .client-manager-delete-btn{color:#b91c1c!important;border-color:#fecaca!important;background:#fff!important;}
+#projectClientMenuPanel .client-manager-empty{padding:12px!important;border:1px dashed #cbd5e1!important;border-radius:10px!important;background:#fff!important;color:#64748b!important;font-size:12px!important;line-height:1.55!important;}
+@media(max-width:760px){#projectClientMenuPanel .master-card-quick-actions,#projectClientMenuPanel .cloud-save-actions,#projectClientMenuPanel .client-manager-card-actions{grid-template-columns:1fr!important;}}
+</style>
 </head>
 <body>
 <div id="loginOverlay" class="login-overlay"><div class="login-card"><p style="font-size:18px;font-weight:700;color:#111;margin-bottom:14px;">パスワードを入力してください</p><input type="password" id="appPasswordInput" placeholder="パスワード" autocomplete="current-password"><button class="btn btn-primary btn-block" id="btnLogin">ログイン</button><div class="login-error" id="loginMsg"></div></div></div>
@@ -1693,7 +1734,7 @@ function projectData(options={}){
   const imageCount=externalImages?externalImageList.length:exportedMenus.filter(m=>!!m.bgImageData).length;
   return {
     app:'richmenu-plus',
-    version:'3.2-cloud',
+    version:'3.2-cloud-v5.1',
     exportType:saveKind==='backup'?'project-backup':'project',
     backupSaveMode:saveKind==='backup'?(externalImages?'json-plus-png':'full-with-images'):'',
     browserSaveMode:includeImages?'full':'compact-no-images',
@@ -1961,12 +2002,58 @@ function renameClientProjectStorage(item){
     showToast('クライアント名を変更しました','success');
   }catch(e){showToast('名前変更に失敗しました: '+e.message,'error');}
 }
-function deleteClientProjectStorage(item){
+
+function confirmClientBrowserDelete(name){
+  return new Promise(resolve=>{
+    let modal=document.getElementById('clientBrowserDeleteConfirm');
+    if(!modal){
+      modal=document.createElement('div');
+      modal.id='clientBrowserDeleteConfirm';
+      modal.className='client-delete-confirm-backdrop';
+      modal.innerHTML='<div class="client-delete-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="clientDeleteConfirmTitle">'+
+        '<div class="client-delete-confirm-head"><strong id="clientDeleteConfirmTitle">ブラウザ保存を削除しますか？</strong></div>'+
+        '<div class="client-delete-confirm-body">'+
+          '<p class="client-delete-confirm-message" id="clientDeleteConfirmMessage"></p>'+
+          '<div class="client-delete-confirm-note">削除されるのは、このブラウザ内に保存されているクライアント管理データです。クラウド保存、Google Drive、LINE公式側に反映済みのリッチメニューは削除されません。</div>'+
+          '<div class="client-delete-confirm-actions">'+
+            '<button type="button" class="btn btn-danger" id="clientDeleteYesBtn">はい、削除する</button>'+
+            '<button type="button" class="btn" id="clientDeleteNoBtn">いいえ</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+      document.body.appendChild(modal);
+    }
+    const msg=document.getElementById('clientDeleteConfirmMessage');
+    if(msg)msg.textContent='「'+(name||'未設定クライアント')+'」のブラウザ保存データを削除してもよろしいですか？';
+    const yes=document.getElementById('clientDeleteYesBtn');
+    const no=document.getElementById('clientDeleteNoBtn');
+    function close(value){
+      modal.classList.remove('open');
+      if(yes)yes.removeEventListener('click',onYes);
+      if(no)no.removeEventListener('click',onNo);
+      modal.removeEventListener('click',onBackdrop);
+      document.removeEventListener('keydown',onKey);
+      resolve(value);
+    }
+    function onYes(){close(true)}
+    function onNo(){close(false)}
+    function onBackdrop(e){if(e.target===modal)close(false)}
+    function onKey(e){if(e.key==='Escape')close(false)}
+    if(yes)yes.addEventListener('click',onYes);
+    if(no)no.addEventListener('click',onNo);
+    modal.addEventListener('click',onBackdrop);
+    document.addEventListener('keydown',onKey);
+    modal.classList.add('open');
+    setTimeout(()=>{if(no)no.focus();},30);
+  });
+}
+
+async function deleteClientProjectStorage(item){
   if(!item||!item.key)return;
   const name=item.name||'未設定クライアント';
   const data=readClientProjectData(item)||{};
-  const message='「'+name+'」を削除しますか？\n\n削除されるもの：\n・ブラウザ保存データ\n・保存済みチャネルアクセストークン\n・リッチメニュー作成データ\n\n※LINE公式側に反映済みのリッチメニューは削除されません。';
-  if(!confirm(message))return;
+  const ok=await confirmClientBrowserDelete(name);
+  if(!ok)return;
   try{
     localStorage.removeItem(item.key);
     const nextIndex=readClientProjectIndex().filter(x=>x&&x.key!==item.key);
@@ -2126,6 +2213,64 @@ function loadClientProjectFromStorage(key){
   }
 }
 
+
+function updateMasterCardQuickStatus(){
+  const quick=document.getElementById('masterCardQuickZone');
+  if(!quick)return;
+  const status=quick.querySelector('.master-card-cloud-status');
+  if(!status)return;
+  const input=document.getElementById('cloudSaveEndpointInput');
+  const ready=!!(input&&String(input.value||'').trim());
+  status.textContent=ready?'クラウド接続URLあり':'Apps Script URL未設定';
+  status.classList.toggle('ready',ready);
+  status.classList.toggle('empty',!ready);
+}
+function clickMasterCardTarget(id){
+  const el=document.getElementById(id);
+  if(el){el.click();return true;}
+  return false;
+}
+function createMasterCardQuickZone(){
+  const quick=document.createElement('div');
+  quick.id='masterCardQuickZone';
+  quick.className='master-card-quick-zone';
+  quick.innerHTML='<div class="master-card-quick-head"><strong>よく使う操作</strong><span class="master-card-cloud-status empty">Apps Script URL未設定</span></div>'+
+    '<div class="master-card-quick-actions">'+
+      '<button type="button" class="cloud" id="masterQuickOpenSheet">📊 シートを開く</button>'+
+      '<button type="button" class="primary" id="masterQuickCloudSave">☁ クラウド保存</button>'+
+      '<button type="button" id="masterQuickCloudLoad">📥 読み込み</button>'+
+      '<button type="button" id="masterQuickCloudList">🔄 一覧更新</button>'+
+    '</div>';
+  const bind=(selector,handler)=>{const btn=quick.querySelector(selector);if(btn)btn.addEventListener('click',handler)};
+  bind('#masterQuickOpenSheet',e=>{
+    e.preventDefault();
+    // 保存先シートを開く操作は、ブラウザのポップアップ制限に引っかからないよう
+    // 表示ボタンから直接実行します。非表示ボタンを .click() する方式だと、
+    // ブラウザによってはユーザー操作扱いにならず、新規タブが開けない場合があります。
+    if(typeof window.cloudOpenSpreadsheet==='function'){window.cloudOpenSpreadsheet();return;}
+    if(!clickMasterCardTarget('btnCloudOpenSheetTop')&&!clickMasterCardTarget('btnCloudOpenSheet'))showToast('Apps Script URLを設定してから開いてください','error');
+  });
+  bind('#masterQuickCloudSave',e=>{e.preventDefault();if(!clickMasterCardTarget('btnCloudSave'))showToast('クラウド保存の準備がまだ完了していません','error');});
+  bind('#masterQuickCloudLoad',e=>{e.preventDefault();if(!clickMasterCardTarget('btnCloudLoad'))showToast('クラウド読み込みの準備がまだ完了していません','error');});
+  bind('#masterQuickCloudList',e=>{e.preventDefault();if(!clickMasterCardTarget('btnCloudList'))showToast('一覧取得の準備がまだ完了していません','error');});
+  setTimeout(updateMasterCardQuickStatus,0);
+  return quick;
+}
+function ensureMasterCardSectionTitle(parent,beforeEl,id,title,small){
+  if(!parent||!beforeEl)return null;
+  let el=document.getElementById(id);
+  if(!el){
+    el=document.createElement('div');
+    el.id=id;
+    el.className='master-card-section-title';
+    el.innerHTML='<span></span><small></small>';
+  }
+  el.querySelector('span').textContent=title;
+  el.querySelector('small').textContent=small||'';
+  if(el.parentElement!==parent||el.nextElementSibling!==beforeEl)parent.insertBefore(el,beforeEl);
+  return el;
+}
+
 function renderProjectClientListMenu(){
   const panel=$('projectClientMenuPanel');
   if(!panel)return;
@@ -2167,12 +2312,18 @@ function renderProjectClientListMenu(){
   actions.appendChild(newProjectBtn);
   actions.appendChild(search);
   body.appendChild(actions);
+  body.appendChild(createMasterCardQuickZone());
   const note=document.createElement('div');
   note.className='client-manager-note';
-  note.textContent='保存管理（クライアント管理）用の一覧です。お手軽保存した作業データを開く・名前変更・削除できます。クラウド保存を使う場合も、この管理エリアで設定・保存・読み込みを行います。';
+  note.textContent='ブラウザ保存とクラウド保存を、この管理カード内だけで操作できます。通常版ではこの管理カードごと削除する想定です。';
   body.appendChild(note);
   const listBox=document.createElement('div');
   listBox.className='client-manager-list';
+  const browserTitle=document.createElement('div');
+  browserTitle.id='masterBrowserListSectionTitle';
+  browserTitle.className='master-card-section-title';
+  browserTitle.innerHTML='<span>ブラウザ保存データ</span><small>開く・名前変更・削除</small>';
+  body.appendChild(browserTitle);
   body.appendChild(listBox);
   drawer.appendChild(body);
   panel.appendChild(drawer);
@@ -2212,7 +2363,7 @@ function renderProjectClientListMenu(){
       renameBtn.type='button';renameBtn.className='client-manager-rename-btn';renameBtn.textContent='名前変更';
       renameBtn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();renameClientProjectStorage(item);});
       const deleteBtn=document.createElement('button');
-      deleteBtn.type='button';deleteBtn.className='client-manager-delete-btn';deleteBtn.textContent='削除';
+      deleteBtn.type='button';deleteBtn.className='client-manager-delete-btn';deleteBtn.textContent='ブラウザ保存削除';
       deleteBtn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();deleteClientProjectStorage(item);});
       buttons.append(openBtn,renameBtn,deleteBtn);
       card.append(info,buttons);
@@ -4149,6 +4300,7 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
           '<li>作業途中や納品前など、定期的にバックアップ保存も行ってください。</li>'+
           '<li>違うブラウザなどで開くと反映されない場合があるため、Google Chromeで開くようにお願いします。</li>'+
           '<li>JSONファイル読み込みから、保存した設定データを読み込めます。</li>'+
+          '<li>保存管理（クライアント管理）のクライアントカードにある「ブラウザ保存削除」を押すと、そのクライアントのブラウザ内保存だけを削除できます。削除前に「はい、削除する / いいえ」の確認が出ます。</li>'+
           '<li>LINEに反映は、現在のリッチメニューをLINE上で全員表示する時に使います。</li>'+
           '<li>LINE表示を停止は、LINE上で全員表示されているリッチメニュー設定を外す時に使います。</li>'+
         '</ol></div></details>'+ 
@@ -4185,6 +4337,7 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
           '<li>Apps Script用コードをコピーし、Google Apps Scriptに貼り付けてWebアプリとして公開します。</li>'+
           '<li>公開後に発行されたApps Script URLを、クラウド保存のURL欄へ貼り付けます。</li>'+
           '<li>最初に接続テストを行い、接続OKになってからクラウドに保存してください。</li>'+
+          '<li>クラウド保存欄は初期状態で開いたまま表示されます。上部の「📊 保存先スプレッドシートを開く」ボタンから、保存先スプレッドシートを直接開けます。</li>'+
           '<li>クラウドに保存すると、クライアント名・保存ファイル名・メニュー情報・画像・チャネルアクセストークンを含む作業データを保存できます。</li>'+
           '<li>クラウドから読み込む時は、現在の編集中データが置き換わるため、必要に応じて先にお手軽保存またはバックアップ保存を行ってください。</li>'+
           '<li>Apps Script URLを変更すると保存先が変わります。別の保存先に切り替える時は、URLが正しいか接続テストで確認してください。</li>'+
@@ -4215,6 +4368,7 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
             '<li>リッチメニュープラスに戻り、「Apps Script URL」欄にコピーしたURLを貼り付けます。</li>'+
             '<li>「接続テスト」を押します。</li>'+
             '<li>「接続OK」と表示されたら設定完了です。この時点で、Google Driveに <code>RichMenuPlus_CloudData</code> フォルダ、Googleスプレッドシートに <code>リッチメニュープラス_クラウド保存</code> が作成されます。</li>'+
+            '<li>必要に応じて「保存先シートを開く」を押すと、作成されたスプレッドシートを確認できます。</li>'+
             '<li>クライアント名と保存ファイル名を入力し、「クラウドに保存」を押すと、画像込みプロジェクトがGoogle Driveに保存されます。</li>'+
             '<li>次回以降は「クラウド保存一覧を更新」→保存データを選択→「クラウドから読み込み」で復元できます。</li>'+
           '</ol>'+
@@ -4223,9 +4377,31 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
             '<li>リッチメニュープラスを開きます。</li>'+
             '<li>保存管理のクラウド保存を開きます。</li>'+
             '<li>Apps Script URLが入っていることを確認します。</li>'+
-            '<li>「クラウド保存一覧を更新」を押します。</li>'+
+            '<li>「一覧取得」を押します。</li>'+
             '<li>読み込みたいクライアント・保存データを選び、「クラウドから読み込み」を押します。</li>'+
           '</ol>'+
+          '<p><strong>Apps Script URLが分からなくなった時</strong></p>'+
+          '<ol>'+
+            '<li><a href="https://script.google.com/" target="_blank" rel="noopener">Google Apps Script</a>を開きます。</li>'+
+            '<li>一覧から、クラウド保存用に作成したプロジェクトを開きます。名前を変更していなければ「無題のプロジェクト」になっている場合もあります。</li>'+
+            '<li>右上の「デプロイ」→「デプロイを管理」を押します。</li>'+
+            '<li>種類が「ウェブアプリ」になっているデプロイを開きます。</li>'+
+            '<li>表示されている「ウェブアプリURL」をコピーします。URLの末尾は通常 <code>/exec</code> です。</li>'+
+            '<li>リッチメニュープラスに戻り、「Apps Script URL」欄へ貼り付けます。</li>'+
+            '<li>「接続テスト」を押して、接続OKになるか確認します。</li>'+
+          '</ol>'+
+          '<p><strong>デプロイを管理にURLが表示されない時</strong></p>'+
+          '<ul>'+
+            '<li>まだWebアプリとしてデプロイできていない可能性があります。「デプロイ」→「新しいデプロイ」から、種類を「ウェブアプリ」にして再度デプロイしてください。</li>'+
+            '<li>デプロイ後に出るURLは、必ずコピーしてリッチメニュープラス側に貼り付けてください。</li>'+
+            '<li>スクリプトのコードを修正した後は、「デプロイを管理」→鉛筆アイコン→バージョンを「新バージョン」にして保存すると、最新コードが反映されます。</li>'+
+          '</ul>'+
+          '<p><strong>スプレッドシートの見出しについて</strong></p>'+
+          '<ul>'+
+            '<li>今回の版では、クラウド保存用スプレッドシートの項目名を日本語で作成・更新します。</li>'+
+            '<li>以前の英語見出しのシートがある場合も、接続テストや保存時に日本語見出しへ整えます。</li>'+
+            '<li>既存の保存データは同じ列順で読み取るため、そのまま使えます。</li>'+
+          '</ul>'+
           '<p><strong>うまく接続できない時</strong></p>'+
           '<ul>'+
             '<li>Apps Script URLが <code>/exec</code> で終わっているか確認してください。<code>/dev</code> のURLではなく、デプロイ後のウェブアプリURLを使います。</li>'+
@@ -4309,6 +4485,21 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
 
 
 
+
+<style id="clientBrowserDeleteConfirmStyle">
+  .client-delete-confirm-backdrop{position:fixed!important;inset:0!important;background:rgba(15,23,42,.45)!important;z-index:2147483300!important;display:none!important;align-items:center!important;justify-content:center!important;padding:16px!important;}
+  .client-delete-confirm-backdrop.open{display:flex!important;}
+  .client-delete-confirm-modal{width:min(460px,100%)!important;background:#fff!important;border:1px solid var(--line)!important;border-radius:14px!important;box-shadow:0 24px 70px rgba(15,23,42,.28)!important;overflow:hidden!important;}
+  .client-delete-confirm-head{padding:14px 16px!important;background:#fef2f2!important;border-bottom:1px solid #fecaca!important;}
+  .client-delete-confirm-head strong{font-size:16px!important;font-weight:900!important;color:#991b1b!important;line-height:1.35!important;}
+  .client-delete-confirm-body{display:grid!important;gap:12px!important;padding:14px 16px 16px!important;}
+  .client-delete-confirm-message{margin:0!important;color:#111827!important;font-size:14px!important;font-weight:900!important;line-height:1.55!important;}
+  .client-delete-confirm-note{padding:10px 12px!important;border:1px solid #fed7aa!important;border-radius:9px!important;background:#fff7ed!important;color:#9a3412!important;font-size:12px!important;font-weight:800!important;line-height:1.6!important;}
+  .client-delete-confirm-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+  .client-delete-confirm-actions .btn{height:40px!important;}
+  @media(max-width:760px){.client-delete-confirm-actions{grid-template-columns:1fr!important;}}
+</style>
+
 <style id="cloudSaveGoogleSheetStyle">
   .cloud-save-details{margin:10px 0 12px;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden;}
   .cloud-save-details>summary{min-height:38px;display:flex;align-items:center;gap:8px;padding:0 10px;cursor:pointer;list-style:none;background:#f8fafc;color:#111827;font-size:13px;font-weight:900;}
@@ -4325,6 +4516,9 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
   .cloud-save-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0;}
   .cloud-save-actions button{width:100%;min-width:0;height:34px;border:1px solid var(--line);border-radius:7px;background:#fff;color:#111827;font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .cloud-save-actions .cloud-primary{background:var(--brand);border-color:var(--brand);color:#fff;}
+
+  .cloud-sheet-open-row{grid-template-columns:1fr!important;margin-top:2px;}
+  .cloud-sheet-open-row button{height:38px!important;font-size:13px!important;}
   .cloud-save-actions .cloud-danger{border-color:#f2b8bf;color:var(--danger);}
   .cloud-save-status{display:none;padding:8px 9px;border-left:4px solid var(--brand);border-radius:7px;background:#f8fafc;color:#334155;font-size:12px;font-weight:800;line-height:1.5;}
   .cloud-save-status.show{display:block;}
@@ -4348,10 +4542,14 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
   'use strict';
   const ENDPOINT_KEY='richmenu_plus_cloud_apps_script_url_v1';
   const SELECTED_ID_KEY='richmenu_plus_cloud_selected_id_v1';
+  const SPREADSHEET_URL_KEY='richmenu_plus_cloud_spreadsheet_url_v1';
   const $=id=>document.getElementById(id);
   const qs=sel=>document.querySelector(sel);
-  const APPS_SCRIPT_TEMPLATE = String.raw`const SHEET_NAME = 'richmenu_plus_cloud_index';
+  const APPS_SCRIPT_TEMPLATE = String.raw`const SHEET_NAME = 'クラウド保存一覧';
+const LEGACY_SHEET_NAME = 'richmenu_plus_cloud_index';
 const FOLDER_NAME = 'RichMenuPlus_CloudData';
+const HEADERS_JA = ['クラウドID','クライアント名','保存名','更新日時','DriveファイルID','トークン保存','メニュー数','メモ'];
+const FIELD_KEYS = ['cloudId','clientName','projectName','updatedAt','fileId','tokenIncluded','menuCount','note'];
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
@@ -4389,6 +4587,7 @@ function handleRequest(req) {
   if (action === 'save') return saveProject(req);
   if (action === 'list') return listProjects();
   if (action === 'load') return loadProject(req);
+  if (action === 'spreadsheet') return getSpreadsheetInfo();
   return { ok:false, message:'未対応の処理です: ' + action };
 }
 
@@ -4404,10 +4603,26 @@ function getSpreadsheet() {
 function getSheet() {
   const ss = getSpreadsheet();
   let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.getSheetByName(LEGACY_SHEET_NAME);
+    if (sheet) {
+      try { sheet.setName(SHEET_NAME); } catch (_) {}
+    }
+  }
   if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
-  const headers = ['cloudId','clientName','projectName','updatedAt','fileId','tokenIncluded','menuCount','note'];
-  if (sheet.getLastRow() === 0) sheet.appendRow(headers);
+  ensureJapaneseHeaders(sheet);
   return sheet;
+}
+
+function ensureJapaneseHeaders(sheet) {
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(HEADERS_JA);
+    return;
+  }
+  const range = sheet.getRange(1, 1, 1, HEADERS_JA.length);
+  const current = range.getValues()[0].map(v => String(v || ''));
+  const needsUpdate = HEADERS_JA.some((h, i) => current[i] !== h);
+  if (needsUpdate) range.setValues([HEADERS_JA]);
 }
 
 function getFolder() {
@@ -4419,20 +4634,24 @@ function getFolder() {
   return folder;
 }
 
-function testConnection() {
+function getSpreadsheetInfo() {
   const ss = getSpreadsheet();
   getSheet();
   getFolder();
-  return { ok:true, message:'接続OK', spreadsheetUrl:ss.getUrl() };
+  return { ok:true, message:'保存先スプレッドシートを取得しました', spreadsheetUrl:ss.getUrl(), spreadsheetId:ss.getId() };
+}
+
+function testConnection() {
+  const info = getSpreadsheetInfo();
+  return { ok:true, message:'接続OK', spreadsheetUrl:info.spreadsheetUrl, spreadsheetId:info.spreadsheetId };
 }
 
 function rowsAsObjects(sheet) {
   const values = sheet.getDataRange().getValues();
   if (values.length < 2) return [];
-  const headers = values[0];
   return values.slice(1).filter(r => r[0]).map((row, i) => {
     const obj = { rowNumber:i + 2 };
-    headers.forEach((h, idx) => obj[h] = row[idx]);
+    FIELD_KEYS.forEach((key, idx) => obj[key] = row[idx]);
     return obj;
   });
 }
@@ -4490,7 +4709,8 @@ function loadProject(req) {
   if (!row) return { ok:false, message:'保存データが見つかりません' };
   const text = DriveApp.getFileById(String(row.fileId)).getBlob().getDataAsString('UTF-8');
   return { ok:true, data:JSON.parse(text), item:{ cloudId:cloudId, clientName:row.clientName, projectName:row.projectName, updatedAt:row.updatedAt } };
-}`;
+}
+`;
 
   function toast(msg,type){
     if(typeof showToast==='function')showToast(msg,type||'success');
@@ -4530,6 +4750,12 @@ function loadProject(req) {
     const url=endpoint();
     try{localStorage.setItem(ENDPOINT_KEY,url);}catch(e){}
     if(typeof markProjectFileDirty==='function')markProjectFileDirty();
+  }
+  function rememberSpreadsheetUrl(result){
+    const url=result&&result.spreadsheetUrl?String(result.spreadsheetUrl):'';
+    if(!url)return '';
+    try{localStorage.setItem(SPREADSHEET_URL_KEY,url);}catch(e){}
+    return url;
   }
   function requireEndpoint(){
     const url=endpoint();
@@ -4588,6 +4814,7 @@ function loadProject(req) {
       let result;
       try{result=await postJson(url,{action:'test'});}catch(_){result=await jsonp(url,{action:'test'});}
       if(!result.ok)throw new Error(result.message||'接続に失敗しました。');
+      rememberSpreadsheetUrl(result);
       setStatus('接続OKです。保存先スプレッドシートを確認できます。');
       toast('クラウド保存の接続を確認しました','success');
     }catch(e){setStatus('接続確認失敗：'+e.message,'error');}
@@ -4601,6 +4828,7 @@ function loadProject(req) {
     try{
       const result=await postJson(url,payload);
       if(!result.ok)throw new Error(result.message||'保存に失敗しました。');
+      rememberSpreadsheetUrl(result);
       try{localStorage.setItem(SELECTED_ID_KEY,result.cloudId||payload.cloudId);}catch(e){}
       if(typeof updateProjectSaveStatus==='function')updateProjectSaveStatus('クラウド保存済み '+new Date().toLocaleString()+'｜保存先：'+currentClientName(),'saved');
       setStatus('クラウド保存しました。');
@@ -4618,6 +4846,7 @@ function loadProject(req) {
     try{
       const result=await jsonp(url,{action:'list'});
       if(!result.ok)throw new Error(result.message||'一覧取得に失敗しました。');
+      rememberSpreadsheetUrl(result);
       const select=$('cloudProjectSelect');
       if(select){
         const savedId=localStorage.getItem(SELECTED_ID_KEY)||'';
@@ -4649,6 +4878,46 @@ function loadProject(req) {
       toast('クラウドから読み込みました','success');
     }catch(e){setStatus('読み込み失敗：'+e.message,'error');}
   }
+  async function cloudOpenSpreadsheet(){
+    const url=requireEndpoint(); if(!url)return;
+    const cached=localStorage.getItem(SPREADSHEET_URL_KEY)||'';
+    // すでにURLが分かっている場合は、ユーザー操作の瞬間に直接開きます。
+    // これでブラウザのポップアップ制限を避けられます。
+    let opened=null;
+    if(cached){
+      opened=window.open(cached,'_blank','noopener');
+      setStatus('保存済みのURLでスプレッドシートを開きました。最新URLを確認中...');
+    }else{
+      opened=window.open('about:blank','_blank');
+      setStatus('保存先スプレッドシートを取得中...');
+    }
+    try{
+      let result;
+      try{result=await jsonp(url,{action:'spreadsheet'});}catch(_){result=await jsonp(url,{action:'test'});}
+      if(!result.ok)throw new Error(result.message||'保存先スプレッドシートを取得できませんでした。');
+      const sheetUrl=rememberSpreadsheetUrl(result);
+      if(!sheetUrl)throw new Error('スプレッドシートURLが返ってきませんでした。Apps Scriptコードを最新版に更新してください。');
+      if(!cached){
+        if(opened){try{opened.opener=null;}catch(_){} opened.location.href=sheetUrl;}
+        else window.open(sheetUrl,'_blank','noopener');
+      }
+      setStatus('保存先スプレッドシートを開きました。');
+      toast('保存先スプレッドシートを開きました','success');
+    }catch(e){
+      if(!cached&&opened)opened.close();
+      if(cached){
+        setStatus('保存済みURLで開いています。最新URL確認は失敗しました：'+e.message);
+        return;
+      }
+      const box=$('cloudSaveStatus');
+      if(box){
+        box.innerHTML='スプレッドシートを開けませんでした：'+escapeText(e.message)+'<br>接続テストを押してから、もう一度「シートを開く」を押してください。';
+        box.classList.add('show','error');
+      }else{
+        setStatus('スプレッドシートを開けませんでした：'+e.message,'error');
+      }
+    }
+  }
   async function copyScriptCode(){
     try{
       await navigator.clipboard.writeText(APPS_SCRIPT_TEMPLATE);
@@ -4659,6 +4928,37 @@ function loadProject(req) {
       if(area){area.focus();area.select();}
       setStatus('コピーできない場合は、コード欄を選択してコピーしてください。','error');
     }
+  }
+  window.cloudOpenSpreadsheet=cloudOpenSpreadsheet;
+  function bindCloudOpenSheetButtons(){
+    const top=$('btnCloudOpenSheetTop');
+    if(top && !top.dataset.bound){top.dataset.bound='1';top.addEventListener('click',cloudOpenSpreadsheet);}
+    const old=$('btnCloudOpenSheet');
+    if(old && !old.dataset.bound){old.dataset.bound='1';old.addEventListener('click',cloudOpenSpreadsheet);}
+  }
+  function ensureVisibleOpenSheetButton(){
+    const body=qs('#cloudSaveDetails .cloud-save-body');
+    if(!body)return;
+    // 重複防止：保存先シートを開くボタンは上部に1つだけ残します。
+    const rows=[...document.querySelectorAll('#cloudOpenSheetTopRow')];
+    rows.slice(1).forEach(r=>r.remove());
+    const oldButton=$('btnCloudOpenSheet');
+    if(oldButton){
+      const oldRow=oldButton.closest('.cloud-save-actions');
+      oldButton.remove();
+      if(oldRow && !oldRow.querySelector('button'))oldRow.remove();
+    }
+    let row=$('cloudOpenSheetTopRow');
+    if(!row){
+      row=document.createElement('div');
+      row.id='cloudOpenSheetTopRow';
+      row.className='cloud-save-actions cloud-sheet-open-row';
+      row.innerHTML='<button type="button" id="btnCloudOpenSheetTop" class="cloud-primary">📊 保存先スプレッドシートを開く</button>';
+    }
+    const grid=body.querySelector('.cloud-save-grid');
+    if(grid && row.nextElementSibling!==grid)body.insertBefore(row,grid);
+    else if(!row.parentElement)body.insertBefore(row,body.firstChild);
+    bindCloudOpenSheetButtons();
   }
   function ensureCloudSaveUi(){
     const body=qs('#projectClientMenuPanel .client-manager-body');
@@ -4674,14 +4974,22 @@ function loadProject(req) {
       }else if(!body && metaGrid && details.parentElement!==metaGrid){
         metaGrid.appendChild(details);
       }
+      ensureVisibleOpenSheetButton();
+      const inputExisting=document.getElementById('cloudSaveEndpointInput');
+      if(inputExisting&&String(inputExisting.value||'').trim())details.removeAttribute('open');
+      else details.setAttribute('open','');
+      if(body)ensureMasterCardSectionTitle(body,details,'masterCloudSectionTitle','クラウド保存・同期','必要な時だけ設定を開く');
+      if(typeof updateMasterCardQuickStatus==='function')setTimeout(updateMasterCardQuickStatus,0);
       return;
     }
     details=document.createElement('details');
     details.id='cloudSaveDetails';
     details.className='cloud-save-details';
-    details.innerHTML='<summary>☁ クラウド保存（Googleスプレッドシート）</summary>'+
+    details.open=true;
+    details.innerHTML='<summary>☁ クラウド保存（Apps Script・Googleスプレッドシート）</summary>'+
       '<div class="cloud-save-body">'+
         '<div class="cloud-save-note">Apps ScriptのWebアプリURLを設定すると、クライアント別データをクラウドに保存できます。ブラウザ保存はそのまま残り、クライアント数が増えた時の管理用として使えます。</div>'+
+        '<div class="cloud-save-actions cloud-sheet-open-row" id="cloudOpenSheetTopRow"><button type="button" id="btnCloudOpenSheetTop" class="cloud-primary">📊 保存先スプレッドシートを開く</button></div>'+
         '<div class="cloud-save-grid">'+
           '<div class="cloud-save-field"><label for="cloudSaveEndpointInput">Apps Script URL</label><input type="url" id="cloudSaveEndpointInput" placeholder="https://script.google.com/macros/s/xxxxx/exec"></div>'+
           '<div class="cloud-save-field"><label for="cloudProjectSelect">クラウド保存データ</label><select id="cloudProjectSelect"><option value="">クラウド保存データを選択</option></select></div>'+
@@ -4702,8 +5010,13 @@ function loadProject(req) {
     const insertBody=qs('#projectClientMenuPanel .client-manager-body');
     const insertList=qs('#projectClientMenuPanel .client-manager-list');
     if(insertBody){
-      if(insertList && insertList.parentElement===insertBody)insertBody.insertBefore(details,insertList);
+      const browserTitle=document.getElementById('masterBrowserListSectionTitle');
+      if(insertList && insertList.parentElement===insertBody){
+        if(browserTitle && browserTitle.parentElement===insertBody)insertBody.insertBefore(details,browserTitle);
+        else insertBody.insertBefore(details,insertList);
+      }
       else insertBody.appendChild(details);
+      ensureMasterCardSectionTitle(insertBody,details,'masterCloudSectionTitle','クラウド保存・同期','必要な時だけ設定を開く');
     }else if(metaGrid){
       metaGrid.appendChild(details);
     }else{
@@ -4712,9 +5025,18 @@ function loadProject(req) {
     const input=$('cloudSaveEndpointInput');
     if(input){
       try{input.value=localStorage.getItem(ENDPOINT_KEY)||'';}catch(e){}
-      input.addEventListener('input',saveEndpoint);
-      input.addEventListener('change',saveEndpoint);
-      input.addEventListener('blur',saveEndpoint);
+      const syncCloudDetails=()=>{
+        saveEndpoint();
+        if(String(input.value||'').trim())details.removeAttribute('open');
+        else details.setAttribute('open','');
+        if(typeof updateMasterCardQuickStatus==='function')updateMasterCardQuickStatus();
+      };
+      input.addEventListener('input',syncCloudDetails);
+      input.addEventListener('change',syncCloudDetails);
+      input.addEventListener('blur',syncCloudDetails);
+      if(String(input.value||'').trim())details.removeAttribute('open');
+      else details.setAttribute('open','');
+      if(typeof updateMasterCardQuickStatus==='function')setTimeout(updateMasterCardQuickStatus,0);
     }
     const code=$('cloudAppsScriptCode');
     if(code)code.value=APPS_SCRIPT_TEMPLATE;
@@ -4724,6 +5046,9 @@ function loadProject(req) {
     const save=$('btnCloudSave'); if(save)save.addEventListener('click',cloudSave);
     const load=$('btnCloudLoad'); if(load)load.addEventListener('click',cloudLoad);
     const list=$('btnCloudList'); if(list)list.addEventListener('click',()=>cloudList(true));
+    bindCloudOpenSheetButtons();
+    ensureVisibleOpenSheetButton();
+    if(typeof updateMasterCardQuickStatus==='function')setTimeout(updateMasterCardQuickStatus,0);
     const copy=$('btnCopyCloudScript'); if(copy)copy.addEventListener('click',copyScriptCode);
   }
   function start(){ensureCloudSaveUi();setTimeout(ensureCloudSaveUi,150);setTimeout(ensureCloudSaveUi,600);}
@@ -5171,6 +5496,9 @@ function loadProject(req) {
 })();
 </script>
 <!-- LOCAL_SAVE_RECOVERY_PATCH_END -->
+
+
+
 
 </body>
 </html>
