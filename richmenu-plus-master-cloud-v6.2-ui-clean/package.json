@@ -1,0 +1,13 @@
+{
+  "name": "richmenu-plus-master-cloud",
+  "version": "6.2.0-master-cloud",
+  "private": true,
+  "description": "Master version of Rich Menu Plus with cloud save and simplified master management card UI.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "check": "node --check api/*.js",
+    "start": "vercel dev"
+  }
+}
