@@ -7208,5 +7208,69 @@ function loadProject(req) {
 })();
 </script>
 
+
+<script id="jsonProjectFileInputFixV693Script">
+(function(){
+  'use strict';
+  function byId(id){return document.getElementById(id);}
+  function toast(msg,type){if(typeof showToast==='function')showToast(msg,type||'success');}
+
+  function ensureJsonProjectFileInput(){
+    var input=byId('projectFileInput');
+    if(!input){
+      input=document.createElement('input');
+      input.type='file';
+      input.id='projectFileInput';
+      input.accept='application/json,.json';
+      input.style.display='none';
+      document.body.appendChild(input);
+    }
+    if(input.dataset.jsonLoadFixBound!=='1'){
+      input.dataset.jsonLoadFixBound='1';
+      input.addEventListener('change',function(e){
+        var file=e.target.files&&e.target.files[0];
+        if(file){
+          if(typeof readProjectFile==='function'){
+            readProjectFile(file);
+          }else{
+            toast('JSON読み込み処理が見つかりません。ページを再読み込みしてください。','error');
+          }
+        }
+        e.target.value='';
+      });
+    }
+    return input;
+  }
+
+  function openJsonFilePicker(){
+    var input=ensureJsonProjectFileInput();
+    if(input){
+      input.click();
+      return true;
+    }
+    toast('JSONファイル読み込み用の入力欄を作成できませんでした。','error');
+    return false;
+  }
+
+  function bindJsonLoadButtons(){
+    ['btnLoadJsonProjectFile','btnLoadProjectFile'].forEach(function(id){
+      var btn=byId(id);
+      if(!btn||btn.dataset.jsonLoadFixBound==='1')return;
+      btn.dataset.jsonLoadFixBound='1';
+      btn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        openJsonFilePicker();
+      },true);
+    });
+    ensureJsonProjectFileInput();
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindJsonLoadButtons);
+  else bindJsonLoadButtons();
+  [300,800,1500,3000].forEach(function(ms){setTimeout(bindJsonLoadButtons,ms);});
+})();
+</script>
+
 </body>
 </html>

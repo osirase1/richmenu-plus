@@ -1,8 +1,8 @@
 {
   "name": "richmenu-plus-master-cloud",
-  "version": "6.9.2-linked-sheet-copy-visible",
+  "version": "6.9.3-json-load-input-fix",
   "private": true,
-  "description": "RichMenu Plus master cloud edition v6.9.2 with visible linked spreadsheet copy controls in Manage tab.",
+  "description": "RichMenu Plus master cloud edition v6.9.3 with JSON project file input recovery fix.",
   "engines": {
     "node": ">=18"
   },
