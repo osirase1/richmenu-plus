@@ -1,8 +1,8 @@
 {
   "name": "richmenu-plus-master-cloud",
-  "version": "6.0.0-master-cloud",
+  "version": "6.8.1-official-no-preview-notice",
   "private": true,
-  "description": "Master version of Rich Menu Plus with cloud save and visible spreadsheet link flow.",
+  "description": "RichMenu Plus master cloud edition v6.8 official upload build with modal save manager UI and no preview notice.",
   "engines": {
     "node": ">=18"
   },

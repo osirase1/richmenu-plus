@@ -129,6 +129,7 @@ body.auth-lock .main,body.auth-lock .header{filter:blur(2px);pointer-events:none
 #projectClientMenuPanel .cloud-save-grid{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;}
 #projectClientMenuPanel .cloud-save-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;}
 #projectClientMenuPanel .cloud-save-actions button{height:34px!important;border-radius:8px!important;font-size:12px!important;font-weight:900!important;}
+#projectClientMenuPanel #btnCloudDelete{color:#b91c1c!important;border-color:#fecaca!important;background:#fff!important;}
 #projectClientMenuPanel .master-card-section-title{display:flex!important;align-items:baseline!important;justify-content:space-between!important;gap:8px!important;margin:2px 0 -2px!important;color:#334155!important;}
 #projectClientMenuPanel .master-card-section-title span{font-size:12px!important;font-weight:900!important;}
 #projectClientMenuPanel .master-card-section-title small{font-size:10.5px!important;color:#64748b!important;font-weight:800!important;}
@@ -144,6 +145,67 @@ body.auth-lock .main,body.auth-lock .header{filter:blur(2px);pointer-events:none
 #projectClientMenuPanel .client-manager-empty{padding:12px!important;border:1px dashed #cbd5e1!important;border-radius:10px!important;background:#fff!important;color:#64748b!important;font-size:12px!important;line-height:1.55!important;}
 @media(max-width:760px){#projectClientMenuPanel .master-card-quick-actions,#projectClientMenuPanel .cloud-save-actions,#projectClientMenuPanel .client-manager-card-actions{grid-template-columns:1fr!important;}}
 </style>
+
+<style id="masterManagementCardUiV62Style">
+/* v6.2: 管理カード内だけを整理。右側の2タブや外側レイアウトには触れない。 */
+#projectClientMenuPanel .client-manager-drawer{border-radius:12px!important;overflow:hidden!important;background:#fff!important;}
+#projectClientMenuPanel .client-manager-head{padding:10px 12px!important;background:#0f172a!important;color:#fff!important;border-bottom:0!important;}
+#projectClientMenuPanel .client-manager-head strong{font-size:13px!important;}
+#projectClientMenuPanel .client-manager-head span{display:block!important;margin-top:3px!important;color:#cbd5e1!important;font-size:10.5px!important;line-height:1.35!important;font-weight:800!important;}
+#projectClientMenuPanel .client-manager-close{background:rgba(255,255,255,.12)!important;border-color:rgba(255,255,255,.2)!important;color:#fff!important;border-radius:8px!important;}
+#projectClientMenuPanel .client-manager-body{gap:9px!important;padding:10px!important;background:#f8fafc!important;}
+#projectClientMenuPanel .master-card-quick-zone{border-color:#bbf7d0!important;background:linear-gradient(180deg,#f0fdf4 0%,#ffffff 100%)!important;}
+#projectClientMenuPanel .master-card-quick-head strong{font-size:13px!important;color:#064e3b!important;}
+#projectClientMenuPanel .master-card-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+#projectClientMenuPanel .master-card-quick-actions button{min-height:38px!important;font-size:12px!important;border-radius:10px!important;}
+#projectClientMenuPanel .master-card-view-switch{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important;padding:6px!important;background:#e2e8f0!important;border:1px solid #cbd5e1!important;border-radius:12px!important;}
+#projectClientMenuPanel .master-card-view-btn{display:grid!important;gap:2px!important;align-content:center!important;justify-items:center!important;min-height:48px!important;padding:6px 4px!important;border:1px solid transparent!important;border-radius:9px!important;background:transparent!important;color:#334155!important;cursor:pointer!important;}
+#projectClientMenuPanel .master-card-view-btn span{font-size:11.5px!important;font-weight:900!important;line-height:1.15!important;white-space:nowrap!important;}
+#projectClientMenuPanel .master-card-view-btn small{font-size:9.5px!important;font-weight:800!important;line-height:1.15!important;color:#64748b!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:100%!important;}
+#projectClientMenuPanel .master-card-view-btn.active{background:#fff!important;border-color:#93c5fd!important;box-shadow:0 1px 4px rgba(15,23,42,.12)!important;color:#075985!important;}
+#projectClientMenuPanel .master-card-view-btn.active small{color:#0369a1!important;}
+#projectClientMenuPanel .client-manager-note{padding:8px 10px!important;background:#fff!important;color:#64748b!important;border:1px solid #e2e8f0!important;border-radius:10px!important;font-size:11px!important;}
+#projectClientMenuPanel .master-card-section-title{padding:2px 2px!important;margin:0!important;}
+#projectClientMenuPanel .master-card-section-title span{font-size:12px!important;color:#0f172a!important;}
+#projectClientMenuPanel .master-card-section-title small{font-size:10px!important;}
+#projectClientMenuPanel .cloud-save-details{border-radius:12px!important;border-color:#bfdbfe!important;box-shadow:0 1px 4px rgba(15,23,42,.05)!important;}
+#projectClientMenuPanel .cloud-save-details>summary{min-height:42px!important;background:#eff6ff!important;color:#1d4ed8!important;border-radius:12px 12px 0 0!important;}
+#projectClientMenuPanel .cloud-save-details:not([open])>summary{border-radius:12px!important;}
+#projectClientMenuPanel .cloud-save-body{gap:9px!important;padding:10px!important;}
+#projectClientMenuPanel .cloud-save-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+#projectClientMenuPanel .cloud-save-actions button{min-height:36px!important;border-radius:9px!important;}
+#projectClientMenuPanel .client-manager-actions{grid-template-columns:1fr!important;background:#fff!important;border:1px solid #e2e8f0!important;border-radius:12px!important;padding:8px!important;}
+#projectClientMenuPanel .client-manager-search{height:38px!important;}
+#projectClientMenuPanel .client-manager-list{gap:8px!important;}
+#projectClientMenuPanel .client-manager-card{padding:9px!important;border-radius:12px!important;}
+#projectClientMenuPanel .client-manager-card-actions{grid-template-columns:1fr 1fr!important;}
+#projectClientMenuPanel .client-manager-open-btn{grid-column:1 / -1!important;min-height:34px!important;}
+#projectClientMenuPanel .client-manager-body[data-manager-view="quick"] .client-manager-actions,
+#projectClientMenuPanel .client-manager-body[data-manager-view="quick"] #masterCloudSectionTitle,
+#projectClientMenuPanel .client-manager-body[data-manager-view="quick"] #cloudSaveDetails,
+#projectClientMenuPanel .client-manager-body[data-manager-view="quick"] #masterBrowserListSectionTitle,
+#projectClientMenuPanel .client-manager-body[data-manager-view="quick"] .client-manager-list{display:none!important;}
+#projectClientMenuPanel .client-manager-body[data-manager-view="cloud"] .client-manager-actions,
+#projectClientMenuPanel .client-manager-body[data-manager-view="cloud"] #masterBrowserListSectionTitle,
+#projectClientMenuPanel .client-manager-body[data-manager-view="cloud"] .client-manager-list{display:none!important;}
+#projectClientMenuPanel .client-manager-body[data-manager-view="cloud"] #cloudSaveDetails{display:block!important;}
+#projectClientMenuPanel .client-manager-body[data-manager-view="browser"] #masterCloudSectionTitle,
+#projectClientMenuPanel .client-manager-body[data-manager-view="browser"] #cloudSaveDetails{display:none!important;}
+#projectClientMenuPanel .client-manager-body[data-manager-view="browser"] .client-manager-actions,
+#projectClientMenuPanel .client-manager-body[data-manager-view="browser"] #masterBrowserListSectionTitle,
+#projectClientMenuPanel .client-manager-body[data-manager-view="browser"] .client-manager-list{display:grid!important;}
+#projectClientMenuPanel .client-manager-body[data-manager-view="all"] .client-manager-actions,
+#projectClientMenuPanel .client-manager-body[data-manager-view="all"] #masterCloudSectionTitle,
+#projectClientMenuPanel .client-manager-body[data-manager-view="all"] #cloudSaveDetails,
+#projectClientMenuPanel .client-manager-body[data-manager-view="all"] #masterBrowserListSectionTitle,
+#projectClientMenuPanel .client-manager-body[data-manager-view="all"] .client-manager-list{display:grid!important;}
+#projectClientMenuPanel .client-manager-body[data-manager-view="all"] #cloudSaveDetails{display:block!important;}
+@media(max-width:760px){
+  #projectClientMenuPanel .master-card-view-switch{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #projectClientMenuPanel .master-card-quick-actions,#projectClientMenuPanel .cloud-save-actions,#projectClientMenuPanel .client-manager-card-actions{grid-template-columns:1fr!important;}
+}
+</style>
+
 </head>
 <body>
 <div id="loginOverlay" class="login-overlay"><div class="login-card"><p style="font-size:18px;font-weight:700;color:#111;margin-bottom:14px;">パスワードを入力してください</p><input type="password" id="appPasswordInput" placeholder="パスワード" autocomplete="current-password"><button class="btn btn-primary btn-block" id="btnLogin">ログイン</button><div class="login-error" id="loginMsg"></div></div></div>
@@ -208,7 +270,7 @@ body.auth-lock .main,body.auth-lock .header{filter:blur(2px);pointer-events:none
 <div class="form-group"><label>クライアント選択</label><select id="clientSelect"><option value="">未選択</option></select></div>
 <div class="form-group"><label>クライアント名</label><input type="text" id="clientNameInput" placeholder="例: A店舗"></div>
 <div class="button-row api-actions" style="margin-bottom:10px;"><button class="btn btn-sm btn-primary" id="btnSaveClientToken">このクライアントで保存</button><button class="btn btn-sm" id="btnDeleteClientToken">選択中を削除</button></div>
-<button class="btn btn-primary btn-block api-main-action" id="btnApiUpload">🚀 LINEに反映</button>
+<button class="btn btn-primary btn-block api-main-action" id="btnApiUpload" title="このブラウザ内に作業データを保存します。LINEには反映しません。">💾 お手軽保存</button>
 <label style="display:flex;align-items:center;gap:8px;margin:10px 0 8px;font-size:14px;"><input type="checkbox" id="autoSetDefault" checked style="width:auto;"> LINE反映後に自動で全員表示にする</label>
 <div class="button-row api-actions">
 <button class="btn btn-block" id="btnSetDefault">🚀 LINEに反映</button>
@@ -1740,7 +1802,7 @@ function projectData(options={}){
   const imageCount=externalImages?externalImageList.length:exportedMenus.filter(m=>!!m.bgImageData).length;
   return {
     app:'richmenu-plus',
-    version:'3.2-cloud-v5.1',
+    version:'3.5-cloud-v6.5-sheet-organize',
     exportType:saveKind==='backup'?'project-backup':'project',
     backupSaveMode:saveKind==='backup'?(externalImages?'json-plus-png':'full-with-images'):'',
     browserSaveMode:includeImages?'full':'compact-no-images',
@@ -2278,6 +2340,48 @@ function ensureMasterCardSectionTitle(parent,beforeEl,id,title,small){
   return el;
 }
 
+
+function setMasterCardView(view){
+  const body=document.querySelector('#projectClientMenuPanel .client-manager-body');
+  if(!body)return;
+  const allowed={quick:1,cloud:1,browser:1,all:1};
+  view=allowed[view]?view:'quick';
+  body.dataset.managerView=view;
+  const cloudDetails=document.getElementById('cloudSaveDetails');
+  if(cloudDetails && (view==='cloud' || view==='all')) cloudDetails.setAttribute('open','');
+  try{localStorage.setItem('richmenu_plus_master_card_view_v1',view)}catch(_){ }
+  body.querySelectorAll('.master-card-view-btn').forEach(btn=>{
+    const active=btn.dataset.view===view;
+    btn.classList.toggle('active',active);
+    btn.setAttribute('aria-pressed',active?'true':'false');
+  });
+}
+function getSavedMasterCardView(){
+  try{return localStorage.getItem('richmenu_plus_master_card_view_v1')||'quick'}catch(_){return 'quick'}
+}
+function createMasterCardViewSwitch(){
+  const wrap=document.createElement('div');
+  wrap.id='masterCardViewSwitch';
+  wrap.className='master-card-view-switch';
+  wrap.setAttribute('aria-label','管理カードの表示切替');
+  const items=[
+    ['quick','よく使う','毎回使う操作だけ'],
+    ['cloud','クラウド','保存・シート・Apps Script'],
+    ['browser','ブラウザ保存','この端末の保存一覧'],
+    ['all','全部','全機能をまとめて表示']
+  ];
+  wrap.innerHTML=items.map(([key,label,desc])=>
+    '<button type="button" class="master-card-view-btn" data-view="'+key+'" aria-pressed="false"><span>'+label+'</span><small>'+desc+'</small></button>'
+  ).join('');
+  wrap.querySelectorAll('button[data-view]').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.preventDefault();e.stopPropagation();
+      setMasterCardView(btn.dataset.view);
+    });
+  });
+  setTimeout(()=>setMasterCardView(getSavedMasterCardView()),0);
+  return wrap;
+}
 function renderProjectClientListMenu(){
   const panel=$('projectClientMenuPanel');
   if(!panel)return;
@@ -2298,6 +2402,7 @@ function renderProjectClientListMenu(){
   drawer.appendChild(head);
   const body=document.createElement('div');
   body.className='client-manager-body';
+  body.dataset.managerView=getSavedMasterCardView();
   const actions=document.createElement('div');
   actions.className='client-manager-actions';
   const newProjectBtn=document.createElement('button');
@@ -2320,9 +2425,10 @@ function renderProjectClientListMenu(){
   actions.appendChild(search);
   body.appendChild(actions);
   body.appendChild(createMasterCardQuickZone());
+  body.appendChild(createMasterCardViewSwitch());
   const note=document.createElement('div');
   note.className='client-manager-note';
-  note.textContent='ブラウザ保存とクラウド保存を、この管理カード内だけで操作できます。通常版ではこの管理カードごと削除する想定です。';
+  note.textContent='上の表示切替で、よく使う操作・クラウド設定・ブラウザ保存を切り替えます。通常版ではこの管理カードごと削除する想定です。';
   body.appendChild(note);
   const listBox=document.createElement('div');
   listBox.className='client-manager-list';
@@ -2380,6 +2486,7 @@ function renderProjectClientListMenu(){
   search.addEventListener('input',drawList);
   drawList();
   if(window.ensureCloudSaveUi)window.ensureCloudSaveUi();
+  setTimeout(()=>setMasterCardView(getSavedMasterCardView()),0);
 }
 function ensureProjectDeploymentLinks(grid){
   if(!grid)return null;
@@ -4601,6 +4708,10 @@ function handleRequest(req) {
   if (action === 'list') return listProjects();
   if (action === 'load') return loadProject(req);
   if (action === 'spreadsheet') return getSpreadsheetInfo();
+  if (action === 'normalizeHeaders' || action === 'japaneseHeaders') return normalizeSpreadsheetHeaders();
+  if (action === 'dedupe' || action === 'cleanupDuplicates') return cleanupDuplicateRows();
+  if (action === 'delete' || action === 'deleteProject' || action === 'cloudDelete') return deleteProject(req);
+  if (action === 'organizeSheet' || action === 'formatSheet' || action === 'cleanupSheet') return organizeSpreadsheet();
   return { ok:false, message:'未対応の処理です: ' + action };
 }
 
@@ -4630,12 +4741,31 @@ function getSheet() {
 function ensureJapaneseHeaders(sheet) {
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(HEADERS_JA);
-    return;
+  } else {
+    // 既存シートが英語見出しの場合も、1行目を必ず日本語に揃えます。
+    // データ行は触らないので、保存済みデータは残ります。
+    const range = sheet.getRange(1, 1, 1, HEADERS_JA.length);
+    const current = range.getValues()[0].map(v => String(v || ''));
+    const needsUpdate = HEADERS_JA.some((h, i) => current[i] !== h);
+    if (needsUpdate) range.setValues([HEADERS_JA]);
   }
-  const range = sheet.getRange(1, 1, 1, HEADERS_JA.length);
-  const current = range.getValues()[0].map(v => String(v || ''));
-  const needsUpdate = HEADERS_JA.some((h, i) => current[i] !== h);
-  if (needsUpdate) range.setValues([HEADERS_JA]);
+  try { sheet.setFrozenRows(1); } catch (_) {}
+  try { sheet.autoResizeColumns(1, HEADERS_JA.length); } catch (_) {}
+}
+
+function normalizeSpreadsheetHeaders() {
+  const ss = getSpreadsheet();
+  const sheet = getSheet();
+  ensureJapaneseHeaders(sheet);
+  const headers = sheet.getRange(1, 1, 1, HEADERS_JA.length).getValues()[0];
+  return {
+    ok:true,
+    message:'スプレッドシートの項目名を日本語に更新しました。',
+    spreadsheetUrl:ss.getUrl(),
+    spreadsheetId:ss.getId(),
+    sheetName:sheet.getName(),
+    headers:headers
+  };
 }
 
 function getFolder() {
@@ -4649,9 +4779,10 @@ function getFolder() {
 
 function getSpreadsheetInfo() {
   const ss = getSpreadsheet();
-  getSheet();
+  const sheet = getSheet();
   getFolder();
-  return { ok:true, message:'保存先スプレッドシートを取得しました', spreadsheetUrl:ss.getUrl(), spreadsheetId:ss.getId() };
+  const headers = sheet.getRange(1, 1, 1, HEADERS_JA.length).getValues()[0];
+  return { ok:true, message:'保存先スプレッドシートを取得しました', spreadsheetUrl:ss.getUrl(), spreadsheetId:ss.getId(), sheetName:sheet.getName(), headers:headers };
 }
 
 function testConnection() {
@@ -4669,19 +4800,203 @@ function rowsAsObjects(sheet) {
   });
 }
 
+
+function rowUpdatedTime(row) {
+  const v = row && row.updatedAt;
+  if (v instanceof Date) return v.getTime();
+  const t = Date.parse(String(v || ''));
+  return isNaN(t) ? 0 : t;
+}
+
+function rowNameKey(row) {
+  return String(row && row.clientName || '').trim() + '::' + String(row && row.projectName || '').trim();
+}
+
+function findRowsForSave(rows, cloudId, clientName, projectName) {
+  const targetCloudId = String(cloudId || '').trim();
+  const targetNameKey = String(clientName || '').trim() + '::' + String(projectName || '').trim();
+  return rows.filter(row => {
+    const rowCloudId = String(row.cloudId || '').trim();
+    return (targetCloudId && rowCloudId === targetCloudId) || rowNameKey(row) === targetNameKey;
+  }).sort((a, b) => {
+    const timeDiff = rowUpdatedTime(b) - rowUpdatedTime(a);
+    return timeDiff || ((b.rowNumber || 0) - (a.rowNumber || 0));
+  });
+}
+
+function trashFileIfSafe(fileId, keepFileId) {
+  const id = String(fileId || '').trim();
+  if (!id || id === String(keepFileId || '').trim()) return false;
+  try {
+    DriveApp.getFileById(id).setTrashed(true);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function deleteRowsDescending(sheet, rowNumbers) {
+  const unique = Array.from(new Set(rowNumbers.map(n => Number(n)).filter(n => n > 1))).sort((a, b) => b - a);
+  unique.forEach(rowNumber => sheet.deleteRow(rowNumber));
+  return unique.length;
+}
+
+function removeDuplicateRowsAfterSave(sheet, rows, keepRow, keepFileId) {
+  if (!keepRow) return 0;
+  const keepCloudId = String(keepRow.cloudId || '').trim();
+  const keepNameKey = rowNameKey(keepRow);
+  const deleteTargets = rows.filter(row => row.rowNumber !== keepRow.rowNumber && (
+    (keepCloudId && String(row.cloudId || '').trim() === keepCloudId) || rowNameKey(row) === keepNameKey
+  ));
+  deleteTargets.forEach(row => trashFileIfSafe(row.fileId, keepFileId));
+  return deleteRowsDescending(sheet, deleteTargets.map(row => row.rowNumber));
+}
+
+function dedupeRowsForList(rows) {
+  const sorted = rows.slice().sort((a, b) => {
+    const timeDiff = rowUpdatedTime(b) - rowUpdatedTime(a);
+    return timeDiff || ((b.rowNumber || 0) - (a.rowNumber || 0));
+  });
+  const seenCloudIds = {};
+  const seenNameKeys = {};
+  const keep = [];
+  sorted.forEach(row => {
+    const cloudId = String(row.cloudId || '').trim();
+    const nameKey = rowNameKey(row);
+    if ((cloudId && seenCloudIds[cloudId]) || seenNameKeys[nameKey]) return;
+    if (cloudId) seenCloudIds[cloudId] = true;
+    seenNameKeys[nameKey] = true;
+    keep.push(row);
+  });
+  return keep;
+}
+
+function cleanupDuplicateRows() {
+  const ss = getSpreadsheet();
+  const sheet = getSheet();
+  const rows = rowsAsObjects(sheet);
+  const keep = dedupeRowsForList(rows);
+  const keepRowNumbers = {};
+  const keepFileIds = {};
+  keep.forEach(row => {
+    keepRowNumbers[row.rowNumber] = true;
+    const id = String(row.fileId || '').trim();
+    if (id) keepFileIds[id] = true;
+  });
+  const deleteTargets = rows.filter(row => !keepRowNumbers[row.rowNumber]);
+  let trashedFiles = 0;
+  deleteTargets.forEach(row => {
+    const id = String(row.fileId || '').trim();
+    if (id && !keepFileIds[id] && trashFileIfSafe(id, '')) trashedFiles++;
+  });
+  const removedRows = deleteRowsDescending(sheet, deleteTargets.map(row => row.rowNumber));
+  ensureJapaneseHeaders(sheet);
+  return {
+    ok:true,
+    message: removedRows ? '重複データを整理しました。' : '重複データはありませんでした。',
+    removedRows:removedRows,
+    keptRows:keep.length,
+    trashedFiles:trashedFiles,
+    spreadsheetUrl:ss.getUrl(),
+    list:dedupeRowsForList(rowsAsObjects(sheet)).map(r => ({
+      cloudId:String(r.cloudId || ''),
+      clientName:String(r.clientName || ''),
+      projectName:String(r.projectName || ''),
+      updatedAt:r.updatedAt instanceof Date ? r.updatedAt.toISOString() : String(r.updatedAt || ''),
+      tokenIncluded:String(r.tokenIncluded || ''),
+      menuCount:String(r.menuCount || '')
+    }))
+  };
+}
+
+
+function removeCompletelyEmptyRows(sheet) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return 0;
+  const lastCol = Math.max(sheet.getLastColumn(), HEADERS_JA.length);
+  const values = sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
+  const deleteTargets = [];
+  values.forEach((row, idx) => {
+    const isEmpty = row.every(v => String(v || '').trim() === '');
+    if (isEmpty) deleteTargets.push(idx + 2);
+  });
+  return deleteRowsDescending(sheet, deleteTargets);
+}
+
+function sortRowsByUpdatedAt(sheet) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 2) return false;
+  const lastCol = Math.max(sheet.getLastColumn(), HEADERS_JA.length);
+  sheet.getRange(2, 1, lastRow - 1, lastCol).sort({ column: 4, ascending: false });
+  return true;
+}
+
+function styleSpreadsheet(sheet) {
+  ensureJapaneseHeaders(sheet);
+  const lastRow = Math.max(sheet.getLastRow(), 1);
+  const lastCol = Math.max(sheet.getLastColumn(), HEADERS_JA.length);
+  const headerRange = sheet.getRange(1, 1, 1, HEADERS_JA.length);
+  headerRange
+    .setBackground('#06c755')
+    .setFontColor('#ffffff')
+    .setFontWeight('bold')
+    .setHorizontalAlignment('center')
+    .setVerticalAlignment('middle');
+  try { sheet.setFrozenRows(1); } catch (_) {}
+  try { sheet.getRange(1, 1, lastRow, lastCol).setVerticalAlignment('middle'); } catch (_) {}
+  try { sheet.getRange(2, 4, Math.max(lastRow - 1, 1), 1).setNumberFormat('yyyy/mm/dd hh:mm:ss'); } catch (_) {}
+  try { sheet.autoResizeColumns(1, HEADERS_JA.length); } catch (_) {}
+  try { sheet.setColumnWidth(1, 210); } catch (_) {}
+  try { sheet.setColumnWidth(2, 160); } catch (_) {}
+  try { sheet.setColumnWidth(3, 180); } catch (_) {}
+  try { sheet.setColumnWidth(4, 150); } catch (_) {}
+  try { sheet.setColumnWidth(5, 220); } catch (_) {}
+  try { sheet.setColumnWidth(7, 90); } catch (_) {}
+  try { sheet.setColumnWidth(8, 220); } catch (_) {}
+  try { sheet.hideColumns(6); } catch (_) {}
+}
+
+function organizeSpreadsheet() {
+  const ss = getSpreadsheet();
+  const sheet = getSheet();
+  ensureJapaneseHeaders(sheet);
+  const removedEmptyRows = removeCompletelyEmptyRows(sheet);
+  const duplicateResult = cleanupDuplicateRows();
+  const removedDuplicateRows = Number(duplicateResult && duplicateResult.removedRows || 0);
+  sortRowsByUpdatedAt(sheet);
+  styleSpreadsheet(sheet);
+  const list = listProjectItems();
+  return {
+    ok:true,
+    message:'スプレッドシートを整理しました。見出し固定・列幅調整・更新日時順並び替え・トークン列非表示・重複/空白行整理を行いました。',
+    spreadsheetUrl:ss.getUrl(),
+    spreadsheetId:ss.getId(),
+    sheetName:sheet.getName(),
+    removedEmptyRows:removedEmptyRows,
+    removedDuplicateRows:removedDuplicateRows,
+    list:list
+  };
+}
+
 function saveProject(req) {
   const sheet = getSheet();
   const folder = getFolder();
   const dataText = typeof req.data === 'string' ? req.data : JSON.stringify(req.data || {});
-  const clientName = String(req.clientName || '未設定クライアント');
-  const projectName = String(req.projectName || 'リッチメニュー');
-  const cloudId = String(req.cloudId || Utilities.getUuid());
+  const clientName = String(req.clientName || '未設定クライアント').trim() || '未設定クライアント';
+  const projectName = String(req.projectName || 'リッチメニュー').trim() || 'リッチメニュー';
+  const requestedCloudId = String(req.cloudId || '').trim();
+  const cloudId = requestedCloudId || Utilities.getUuid();
   const rows = rowsAsObjects(sheet);
-  let row = rows.find(r => String(r.cloudId) === cloudId) || rows.find(r => String(r.clientName) === clientName && String(r.projectName) === projectName);
+  const matches = findRowsForSave(rows, cloudId, clientName, projectName);
+  const row = matches[0] || null;
   let file;
   if (row && row.fileId) {
-    file = DriveApp.getFileById(String(row.fileId));
-    file.setContent(dataText);
+    try {
+      file = DriveApp.getFileById(String(row.fileId));
+      file.setContent(dataText);
+    } catch (_) {
+      file = folder.createFile(cloudId + '.json', dataText, MimeType.PLAIN_TEXT);
+    }
   } else {
     file = folder.createFile(cloudId + '.json', dataText, MimeType.PLAIN_TEXT);
   }
@@ -4696,14 +5011,74 @@ function saveProject(req) {
     Array.isArray(dataObj.menus) ? dataObj.menus.length : '',
     req.note || ''
   ];
-  if (row) sheet.getRange(row.rowNumber, 1, 1, values.length).setValues([values]);
-  else sheet.appendRow(values);
-  return { ok:true, message:'クラウド保存しました', cloudId:cloudId, spreadsheetUrl:getSpreadsheet().getUrl() };
+  let removedDuplicates = 0;
+  if (row) {
+    sheet.getRange(row.rowNumber, 1, 1, values.length).setValues([values]);
+    const keepRow = Object.assign({}, row, {
+      cloudId: cloudId,
+      clientName: clientName,
+      projectName: projectName,
+      updatedAt: values[3],
+      fileId: file.getId()
+    });
+    removedDuplicates = removeDuplicateRowsAfterSave(sheet, rows, keepRow, file.getId());
+  } else {
+    sheet.appendRow(values);
+  }
+  return { ok:true, message:removedDuplicates ? 'クラウド保存しました。重複データも整理しました。' : 'クラウド保存しました', cloudId:cloudId, removedDuplicates:removedDuplicates, spreadsheetUrl:getSpreadsheet().getUrl() };
 }
 
-function listProjects() {
+
+function deleteProject(req) {
+  const ss = getSpreadsheet();
   const sheet = getSheet();
-  const list = rowsAsObjects(sheet).map(r => ({
+  const rows = rowsAsObjects(sheet);
+  const cloudId = String(req.cloudId || '').trim();
+  const clientName = String(req.clientName || '').trim();
+  const projectName = String(req.projectName || '').trim();
+  if (!cloudId && (!clientName || !projectName)) {
+    return { ok:false, message:'削除対象のクラウドID、またはクライアント名＋保存名がありません。' };
+  }
+
+  const targetNameKey = clientName && projectName ? (clientName + '::' + projectName) : '';
+  const targets = rows.filter(row => {
+    const rowCloudId = String(row.cloudId || '').trim();
+    if (cloudId && rowCloudId === cloudId) return true;
+    return targetNameKey && rowNameKey(row) === targetNameKey;
+  });
+
+  if (!targets.length) {
+    return {
+      ok:true,
+      message:'削除対象は見つかりませんでした。すでに削除済みの可能性があります。',
+      deletedRows:0,
+      trashedFiles:0,
+      spreadsheetUrl:ss.getUrl(),
+      list:listProjectItems()
+    };
+  }
+
+  let trashedFiles = 0;
+  targets.forEach(row => {
+    const id = String(row.fileId || '').trim();
+    if (id && trashFileIfSafe(id, '')) trashedFiles++;
+  });
+  const deletedRows = deleteRowsDescending(sheet, targets.map(row => row.rowNumber));
+  ensureJapaneseHeaders(sheet);
+  return {
+    ok:true,
+    message:'クラウド保存データを削除しました。スプレッドシートの行とDrive保存ファイルを削除対象にしました。',
+    deletedRows:deletedRows,
+    trashedFiles:trashedFiles,
+    spreadsheetUrl:ss.getUrl(),
+    list:listProjectItems()
+  };
+}
+
+function listProjectItems() {
+  const sheet = getSheet();
+  const rows = rowsAsObjects(sheet);
+  return dedupeRowsForList(rows).map(r => ({
     cloudId:String(r.cloudId || ''),
     clientName:String(r.clientName || ''),
     projectName:String(r.projectName || ''),
@@ -4711,7 +5086,14 @@ function listProjects() {
     tokenIncluded:String(r.tokenIncluded || ''),
     menuCount:String(r.menuCount || '')
   })).sort((a,b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
-  return { ok:true, list:list, spreadsheetUrl:getSpreadsheet().getUrl() };
+}
+
+function listProjects() {
+  const sheet = getSheet();
+  const rows = rowsAsObjects(sheet);
+  const list = listProjectItems();
+  const duplicateCount = Math.max(0, rows.length - list.length);
+  return { ok:true, list:list, duplicateCount:duplicateCount, spreadsheetUrl:getSpreadsheet().getUrl() };
 }
 
 function loadProject(req) {
@@ -4890,6 +5272,79 @@ function loadProject(req) {
       toast('クラウド保存の接続を確認しました','success');
     }catch(e){setStatus('接続確認失敗：'+e.message,'error');}
   }
+
+  async function cloudJapaneseHeaders(){
+    const url=requireEndpoint(); if(!url)return;
+    setStatus('スプレッドシートの項目名を日本語化中...');
+    showMasterQuickSheetResult('', 'スプレッドシートの項目名を日本語化中...');
+    try{
+      let result;
+      try{result=await postJson(url,{action:'normalizeHeaders'});}catch(_){result=await jsonp(url,{action:'normalizeHeaders'});}
+      if(!result.ok)throw new Error(result.message||'日本語化に失敗しました。');
+      rememberSpreadsheetUrl(result);
+      const msg='項目名を日本語に更新しました。シートを開いて1行目を確認してください。';
+      setStatus(msg);
+      showMasterQuickSheetResult(result.spreadsheetUrl||'', msg);
+      toast('項目名を日本語化しました','success');
+    }catch(e){
+      const msg='項目名を日本語化できませんでした：'+(e&&e.message?e.message:e)+'。Apps Script用コードを最新版に貼り替え、「デプロイを管理」から新バージョンで更新してください。';
+      setStatus(msg,'error');
+      showMasterQuickSheetResult('', msg, 'error');
+    }
+  }
+
+  async function cloudDeduplicate(){
+    const url=requireEndpoint(); if(!url)return;
+    if(!confirm('クラウド保存一覧の重複データを整理します。最新の1件を残し、古い重複行は削除します。実行しますか？'))return;
+    setStatus('クラウド保存の重複データを整理中...');
+    showMasterQuickSheetResult('', 'クラウド保存の重複データを整理中...');
+    try{
+      let result;
+      try{result=await postJson(url,{action:'dedupe'});}catch(_){result=await jsonp(url,{action:'dedupe'});}
+      if(!result.ok)throw new Error(result.message||'重複整理に失敗しました。');
+      rememberSpreadsheetUrl(result);
+      const removed=Number(result.removedRows||0);
+      const msg=removed ? ('重複データを'+removed+'件整理しました。') : '重複データはありませんでした。';
+      setStatus(msg);
+      showMasterQuickSheetResult(result.spreadsheetUrl||'', msg);
+      toast(msg,'success');
+      await cloudList(false);
+    }catch(e){
+      const msg='重複整理に失敗しました：'+(e&&e.message?e.message:e)+'。Apps Script用コードを最新版に貼り替え、「デプロイを管理」から新バージョンで更新してください。';
+      setStatus(msg,'error');
+      showMasterQuickSheetResult('', msg, 'error');
+    }
+  }
+
+  async function cloudOrganizeSheet(){
+    if(!confirm('スプレッドシートを整理します。\n\n実行内容：\n・項目名を日本語化\n・見出し行を固定\n・列幅を調整\n・トークン保存列を非表示\n・更新日時の新しい順に並び替え\n・重複行と空白行を整理\n\n実行しますか？'))return;
+    setStatus('スプレッドシートを整理中...');
+    showMasterQuickSheetResult('', 'スプレッドシートを整理中...');
+    try{
+      saveEndpoint();
+      const url=endpoint();
+      let result;
+      try{result=await postJson(url,{action:'organizeSheet'});}
+      catch(_){result=await jsonp(url,{action:'organizeSheet'});}
+      if(!result.ok)throw new Error(result.message||'スプレッドシート整理に失敗しました。');
+      if(result.spreadsheetUrl){
+        try{localStorage.setItem(SPREADSHEET_URL_KEY,result.spreadsheetUrl);}catch(e){}
+      }
+      const removedEmpty=Number(result.removedEmptyRows||0);
+      const removedDup=Number(result.removedDuplicateRows||0);
+      const msg='スプレッドシートを整理しました。空白行 '+removedEmpty+'件 / 重複行 '+removedDup+'件を整理しました。';
+      setStatus(msg);
+      showMasterQuickSheetResult(result.spreadsheetUrl||'', msg);
+      toast('スプレッドシートを整理しました','success');
+      await cloudList(false);
+    }catch(e){
+      const msg='スプレッドシート整理に失敗しました：'+(e&&e.message?e.message:e)+'。Apps Script用コードを最新版に貼り替え、「デプロイを管理」から新バージョンで更新してください。';
+      setStatus(msg,'error');
+      showMasterQuickSheetResult('', msg, true);
+      toast('スプレッドシート整理に失敗しました','error');
+    }
+  }
+
   async function cloudSave(){
     const url=requireEndpoint(); if(!url)return;
     let data;
@@ -4948,6 +5403,47 @@ function loadProject(req) {
       setStatus('クラウド保存データを読み込みました。');
       toast('クラウドから読み込みました','success');
     }catch(e){setStatus('読み込み失敗：'+e.message,'error');}
+  }
+  async function cloudDelete(){
+    const url=requireEndpoint(); if(!url)return;
+    const select=$('cloudProjectSelect');
+    const cloudId=(select&&select.value)||localStorage.getItem(SELECTED_ID_KEY)||'';
+    if(!cloudId){setStatus('削除するクラウド保存データを選択してください。','error');return;}
+    const label=select&&select.options&&select.selectedIndex>=0 ? (select.options[select.selectedIndex].textContent||'選択中のデータ') : '選択中のデータ';
+    if(!confirm('「'+label+'」をクラウド保存から削除しますか？\n\n削除されるもの：\n・スプレッドシートの該当行\n・Google Drive内の保存JSONファイル\n\n削除されないもの：\n・ブラウザ保存\n・LINE公式側に反映済みのリッチメニュー'))return;
+    setStatus('クラウド保存データを削除中...');
+    showMasterQuickSheetResult('', 'クラウド保存データを削除中...');
+    try{
+      let result;
+      try{result=await postJson(url,{action:'delete',cloudId:cloudId});}
+      catch(_){result=await jsonp(url,{action:'delete',cloudId:cloudId});}
+      if(!result.ok)throw new Error(result.message||'削除に失敗しました。');
+      rememberSpreadsheetUrl(result);
+      try{
+        if((localStorage.getItem(SELECTED_ID_KEY)||'')===cloudId)localStorage.removeItem(SELECTED_ID_KEY);
+      }catch(_){}
+      const msg=(result.message||'クラウド保存データを削除しました。')+' 削除行数：'+(result.deletedRows||0)+'件';
+      setStatus(msg);
+      showMasterQuickSheetResult(result.spreadsheetUrl||'', msg);
+      toast('クラウド保存データを削除しました','success');
+      if(select){
+        const list=Array.isArray(result.list)?result.list:null;
+        if(list){
+          select.innerHTML='<option value="">クラウド保存データを選択</option>'+list.map(item=>{
+            const optionLabel=(item.clientName||'未設定')+' / '+(item.projectName||'リッチメニュー')+(item.updatedAt?' / '+String(item.updatedAt).slice(0,10):'');
+            return '<option value="'+escapeText(item.cloudId)+'">'+escapeText(optionLabel)+'</option>';
+          }).join('');
+        }else{
+          await cloudList(false);
+        }
+      }else{
+        await cloudList(false);
+      }
+    }catch(e){
+      const msg='クラウド削除に失敗しました：'+(e&&e.message?e.message:e)+'。Apps Script用コードを最新版に貼り替え、「デプロイを管理」から新バージョンで更新してください。';
+      setStatus(msg,'error');
+      showMasterQuickSheetResult('', msg, 'error');
+    }
   }
   function showSpreadsheetDirectLink(sheetUrl,message){
     if(!sheetUrl)return;
@@ -5078,6 +5574,36 @@ function loadProject(req) {
     const btn=$('btnCopyCloudSheetUrl');
     if(btn&&!btn.dataset.bound){btn.dataset.bound='1';btn.addEventListener('click',copySpreadsheetUrl);}
   }
+  function ensureCloudDeduplicateButton(){
+    const actions=qs('#cloudSaveDetails .cloud-save-actions');
+    if(!actions)return;
+    let btn=$('btnCloudDeduplicate');
+    if(!btn){
+      btn=document.createElement('button');
+      btn.type='button';
+      btn.id='btnCloudDeduplicate';
+      btn.textContent='重複整理';
+      const save=$('btnCloudSave');
+      if(save&&save.parentElement===actions)actions.insertBefore(btn,save);
+      else actions.appendChild(btn);
+    }
+    if(!btn.dataset.bound){btn.dataset.bound='1';btn.addEventListener('click',cloudDeduplicate);}
+  }
+  function ensureCloudDeleteButton(){
+    const actions=qs('#cloudSaveDetails .cloud-save-actions');
+    if(!actions)return;
+    let btn=$('btnCloudDelete');
+    if(!btn){
+      btn=document.createElement('button');
+      btn.type='button';
+      btn.id='btnCloudDelete';
+      btn.textContent='クラウド削除';
+      const save=$('btnCloudSave');
+      if(save&&save.parentElement===actions)actions.insertBefore(btn,save);
+      else actions.appendChild(btn);
+    }
+    if(!btn.dataset.bound){btn.dataset.bound='1';btn.addEventListener('click',cloudDelete);}
+  }
   function ensureCloudSaveUi(){
     const body=qs('#projectClientMenuPanel .client-manager-body');
     const metaGrid=qs('.project-meta-card .project-meta-grid');
@@ -5093,6 +5619,8 @@ function loadProject(req) {
         metaGrid.appendChild(details);
       }
       ensureVisibleOpenSheetButton();
+      ensureCloudDeduplicateButton();
+      ensureCloudDeleteButton();
       const inputExisting=document.getElementById('cloudSaveEndpointInput');
       if(inputExisting&&String(inputExisting.value||'').trim())details.removeAttribute('open');
       else details.setAttribute('open','');
@@ -5115,6 +5643,10 @@ function loadProject(req) {
         '</div>'+
         '<div class="cloud-save-actions">'+
           '<button type="button" id="btnCloudSaveTest">接続テスト</button>'+
+          '<button type="button" id="btnCloudJapaneseHeaders">項目名を日本語化</button>'+
+          '<button type="button" id="btnCloudOrganizeSheet">シート整理</button>'+
+          '<button type="button" id="btnCloudDeduplicate">重複整理</button>'+
+          '<button type="button" id="btnCloudDelete">クラウド削除</button>'+
           '<button type="button" id="btnCloudSave" class="cloud-primary">クラウドに保存</button>'+
           '<button type="button" id="btnCloudLoad">クラウドから読み込み</button>'+
           '<button type="button" id="btnCloudList">一覧取得</button>'+
@@ -5165,7 +5697,13 @@ function loadProject(req) {
     const save=$('btnCloudSave'); if(save)save.addEventListener('click',cloudSave);
     const load=$('btnCloudLoad'); if(load)load.addEventListener('click',cloudLoad);
     const list=$('btnCloudList'); if(list)list.addEventListener('click',()=>cloudList(true));
+    const headersBtn=$('btnCloudJapaneseHeaders'); if(headersBtn)headersBtn.addEventListener('click',cloudJapaneseHeaders);
+    const organizeSheetBtn=$('btnCloudOrganizeSheet'); if(organizeSheetBtn&&!organizeSheetBtn.dataset.bound){organizeSheetBtn.dataset.bound='1';organizeSheetBtn.addEventListener('click',cloudOrganizeSheet);}
+    const dedupeBtn=$('btnCloudDeduplicate'); if(dedupeBtn&&!dedupeBtn.dataset.bound){dedupeBtn.dataset.bound='1';dedupeBtn.addEventListener('click',cloudDeduplicate);}
+    const cloudDeleteBtn=$('btnCloudDelete'); if(cloudDeleteBtn&&!cloudDeleteBtn.dataset.bound){cloudDeleteBtn.dataset.bound='1';cloudDeleteBtn.addEventListener('click',cloudDelete);}
     bindCloudOpenSheetButtons();
+    ensureCloudDeduplicateButton();
+    ensureCloudDeleteButton();
     ensureVisibleOpenSheetButton();
     if(typeof updateMasterCardQuickStatus==='function')setTimeout(updateMasterCardQuickStatus,0);
     const copy=$('btnCopyCloudScript'); if(copy)copy.addEventListener('click',copyScriptCode);
@@ -5418,57 +5956,7 @@ function loadProject(req) {
 </script>
 <!-- MASTER_BASIC_SETTINGS_NO_EXPAND_END -->
 
-<!-- MASTER_SAVE_ONLY_PATCH_START -->
-<style id="masterSaveOnlyPatchStyle">
-  .line-mini-note{white-space:pre-line!important;}
-</style>
-<script id="masterSaveOnlyPatchScript">
-(function(){
-  'use strict';
-  function byId(id){return document.getElementById(id)}
-  function saveOnly(){
-    var btn=byId('btnApiUpload');
-    if(!btn || btn.dataset.masterSaveOnlyApplied==='1')return;
-    var clone=btn.cloneNode(true);
-    clone.dataset.masterSaveOnlyApplied='1';
-    clone.textContent='💾 お手軽保存';
-    clone.title='このブラウザ内に作業データを保存します。LINEには反映しません。';
-    btn.parentNode.replaceChild(clone,btn);
-    clone.addEventListener('click',function(e){
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      try{
-        if(typeof saveProjectToLocal==='function')saveProjectToLocal(true);
-        if(typeof markProjectFileSaved==='function')markProjectFileSaved();
-        if(typeof updateProjectSaveStatus==='function'){
-          var time=(typeof formatSaveTime==='function')?formatSaveTime(new Date()):'';
-          updateProjectSaveStatus('お手軽保存済み '+time,'saved');
-        }
-        if(typeof showToast==='function')showToast('保存しました','success');
-      }catch(error){
-        var msg=(error&&error.message)||'保存に失敗しました。';
-        if(typeof showToast==='function')showToast(msg,'error');
-        else alert(msg);
-      }
-    },true);
-  }
-  function updateSaveNote(){
-    var mini=document.querySelector('.line-mini-note');
-    if(mini){
-      mini.style.whiteSpace='pre-line';
-      mini.textContent='LINEに反映を押した後に確認されたい場合は、LINEアプリを落としてください。\nまれに、反映されるのに、数分お時間がかかる時があります。\nそれでも反映されない時は、LINE表示を停止を押し、リッチメニューが消えてるかを確認後、再度LINEに反映を押してください。';
-    }
-  }
-  function run(){saveOnly();updateSaveNote();}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});
-  else run();
-  window.addEventListener('load',run,{once:true,passive:true});
-  [100,300,800].forEach(function(ms){setTimeout(run,ms);});
-})();
-</script>
-<!-- MASTER_SAVE_ONLY_PATCH_END -->
-
-
+<!-- MASTER_SAVE_ONLY_PATCH_REMOVED: btnApiUpload は本体処理でお手軽保存専用に統一済み -->
 
 <!-- LOCAL_SAVE_RECOVERY_PATCH_START -->
 <style id="localSaveRecoveryPatchStyle">
@@ -5618,6 +6106,563 @@ function loadProject(req) {
 
 
 
+
+
+
+
+
+
+
+
+<style id="masterManagerModalPatchStyle">
+/* v6.8 preview: 保存管理は小さい管理カード内に押し込まず、大きいモーダルで表示 */
+.project-client-management-area[open] > .project-client-menu-panel.client-manager-panel{
+  display:none!important;
+}
+.project-client-management-area[open]{
+  border:1px solid rgba(6,199,85,.35)!important;
+  background:#f0fdf4!important;
+  padding:0!important;
+  box-shadow:none!important;
+}
+.project-client-management-area[open] > .project-client-management-summary{
+  border-radius:8px!important;
+  background:#ecfdf5!important;
+  color:#047857!important;
+}
+.master-save-modal-backdrop{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483300!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+  background:rgba(15,23,42,.42)!important;
+}
+.master-save-modal-backdrop.open{display:flex!important;}
+.master-save-modal{
+  width:min(980px,96vw)!important;
+  height:min(760px,92vh)!important;
+  display:grid!important;
+  grid-template-rows:auto auto minmax(0,1fr)!important;
+  background:#fff!important;
+  border:1px solid #dbe3ee!important;
+  border-radius:16px!important;
+  box-shadow:0 26px 80px rgba(15,23,42,.28)!important;
+  overflow:hidden!important;
+}
+.master-save-modal-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  padding:16px 18px!important;
+  border-bottom:1px solid #e2e8f0!important;
+  background:linear-gradient(180deg,#ffffff,#f8fafc)!important;
+}
+.master-save-modal-title{
+  display:grid!important;
+  gap:3px!important;
+}
+.master-save-modal-title strong{
+  font-size:18px!important;
+  font-weight:900!important;
+  color:#0f172a!important;
+}
+.master-save-modal-title span{
+  font-size:12px!important;
+  font-weight:800!important;
+  color:#64748b!important;
+}
+.master-save-modal-close{
+  width:36px!important;
+  height:36px!important;
+  border:1px solid #dbe3ee!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:#334155!important;
+  font-size:22px!important;
+  font-weight:900!important;
+  cursor:pointer!important;
+}
+.master-save-modal-tabs{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:0!important;
+  padding:10px 14px 0!important;
+  background:#fff!important;
+  border-bottom:1px solid #e2e8f0!important;
+}
+.master-save-modal-tab{
+  min-height:46px!important;
+  border:0!important;
+  border-bottom:3px solid transparent!important;
+  background:#fff!important;
+  color:#334155!important;
+  font-size:14px!important;
+  font-weight:900!important;
+  cursor:pointer!important;
+}
+.master-save-modal-tab.active{
+  color:#06a84a!important;
+  border-bottom-color:#06c755!important;
+  background:#f8fffb!important;
+}
+.master-save-modal-body{
+  min-height:0!important;
+  overflow:auto!important;
+  padding:16px!important;
+  background:#f8fafc!important;
+}
+.master-save-pane{display:none!important;}
+.master-save-pane.active{display:grid!important;gap:14px!important;}
+.master-save-card{
+  background:#fff!important;
+  border:1px solid #dbe3ee!important;
+  border-radius:14px!important;
+  padding:14px!important;
+  box-shadow:0 1px 4px rgba(15,23,42,.06)!important;
+  display:grid!important;
+  gap:12px!important;
+}
+.master-save-card h4{
+  margin:0!important;
+  font-size:16px!important;
+  font-weight:900!important;
+  color:#0f172a!important;
+}
+.master-save-card p{
+  margin:0!important;
+  font-size:12px!important;
+  color:#64748b!important;
+  line-height:1.6!important;
+}
+.master-save-grid-2{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:14px!important;
+}
+.master-save-field{display:grid!important;gap:5px!important;}
+.master-save-field label{
+  font-size:12px!important;
+  font-weight:900!important;
+  color:#334155!important;
+}
+.master-save-field .value,
+.master-save-field input,
+.master-save-field select,
+.master-save-field textarea{
+  width:100%!important;
+  min-height:40px!important;
+  border:1px solid #d7dee7!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  padding:9px 10px!important;
+  font-size:13px!important;
+  box-sizing:border-box!important;
+}
+.master-save-field textarea{
+  min-height:220px!important;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;
+  font-size:11px!important;
+  line-height:1.45!important;
+}
+.master-save-actions{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+.master-save-actions button{
+  min-height:44px!important;
+  border:1px solid #d7dee7!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:#0f172a!important;
+  font-size:13px!important;
+  font-weight:900!important;
+  cursor:pointer!important;
+}
+.master-save-actions .primary{
+  background:#06c755!important;
+  border-color:#06c755!important;
+  color:#fff!important;
+}
+.master-save-actions .blue{
+  background:#eff6ff!important;
+  border-color:#bfdbfe!important;
+  color:#1d4ed8!important;
+}
+.master-save-actions .danger{
+  background:#fff5f5!important;
+  border-color:#fecaca!important;
+  color:#b91c1c!important;
+}
+.master-save-status-box{
+  display:grid!important;
+  gap:4px!important;
+  padding:11px 12px!important;
+  border:1px solid #bbf7d0!important;
+  border-radius:12px!important;
+  background:#f0fdf4!important;
+  color:#166534!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  line-height:1.6!important;
+}
+.master-save-browser-slot .client-manager-actions{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:8px!important;
+  margin:0 0 12px!important;
+}
+.master-save-browser-slot .client-manager-new-btn{
+  height:40px!important;
+  border-radius:10px!important;
+}
+.master-save-browser-slot .client-manager-search{
+  height:40px!important;
+  border-radius:10px!important;
+}
+.master-save-browser-slot .client-manager-list{
+  display:grid!important;
+  gap:10px!important;
+}
+.master-save-browser-slot .client-manager-card{
+  border-radius:12px!important;
+}
+.master-sheet-result{
+  display:none!important;
+  gap:10px!important;
+  padding:12px!important;
+  border:1px solid #bfdbfe!important;
+  border-radius:12px!important;
+  background:#eff6ff!important;
+  color:#1e3a8a!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  line-height:1.5!important;
+}
+.master-sheet-result.show{display:grid!important;}
+.master-sheet-result.error{
+  border-color:#fecaca!important;
+  background:#fff7f7!important;
+  color:#991b1b!important;
+}
+.master-sheet-result .actions{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+}
+.master-sheet-result a,
+.master-sheet-result button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:38px!important;
+  border-radius:9px!important;
+  text-decoration:none!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  cursor:pointer!important;
+}
+.master-sheet-result a{
+  background:#2563eb!important;
+  color:#fff!important;
+  border:1px solid #2563eb!important;
+}
+.master-sheet-result button{
+  background:#fff!important;
+  color:#1e3a8a!important;
+  border:1px solid #bfdbfe!important;
+}
+.master-danger-box{
+  display:grid!important;
+  gap:10px!important;
+  padding:12px!important;
+  border:1px solid #fecaca!important;
+  border-radius:12px!important;
+  background:#fff5f5!important;
+}
+.master-danger-box strong{
+  font-size:13px!important;
+  color:#b91c1c!important;
+}
+.master-cloud-hidden-source{
+  display:none!important;
+}
+@media(max-width:760px){
+  .master-save-modal{
+    width:98vw!important;
+    height:94vh!important;
+  }
+  .master-save-modal-tabs{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .master-save-grid-2{
+    grid-template-columns:1fr!important;
+  }
+  .master-save-actions,
+  .master-sheet-result .actions{
+    grid-template-columns:1fr!important;
+  }
+}
+</style>
+<script id="masterManagerModalPatchScript">
+(function(){
+  const TAB_KEY='richmenu_plus_save_modal_tab_v68';
+  function byId(id){return document.getElementById(id)}
+  function qs(sel,root){return (root||document).querySelector(sel)}
+  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
+  function click(id){const el=byId(id); if(el){el.click(); return true;} return false;}
+  function text(id){const el=byId(id); return String((el&&('value' in el?el.value:el.textContent))||'').trim();}
+  function copyText(v){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v||'').catch(()=>{});}}
+  function setTab(tab){
+    const modal=byId('masterSaveModal'); if(!modal)return;
+    qsa('.master-save-modal-tab',modal).forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+    qsa('.master-save-pane',modal).forEach(p=>p.classList.toggle('active',p.dataset.pane===tab));
+    try{localStorage.setItem(TAB_KEY,tab)}catch(_){}
+  }
+  function getTab(){try{return localStorage.getItem(TAB_KEY)||'save'}catch(_){return 'save'}}
+  function openModal(tab){
+    buildModal();
+    const backdrop=byId('masterSaveModalBackdrop');
+    if(backdrop)backdrop.classList.add('open');
+    setTab(tab||getTab());
+    syncAll();
+  }
+  function closeModal(){
+    const backdrop=byId('masterSaveModalBackdrop');
+    if(backdrop)backdrop.classList.remove('open');
+  }
+  function syncMirror(srcId,dstId){
+    const src=byId(srcId), dst=byId(dstId); if(!src||!dst)return;
+    dst.textContent=String(src.value||'').trim()||'未入力';
+    if(!src.dataset.masterModalMirror){
+      src.dataset.masterModalMirror='1';
+      ['input','change','blur'].forEach(ev=>src.addEventListener(ev,()=>syncMirror(srcId,dstId)));
+    }
+  }
+  function syncSelect(){
+    const src=byId('cloudProjectSelect'), dst=byId('masterCloudProjectSelect'); if(!src||!dst)return;
+    const current=src.value||'';
+    dst.innerHTML='';
+    Array.from(src.options||[]).forEach(opt=>{
+      const n=document.createElement('option');
+      n.value=opt.value; n.textContent=opt.textContent;
+      dst.appendChild(n);
+    });
+    dst.value=current;
+    if(!dst.dataset.bound){
+      dst.dataset.bound='1';
+      dst.addEventListener('change',()=>{
+        src.value=dst.value;
+        src.dispatchEvent(new Event('change',{bubbles:true}));
+      });
+    }
+  }
+  function syncCloudUrl(){
+    const src=byId('cloudSaveEndpointInput'), dst=byId('masterCloudUrlMirror'); if(!src||!dst)return;
+    if(document.activeElement!==dst)dst.value=src.value||'';
+    if(!src.dataset.masterUrlMirror){
+      src.dataset.masterUrlMirror='1';
+      ['input','change','blur'].forEach(ev=>src.addEventListener(ev,()=>syncCloudUrl()));
+    }
+    if(!dst.dataset.bound){
+      dst.dataset.bound='1';
+      dst.addEventListener('input',()=>{
+        src.value=dst.value;
+        src.dispatchEvent(new Event('input',{bubbles:true}));
+      });
+      dst.addEventListener('change',()=>{
+        src.value=dst.value;
+        src.dispatchEvent(new Event('change',{bubbles:true}));
+      });
+    }
+  }
+  function syncCode(){
+    const src=byId('cloudAppsScriptCode'), dst=byId('masterCloudCodeMirror');
+    if(src&&dst)dst.value=src.value||'';
+  }
+  function syncAll(){
+    syncMirror('clientProjectNameInput','masterSaveClientName');
+    syncMirror('projectFileName','masterSaveFileName');
+    syncSelect();
+    syncCloudUrl();
+    syncCode();
+    syncSheetResult();
+  }
+  function syncSheetResult(){
+    const src=byId('masterQuickSheetResult');
+    const target=byId('masterSheetResult');
+    if(!src||!target)return;
+    const show=src.classList.contains('show');
+    const err=src.classList.contains('error');
+    target.classList.toggle('show',show);
+    target.classList.toggle('error',err);
+    const msg=byId('masterSheetResultMessage');
+    const a=src.querySelector('a');
+    if(msg)msg.textContent=src.textContent.trim()||'保存先スプレッドシートのURLを取得すると、ここに表示されます。';
+    const link=byId('masterSheetResultLink');
+    if(link){
+      if(a&&a.href){link.href=a.href;link.style.display='flex';}
+      else link.style.display='none';
+    }
+  }
+  function bindSheetObserver(){
+    const src=byId('masterQuickSheetResult'); if(!src||src.dataset.modalObserved)return;
+    src.dataset.modalObserved='1';
+    new MutationObserver(syncSheetResult).observe(src,{childList:true,subtree:true,attributes:true,characterData:true});
+  }
+  function buildModal(){
+    if(byId('masterSaveModalBackdrop')){syncAll(); return;}
+    const body=document.body;
+    const backdrop=document.createElement('div');
+    backdrop.id='masterSaveModalBackdrop';
+    backdrop.className='master-save-modal-backdrop';
+    backdrop.innerHTML=
+    '<div class="master-save-modal" id="masterSaveModal" role="dialog" aria-modal="true" aria-label="保存管理">'+
+      '<div class="master-save-modal-head">'+
+        '<div class="master-save-modal-title"><strong>保存管理</strong><span>作成したリッチメニューの保存・読み込み・管理・設定を行います</span></div>'+
+        '<button type="button" class="master-save-modal-close" id="masterSaveModalClose" aria-label="閉じる">×</button>'+
+      '</div>'+
+      '<div class="master-save-modal-tabs">'+
+        '<button type="button" class="master-save-modal-tab" data-tab="save">保存する</button>'+
+        '<button type="button" class="master-save-modal-tab" data-tab="load">読み込む</button>'+
+        '<button type="button" class="master-save-modal-tab" data-tab="manage">管理する</button>'+
+        '<button type="button" class="master-save-modal-tab" data-tab="settings">設定</button>'+
+      '</div>'+
+      '<div class="master-save-modal-body">'+
+        '<div class="master-save-pane" data-pane="save">'+
+          '<div class="master-save-card">'+
+            '<h4>保存する</h4><p>現在の作業データを保存します。まずはこのPCに保存してから、必要に応じてクラウドにも保存できます。</p>'+
+            '<div class="master-save-grid-2">'+
+              '<div class="master-save-field"><label>クライアント名</label><div class="value" id="masterSaveClientName">未入力</div></div>'+
+              '<div class="master-save-field"><label>保存名</label><div class="value" id="masterSaveFileName">未入力</div></div>'+
+            '</div>'+
+            '<div class="master-save-status-box"><div>保存の基本順：このPCに保存 → クラウドに保存</div><div id="masterSaveStatusLine"></div></div>'+
+            '<div class="master-save-actions">'+
+              '<button type="button" class="primary" id="masterBtnLocalSave">💾 このPCに保存</button>'+
+              '<button type="button" class="blue" id="masterBtnCloudSave">☁ クラウドに保存</button>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="master-save-pane" data-pane="load">'+
+          '<div class="master-save-grid-2">'+
+            '<div class="master-save-card"><h4>ブラウザ保存から読み込む</h4><p>このPCに保存したデータを開きます。</p><div class="master-save-browser-slot" id="masterBrowserSlot"></div></div>'+
+            '<div class="master-save-card">'+
+              '<h4>クラウドから読み込む</h4><p>クラウド保存済みのデータを選択して開きます。</p>'+
+              '<div class="master-save-field"><label>クラウド保存データ</label><select id="masterCloudProjectSelect"><option value="">クラウド保存データを選択</option></select></div>'+
+              '<div class="master-save-actions">'+
+                '<button type="button" class="blue" id="masterBtnCloudList">一覧を更新</button>'+
+                '<button type="button" class="primary" id="masterBtnCloudLoad">クラウドから開く</button>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="master-save-pane" data-pane="manage">'+
+          '<div class="master-save-grid-2">'+
+            '<div class="master-save-card">'+
+              '<h4>管理する</h4><p>保存先スプレッドシートやクラウド保存データを整理します。</p>'+
+              '<div class="master-save-actions">'+
+                '<button type="button" class="blue" id="masterBtnOpenSheet">📊 スプレッドシートを開く</button>'+
+                '<button type="button" id="masterBtnOrganizeSheet">🧹 シート整理</button>'+
+                '<button type="button" id="masterBtnDeduplicate">🔁 重複整理</button>'+
+              '</div>'+
+              '<div class="master-sheet-result" id="masterSheetResult"><div id="masterSheetResultMessage">保存先スプレッドシートのURLを取得すると、ここに表示されます。</div><div class="actions"><a id="masterSheetResultLink" href="#" target="_blank" rel="noopener" style="display:none;">📊 スプレッドシートを開く</a><button type="button" id="masterSheetCopyBtn">URLをコピー</button></div></div>'+
+            '</div>'+
+            '<div class="master-save-card">'+
+              '<h4>削除・危険な操作</h4><p>削除は元に戻せないため、必要なものだけ実行してください。</p>'+
+              '<div class="master-danger-box">'+
+                '<strong>危険な操作</strong>'+
+                '<button type="button" class="danger" id="masterBtnCloudDelete">クラウド削除</button>'+
+                '<div style="font-size:11px;color:#991b1b;line-height:1.6;">クラウド削除は、Driveの保存ファイルとスプレッドシートの該当行を対象にします。</div>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="master-save-pane" data-pane="settings">'+
+          '<div class="master-save-card">'+
+            '<h4>設定</h4><p>クラウド保存を使うためのApps Script URLとコードを管理します。</p>'+
+            '<div class="master-save-field"><label>Apps Script URL</label><input type="url" id="masterCloudUrlMirror" placeholder="https://script.google.com/macros/s/xxxxx/exec"></div>'+
+            '<div class="master-save-actions">'+
+              '<button type="button" class="primary" id="masterBtnCloudTest">接続テスト</button>'+
+              '<button type="button" id="masterBtnCopyScript">コードをコピー</button>'+
+            '</div>'+
+            '<div class="master-save-field"><label>Apps Script用コード</label><textarea id="masterCloudCodeMirror" readonly></textarea></div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+    body.appendChild(backdrop);
+
+    const modal=byId('masterSaveModal');
+    qsa('.master-save-modal-tab',modal).forEach(btn=>btn.addEventListener('click',()=>setTab(btn.dataset.tab)));
+    byId('masterSaveModalClose').addEventListener('click',closeModal);
+    backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeModal();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+    // move existing browser list controls into modal
+    const panel=byId('projectClientMenuPanel');
+    const actions=qs('.client-manager-actions',panel);
+    const list=qs('.client-manager-list',panel);
+    const slot=byId('masterBrowserSlot');
+    if(slot&&actions&&list){slot.appendChild(actions);slot.appendChild(list);}
+
+    // hide original cloud details but keep source controls/events available
+    const cloud=byId('cloudSaveDetails');
+    if(cloud)cloud.classList.add('master-cloud-hidden-source');
+
+    const bind=(id,fn)=>{const el=byId(id); if(el&&!el.dataset.bound){el.dataset.bound='1'; el.addEventListener('click',fn);}};
+    bind('masterBtnLocalSave',()=>{click('btnApiUpload'); const line=byId('masterSaveStatusLine'); if(line)line.textContent='このPCに保存を実行しました。必要に応じてクラウドにも保存してください。';});
+    bind('masterBtnCloudSave',()=>click('btnCloudSave'));
+    bind('masterBtnCloudList',()=>click('btnCloudList'));
+    bind('masterBtnCloudLoad',()=>{
+      const src=byId('cloudProjectSelect'), dst=byId('masterCloudProjectSelect');
+      if(src&&dst){src.value=dst.value;src.dispatchEvent(new Event('change',{bubbles:true}));}
+      click('btnCloudLoad');
+    });
+    bind('masterBtnOpenSheet',()=>{ if(typeof window.cloudOpenSpreadsheet==='function')window.cloudOpenSpreadsheet(); else click('btnCloudOpenSheetTop');});
+    bind('masterBtnOrganizeSheet',()=>click('btnCloudOrganizeSheet'));
+    bind('masterBtnDeduplicate',()=>click('btnCloudDeduplicate'));
+    bind('masterBtnCloudDelete',()=>click('btnCloudDelete'));
+    bind('masterBtnCloudTest',()=>{
+      const src=byId('cloudSaveEndpointInput'), dst=byId('masterCloudUrlMirror');
+      if(src&&dst){src.value=dst.value;src.dispatchEvent(new Event('input',{bubbles:true}));}
+      click('btnCloudSaveTest');
+    });
+    bind('masterBtnCopyScript',()=>click('btnCopyCloudScript'));
+    bind('masterSheetCopyBtn',()=>{const a=byId('masterSheetResultLink');if(a&&a.href)copyText(a.href);});
+
+    bindSheetObserver();
+    syncAll();
+    setTab(getTab());
+  }
+  function wireSummary(){
+    const area=qs('.project-client-management-area');
+    const summary=qs('.project-client-management-summary');
+    if(!area||!summary||summary.dataset.modalBound)return;
+    summary.dataset.modalBound='1';
+    summary.innerHTML='▼ 保存管理を開く';
+    summary.addEventListener('click',function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      openModal();
+      return false;
+    },true);
+  }
+  function start(){
+    if(typeof window.ensureCloudSaveUi==='function')window.ensureCloudSaveUi();
+    wireSummary();
+    buildModal();
+    setTimeout(()=>{wireSummary();syncAll();},200);
+    setTimeout(()=>{wireSummary();syncAll();},800);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);
+  else start();
+  window.openMasterSaveModal=openModal;
+})();
+</script>
 
 </body>
 </html>
