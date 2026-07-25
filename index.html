@@ -6664,5 +6664,549 @@ function loadProject(req) {
 })();
 </script>
 
+
+<style id="linkedSpreadsheetDisplayV69Style">
+  .linked-sheet-card{
+    background:#fff!important;
+    border:1px solid #bfdbfe!important;
+    border-radius:14px!important;
+    padding:14px!important;
+    box-shadow:0 1px 4px rgba(15,23,42,.06)!important;
+    display:grid!important;
+    gap:12px!important;
+  }
+  .linked-sheet-card h4{
+    margin:0!important;
+    font-size:16px!important;
+    font-weight:900!important;
+    color:#0f172a!important;
+  }
+  .linked-sheet-help{
+    margin:0!important;
+    font-size:12px!important;
+    color:#64748b!important;
+    line-height:1.65!important;
+  }
+  .linked-sheet-current{
+    display:grid!important;
+    gap:8px!important;
+    padding:12px!important;
+    border:1px solid #dbeafe!important;
+    border-radius:12px!important;
+    background:#eff6ff!important;
+    color:#1e3a8a!important;
+    font-size:12px!important;
+    font-weight:800!important;
+    line-height:1.55!important;
+  }
+  .linked-sheet-current.empty{
+    border-color:#fed7aa!important;
+    background:#fff7ed!important;
+    color:#9a3412!important;
+  }
+  .linked-sheet-url{
+    display:block!important;
+    word-break:break-all!important;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;
+    font-size:11px!important;
+    color:#334155!important;
+    background:#fff!important;
+    border:1px solid #dbeafe!important;
+    border-radius:8px!important;
+    padding:8px!important;
+  }
+  .linked-sheet-actions{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  .linked-sheet-actions button,
+  .linked-sheet-actions a{
+    min-height:40px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:10px!important;
+    border:1px solid #d7dee7!important;
+    background:#fff!important;
+    color:#0f172a!important;
+    font-size:12px!important;
+    font-weight:900!important;
+    text-decoration:none!important;
+    cursor:pointer!important;
+  }
+  .linked-sheet-actions .primary{
+    background:#2563eb!important;
+    border-color:#2563eb!important;
+    color:#fff!important;
+  }
+  .linked-sheet-actions .green{
+    background:#06c755!important;
+    border-color:#06c755!important;
+    color:#fff!important;
+  }
+  .linked-sheet-usage{
+    display:grid!important;
+    gap:6px!important;
+    padding:12px!important;
+    border:1px solid #dcfce7!important;
+    border-radius:12px!important;
+    background:#f0fdf4!important;
+    color:#166534!important;
+    font-size:12px!important;
+    line-height:1.65!important;
+  }
+  .linked-sheet-usage strong{
+    font-size:13px!important;
+    font-weight:900!important;
+  }
+  .linked-sheet-usage ol{
+    margin:0!important;
+    padding-left:20px!important;
+  }
+  @media(max-width:760px){
+    .linked-sheet-actions{grid-template-columns:1fr!important;}
+  }
+</style>
+<script id="linkedSpreadsheetDisplayV69Script">
+(function(){
+  'use strict';
+  var SPREADSHEET_URL_KEY='richmenu_plus_cloud_spreadsheet_url_v1';
+  function byId(id){return document.getElementById(id);}
+  function qs(sel,root){return (root||document).querySelector(sel);}
+  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
+  function getCachedSheetUrl(){
+    try{return localStorage.getItem(SPREADSHEET_URL_KEY)||'';}catch(_){return '';}
+  }
+  function setCachedSheetUrl(url){
+    try{if(url)localStorage.setItem(SPREADSHEET_URL_KEY,url);}catch(_){}
+  }
+  function copyText(text){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text||'').then(function(){
+        if(typeof showToast==='function')showToast('スプレッドシートURLをコピーしました','success');
+      }).catch(function(){});
+    }
+  }
+  function getUrlFromExistingResult(){
+    var links=[
+      byId('masterSheetResultLink'),
+      byId('cloudSheetDirectLink'),
+      qs('#masterQuickSheetResult a')
+    ];
+    for(var i=0;i<links.length;i++){
+      var href=links[i]&&links[i].href;
+      if(href&&href!=='#'&&href.indexOf('http')===0)return href;
+    }
+    return '';
+  }
+  function syncLinkedSheetCards(){
+    var found=getUrlFromExistingResult();
+    if(found)setCachedSheetUrl(found);
+    var url=found||getCachedSheetUrl();
+    qsa('.linked-sheet-current').forEach(function(box){
+      box.classList.toggle('empty',!url);
+      var label=box.querySelector('.linked-sheet-label');
+      var urlBox=box.querySelector('.linked-sheet-url');
+      if(label)label.textContent=url?'現在、紐づけ中のスプレッドシートがあります。':'まだ紐づけ中のスプレッドシートURLを取得していません。';
+      if(urlBox)urlBox.textContent=url||'Apps Script URLを設定し、「紐づけシートを表示」を押してください。';
+    });
+    qsa('.linked-sheet-open-link').forEach(function(a){
+      if(url){
+        a.href=url;
+        a.removeAttribute('aria-disabled');
+        a.style.opacity='1';
+        a.style.pointerEvents='auto';
+      }else{
+        a.href='#';
+        a.setAttribute('aria-disabled','true');
+        a.style.opacity='.55';
+        a.style.pointerEvents='none';
+      }
+    });
+  }
+  function buildLinkedSheetCard(){
+    var card=document.createElement('div');
+    card.className='linked-sheet-card';
+    card.innerHTML=
+      '<h4>紐づけ中のスプレッドシート</h4>'+
+      '<p class="linked-sheet-help">クラウド保存で使っているGoogleスプレッドシートをここに表示します。保存一覧・重複整理・シート整理・クラウド削除の確認に使えます。</p>'+
+      '<div class="linked-sheet-current empty">'+
+        '<div class="linked-sheet-label">まだ紐づけ中のスプレッドシートURLを取得していません。</div>'+
+        '<div class="linked-sheet-url">Apps Script URLを設定し、「紐づけシートを表示」を押してください。</div>'+
+      '</div>'+
+      '<div class="linked-sheet-actions">'+
+        '<button type="button" class="green linked-sheet-fetch-btn">紐づけシートを表示</button>'+
+        '<a class="primary linked-sheet-open-link" href="#" target="_blank" rel="noopener" aria-disabled="true">シートを開く</a>'+
+        '<button type="button" class="linked-sheet-copy-btn">URLをコピー</button>'+
+      '</div>'+
+      '<div class="linked-sheet-usage">'+
+        '<strong>使い方</strong>'+
+        '<ol>'+
+          '<li>設定タブでApps Script URLを入力します。</li>'+
+          '<li>接続テスト、または「紐づけシートを表示」を押します。</li>'+
+          '<li>URLが表示されたら「シートを開く」から確認できます。</li>'+
+          '<li>表示されない場合は、Apps Scriptコードを最新版に貼り替えて新バージョンでデプロイしてください。</li>'+
+        '</ol>'+
+      '</div>';
+    card.querySelector('.linked-sheet-fetch-btn').addEventListener('click',function(e){
+      e.preventDefault();
+      if(typeof window.cloudOpenSpreadsheet==='function'){
+        window.cloudOpenSpreadsheet();
+        setTimeout(syncLinkedSheetCards,300);
+        setTimeout(syncLinkedSheetCards,1000);
+      }else if(typeof showToast==='function'){
+        showToast('Apps Script URLを設定してから実行してください','error');
+      }
+    });
+    card.querySelector('.linked-sheet-copy-btn').addEventListener('click',function(e){
+      e.preventDefault();
+      var url=getUrlFromExistingResult()||getCachedSheetUrl();
+      if(!url){
+        if(typeof showToast==='function')showToast('コピーするURLがまだありません','error');
+        return;
+      }
+      copyText(url);
+    });
+    return card;
+  }
+  function insertLinkedSheetCards(){
+    var modal=byId('masterSaveModal');
+    if(!modal)return;
+    var managePane=qs('.master-save-pane[data-pane="manage"]',modal);
+    var settingsPane=qs('.master-save-pane[data-pane="settings"]',modal);
+    if(managePane&&!byId('linkedSheetCardManage')){
+      var card=buildLinkedSheetCard();
+      card.id='linkedSheetCardManage';
+      managePane.insertBefore(card,managePane.firstChild);
+    }
+    if(settingsPane&&!byId('linkedSheetCardSettings')){
+      var card2=buildLinkedSheetCard();
+      card2.id='linkedSheetCardSettings';
+      settingsPane.insertBefore(card2,settingsPane.firstChild);
+    }
+    syncLinkedSheetCards();
+  }
+  function observeSheetResult(){
+    var targets=[byId('masterSheetResult'),byId('masterQuickSheetResult'),byId('cloudSheetDirectRow')].filter(Boolean);
+    targets.forEach(function(t){
+      if(t.dataset.linkedSheetObserved)return;
+      t.dataset.linkedSheetObserved='1';
+      new MutationObserver(syncLinkedSheetCards).observe(t,{childList:true,subtree:true,attributes:true,characterData:true});
+    });
+  }
+  function silentSaveLineToken(){
+    var input=byId('lineTokenInput');
+    var token=input?String(input.value||'').trim():'';
+    if(!token)return false;
+    try{
+      var remember=byId('rememberLineToken');
+      if(remember&&remember.checked){
+        localStorage.setItem('richmenu_plus_line_token_v1',token);
+        sessionStorage.removeItem('richmenu_plus_line_token_session_v1');
+      }else{
+        sessionStorage.setItem('richmenu_plus_line_token_session_v1',token);
+        localStorage.removeItem('richmenu_plus_line_token_v1');
+      }
+    }catch(_){}
+    return true;
+  }
+  function patchTokenNotice(){
+    try{
+      window.requireLineTokenInput=function(){
+        var input=byId('lineTokenInput');
+        var token=input?String(input.value||'').trim():'';
+        if(!token && !confirm('画面にチャネルアクセストークンが未入力です。Vercel環境変数 LINE_CHANNEL_ACCESS_TOKEN を使用して続行しますか？')){
+          throw new Error('チャネルアクセストークンを入力してください。');
+        }
+        if(token)silentSaveLineToken();
+        return token;
+      };
+      if(typeof requireLineTokenInput!=='undefined'){
+        requireLineTokenInput=window.requireLineTokenInput;
+      }
+    }catch(_){}
+  }
+  function start(){
+    insertLinkedSheetCards();
+    observeSheetResult();
+    syncLinkedSheetCards();
+    patchTokenNotice();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);
+  else start();
+  [300,800,1500,3000].forEach(function(ms){setTimeout(start,ms);});
+  window.syncLinkedSpreadsheetDisplay=syncLinkedSheetCards;
+})();
+</script>
+
+
+<style id="linkedSheetCopyFixV691Style">
+  .linked-sheet-copy-fallback{
+    display:none!important;
+    gap:8px!important;
+    padding:10px!important;
+    border:1px solid #fed7aa!important;
+    border-radius:10px!important;
+    background:#fff7ed!important;
+    color:#9a3412!important;
+    font-size:12px!important;
+    line-height:1.55!important;
+  }
+  .linked-sheet-copy-fallback.show{display:grid!important;}
+  .linked-sheet-copy-fallback input{
+    width:100%!important;
+    min-height:38px!important;
+    border:1px solid #fdba74!important;
+    border-radius:8px!important;
+    padding:8px!important;
+    font-size:12px!important;
+    box-sizing:border-box!important;
+  }
+</style>
+<script id="linkedSheetCopyFixV691Script">
+(function(){
+  'use strict';
+  var SPREADSHEET_URL_KEY='richmenu_plus_cloud_spreadsheet_url_v1';
+  function byId(id){return document.getElementById(id);}
+  function qs(sel,root){return (root||document).querySelector(sel);}
+  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
+  function getCachedSheetUrl(){
+    try{return localStorage.getItem(SPREADSHEET_URL_KEY)||'';}catch(_){return '';}
+  }
+  function getUrlFromExistingResult(){
+    var links=[
+      byId('masterSheetResultLink'),
+      byId('cloudSheetDirectLink'),
+      qs('#masterQuickSheetResult a'),
+      qs('.linked-sheet-open-link[href^="http"]')
+    ];
+    for(var i=0;i<links.length;i++){
+      var href=links[i]&&links[i].href;
+      if(href&&href!=='#'&&href.indexOf('http')===0)return href;
+    }
+    return '';
+  }
+  function findCard(el){
+    while(el&&el!==document.body){
+      if(el.classList&&el.classList.contains('linked-sheet-card'))return el;
+      el=el.parentElement;
+    }
+    return null;
+  }
+  function ensureFallback(card,url){
+    if(!card)return;
+    var box=card.querySelector('.linked-sheet-copy-fallback');
+    if(!box){
+      box=document.createElement('div');
+      box.className='linked-sheet-copy-fallback';
+      box.innerHTML='<div>自動コピーできない場合は、下のURLを選択してコピーしてください。</div><input type="text" readonly>';
+      card.appendChild(box);
+    }
+    var input=box.querySelector('input');
+    if(input){
+      input.value=url||'';
+      input.focus();
+      input.select();
+    }
+    box.classList.add('show');
+  }
+  async function copyLinkedSheetUrl(btn){
+    var url=getUrlFromExistingResult()||getCachedSheetUrl();
+    if(!url){
+      if(typeof showToast==='function')showToast('コピーするURLがまだありません。先に「紐づけシートを表示」を押してください。','error');
+      return;
+    }
+    var ok=false;
+    try{
+      if(navigator.clipboard && window.isSecureContext){
+        await navigator.clipboard.writeText(url);
+        ok=true;
+      }
+    }catch(_){}
+    if(!ok){
+      try{
+        var temp=document.createElement('textarea');
+        temp.value=url;
+        temp.setAttribute('readonly','');
+        temp.style.position='fixed';
+        temp.style.left='-9999px';
+        temp.style.top='0';
+        document.body.appendChild(temp);
+        temp.focus();
+        temp.select();
+        ok=document.execCommand('copy');
+        temp.remove();
+      }catch(_){ok=false;}
+    }
+    if(ok){
+      if(typeof showToast==='function')showToast('スプレッドシートURLをコピーしました','success');
+      return;
+    }
+    ensureFallback(findCard(btn),url);
+    if(typeof showToast==='function')showToast('自動コピーできませんでした。表示されたURLを手動でコピーしてください。','error');
+  }
+  function bindCopyButtons(){
+    qsa('.linked-sheet-copy-btn').forEach(function(btn){
+      if(btn.dataset.copyFixBound==='1')return;
+      btn.dataset.copyFixBound='1';
+      btn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        copyLinkedSheetUrl(btn);
+      },true);
+    });
+  }
+  function start(){bindCopyButtons();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);
+  else start();
+  [300,800,1500,3000].forEach(function(ms){setTimeout(start,ms);});
+})();
+</script>
+
+
+<style id="linkedSheetVisibleManageV692Style">
+  .linked-sheet-inline-panel{display:grid!important;gap:9px!important;margin-top:10px!important;padding:11px!important;border:1px solid #bfdbfe!important;border-radius:12px!important;background:#eff6ff!important;}
+  .linked-sheet-inline-title{font-size:13px!important;font-weight:900!important;color:#1d4ed8!important;}
+  .linked-sheet-inline-desc{font-size:11.5px!important;line-height:1.55!important;color:#475569!important;}
+  .linked-sheet-inline-url{min-height:36px!important;display:flex!important;align-items:center!important;padding:8px!important;border:1px solid #bfdbfe!important;border-radius:8px!important;background:#fff!important;color:#334155!important;font-size:11px!important;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;word-break:break-all!important;}
+  .linked-sheet-inline-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;}
+  .linked-sheet-inline-actions button,.linked-sheet-inline-actions a{min-height:38px!important;display:flex!important;align-items:center!important;justify-content:center!important;border-radius:9px!important;border:1px solid #bfdbfe!important;background:#fff!important;color:#1d4ed8!important;font-size:12px!important;font-weight:900!important;text-decoration:none!important;cursor:pointer!important;}
+  .linked-sheet-inline-actions .primary{background:#2563eb!important;border-color:#2563eb!important;color:#fff!important;}
+  .linked-sheet-inline-actions .green{background:#06c755!important;border-color:#06c755!important;color:#fff!important;}
+  .linked-sheet-inline-help{font-size:11px!important;line-height:1.55!important;color:#1e3a8a!important;}
+  .linked-sheet-manual-copy{display:none!important;gap:6px!important;padding:9px!important;border:1px solid #fed7aa!important;border-radius:10px!important;background:#fff7ed!important;color:#9a3412!important;font-size:11.5px!important;line-height:1.5!important;}
+  .linked-sheet-manual-copy.show{display:grid!important;}
+  .linked-sheet-manual-copy input{width:100%!important;min-height:36px!important;border:1px solid #fdba74!important;border-radius:8px!important;padding:8px!important;box-sizing:border-box!important;font-size:11px!important;}
+  @media(max-width:760px){.linked-sheet-inline-actions{grid-template-columns:1fr!important;}}
+</style>
+
+<script id="linkedSheetVisibleManageV692Script">
+(function(){
+  'use strict';
+  var SPREADSHEET_URL_KEY='richmenu_plus_cloud_spreadsheet_url_v1';
+  function byId(id){return document.getElementById(id);}
+  function qs(sel,root){return (root||document).querySelector(sel);}
+  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
+  function toast(msg,type){if(typeof showToast==='function')showToast(msg,type||'success');}
+  function getCachedUrl(){try{return localStorage.getItem(SPREADSHEET_URL_KEY)||'';}catch(_){return '';}}
+  function setCachedUrl(url){try{if(url)localStorage.setItem(SPREADSHEET_URL_KEY,url);}catch(_){}}
+  function findSheetUrl(){
+    var links=[byId('linkedSheetInlineOpen'),byId('masterSheetResultLink'),byId('cloudSheetDirectLink'),qs('#masterQuickSheetResult a'),qs('.linked-sheet-open-link[href^="http"]')];
+    for(var i=0;i<links.length;i++){
+      var href=links[i]&&links[i].href;
+      if(href&&href!=='#'&&href.indexOf('http')===0)return href;
+    }
+    return getCachedUrl();
+  }
+  function updateInlineUrl(url){
+    if(url)setCachedUrl(url);
+    url=url||findSheetUrl();
+    qsa('.linked-sheet-inline-url').forEach(function(el){
+      el.textContent=url||'まだURLを取得していません。「紐づけシートを表示」を押してください。';
+    });
+    qsa('.linked-sheet-inline-open').forEach(function(a){
+      if(url){a.href=url;a.style.opacity='1';a.style.pointerEvents='auto';a.removeAttribute('aria-disabled');}
+      else{a.href='#';a.style.opacity='.55';a.style.pointerEvents='none';a.setAttribute('aria-disabled','true');}
+    });
+  }
+  function showManualCopy(btn,url){
+    var panel=btn&&btn.closest('.linked-sheet-inline-panel');
+    if(!panel)return;
+    var box=panel.querySelector('.linked-sheet-manual-copy');
+    if(!box){
+      box=document.createElement('div');
+      box.className='linked-sheet-manual-copy';
+      box.innerHTML='<div>自動コピーできない場合は、下のURLを選択してコピーしてください。</div><input type="text" readonly>';
+      panel.appendChild(box);
+    }
+    var input=box.querySelector('input');
+    if(input){input.value=url||'';input.focus();input.select();}
+    box.classList.add('show');
+  }
+  async function copyUrl(btn){
+    var url=findSheetUrl();
+    if(!url){toast('コピーするURLがまだありません。先に「紐づけシートを表示」を押してください。','error');return;}
+    var ok=false;
+    try{
+      if(navigator.clipboard && window.isSecureContext){await navigator.clipboard.writeText(url);ok=true;}
+    }catch(_){}
+    if(!ok){
+      try{
+        var ta=document.createElement('textarea');
+        ta.value=url;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.left='-9999px';
+        document.body.appendChild(ta);ta.focus();ta.select();ok=document.execCommand('copy');ta.remove();
+      }catch(_){ok=false;}
+    }
+    if(ok)toast('スプレッドシートURLをコピーしました','success');
+    else{showManualCopy(btn,url);toast('自動コピーできませんでした。表示されたURLを手動でコピーしてください。','error');}
+  }
+  function createInlinePanel(){
+    var div=document.createElement('div');
+    div.className='linked-sheet-inline-panel';
+    div.id='linkedSheetInlinePanel';
+    div.innerHTML=
+      '<div class="linked-sheet-inline-title">紐づけ中のスプレッドシート</div>'+
+      '<div class="linked-sheet-inline-desc">クラウド保存で使っているGoogleスプレッドシートを表示します。保存一覧・シート整理・重複整理の確認に使えます。</div>'+
+      '<div class="linked-sheet-inline-url">まだURLを取得していません。「紐づけシートを表示」を押してください。</div>'+
+      '<div class="linked-sheet-inline-actions">'+
+        '<button type="button" class="green linked-sheet-inline-fetch">紐づけシートを表示</button>'+
+        '<a class="primary linked-sheet-inline-open" id="linkedSheetInlineOpen" href="#" target="_blank" rel="noopener" aria-disabled="true">シートを開く</a>'+
+        '<button type="button" class="linked-sheet-inline-copy">URLをコピー</button>'+
+      '</div>'+
+      '<div class="linked-sheet-inline-help">使い方：設定タブでApps Script URLを入力 → 接続テスト →「紐づけシートを表示」→ URL確認・コピー。</div>';
+    return div;
+  }
+  function findManageCard(){
+    var pane=qs('.master-save-pane[data-pane="manage"]');
+    if(!pane)return null;
+    var cards=qsa('.master-save-card',pane);
+    for(var i=0;i<cards.length;i++){
+      var h=qs('h4',cards[i]);
+      if(h&&h.textContent.indexOf('管理する')!==-1)return cards[i];
+    }
+    return cards[0]||pane;
+  }
+  function ensureInlinePanel(){
+    var card=findManageCard();
+    if(!card)return;
+    var panel=byId('linkedSheetInlinePanel');
+    if(!panel){
+      panel=createInlinePanel();
+      var actions=qs('.master-save-actions',card);
+      if(actions&&actions.parentElement===card)actions.insertAdjacentElement('afterend',panel);
+      else card.appendChild(panel);
+    }
+    if(!panel.dataset.bound){
+      panel.dataset.bound='1';
+      var fetchBtn=qs('.linked-sheet-inline-fetch',panel);
+      var copyBtn=qs('.linked-sheet-inline-copy',panel);
+      if(fetchBtn)fetchBtn.addEventListener('click',function(e){
+        e.preventDefault();
+        if(typeof window.cloudOpenSpreadsheet==='function'){
+          window.cloudOpenSpreadsheet();
+          setTimeout(function(){updateInlineUrl();},300);
+          setTimeout(function(){updateInlineUrl();},1000);
+          setTimeout(function(){updateInlineUrl();},1800);
+        }else{toast('Apps Script URLを設定してから実行してください','error');}
+      });
+      if(copyBtn)copyBtn.addEventListener('click',function(e){e.preventDefault();copyUrl(copyBtn);});
+    }
+    updateInlineUrl();
+  }
+  function observeExistingResults(){
+    [byId('masterSheetResult'),byId('masterQuickSheetResult'),byId('cloudSheetDirectRow')].filter(Boolean).forEach(function(t){
+      if(t.dataset.inlineSheetObserved)return;
+      t.dataset.inlineSheetObserved='1';
+      new MutationObserver(function(){updateInlineUrl();}).observe(t,{childList:true,subtree:true,attributes:true,characterData:true});
+    });
+  }
+  function start(){ensureInlinePanel();observeExistingResults();updateInlineUrl();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);
+  else start();
+  [300,800,1500,3000,5000].forEach(function(ms){setTimeout(start,ms);});
+})();
+</script>
+
 </body>
 </html>
