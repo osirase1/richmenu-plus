@@ -1,0 +1,13 @@
+{
+  "name": "richmenu-plus-master-cloud",
+  "version": "6.9.0-linked-spreadsheet-display",
+  "private": true,
+  "description": "RichMenu Plus master cloud edition v6.9 with modal save manager UI and linked spreadsheet display.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "check": "node --check api/*.js",
+    "start": "vercel dev"
+  }
+}
