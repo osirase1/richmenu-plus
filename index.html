@@ -219,7 +219,7 @@ body.auth-lock .main,body.auth-lock .header{filter:blur(2px);pointer-events:none
 </div>
 <div class="button-row">
 <button class="btn btn-sm btn-primary" id="btnCheckReflectStatus">🧭 デフォルト＋個別リンクをまとめて確認</button>
-</div></div><div class="panel drawer-section" id="panel-users"><h3>👤 ユーザーリンク</h3><div class="user-add-row"><div class="form-group" style="margin:0;"><label>ユーザー名（表示用）</label><input type="text" id="newUserName" placeholder="例: 山田 太郎"></div><div class="form-group" style="margin:0;"><label>ユーザーID</label><input type="text" id="newUserId" placeholder="例: U1234567890abcdef..."></div><button class="btn btn-primary btn-sm btn-block" id="btnAddUser">＋ 追加</button></div>
+</div></div><div class="panel drawer-section" id="panel-users"><h3>👤 ユーザーリンク</h3><div class="user-add-row"><div class="form-group" style="margin:0;"><label>ユーザー名（表示用）</label><input type="text" id="newUserName" placeholder="例: 山田 太郎"></div><div class="form-group" style="margin:0;"><label>ユーザーID</label><input type="text" id="newUserId" placeholder="例: U1234567890abcdef..."></div><button class="btn btn-primary btn-sm btn-block" id="btnAddUser">＋ ユーザーを追加</button></div>
 <h3 style="margin-top:18px;">登録ユーザー <span id="userCount" style="color:#888;font-size:14px;font-weight:normal;"></span></h3><div class="user-list" id="userListContainer"></div>
 <h3 style="margin-top:18px;">適用 / 解除</h3><button class="btn btn-primary btn-sm btn-block" id="btnLinkUsers">🔗 登録ユーザー全員にリンク</button><button class="btn btn-sm btn-block" id="btnUnlinkUsers" style="margin-top:8px;">🔓 全員のリンクを解除</button></div></div></div>
 <div class="main">
@@ -256,8 +256,8 @@ body.auth-lock .main,body.auth-lock .header{filter:blur(2px);pointer-events:none
       <input type="text" id="projectFileName" placeholder="例: 体験用リッチメニュー">
     </div>
     <div class="button-row">
-      <button class="btn btn-primary" id="btnDownloadProject">プロジェクトファイル保存</button>
-      <button class="btn" id="btnLoadProjectFile">プロジェクトファイル読み込み</button>
+      <button class="btn btn-primary" id="btnDownloadProject">📦 JSONで保存</button>
+      <button class="btn" id="btnLoadProjectFile">📂 JSONを読み込む</button>
     </div>
     <input type="file" id="projectFileInput" accept="application/json,.json" style="display:none;">
 
@@ -265,7 +265,7 @@ body.auth-lock .main,body.auth-lock .header{filter:blur(2px);pointer-events:none
 <div class="form-group"><label>チャネルアクセストークン</label><input type="password" id="lineTokenInput" placeholder="チャネルアクセストークン"></div>
 <label style="display:flex;align-items:center;gap:8px;margin:-2px 0 12px;font-size:14px;color:#555;"><input type="checkbox" id="rememberLineToken" style="width:auto;" checked> このブラウザにトークンを保存する（次回から自動入力）</label>
 <div class="button-row api-actions" style="margin-bottom:10px;"><button class="btn btn-sm" id="btnSaveLineToken">トークン保存</button><button class="btn btn-sm" id="btnClearLineToken">トークン削除</button></div>
-<div class="button-row api-actions json-load-row" style="display:grid;grid-template-columns:1fr;margin-bottom:10px;"><button class="btn btn-sm btn-block" id="btnLoadJsonProjectFile" type="button">📂 JSONファイル読み込み</button></div>
+<div class="button-row api-actions json-load-row" style="display:grid;grid-template-columns:1fr;margin-bottom:10px;"><button class="btn btn-sm btn-block" id="btnLoadJsonProjectFile" type="button">📂 JSONを読み込む</button></div>
 <h3 style="margin-top:18px;">クライアント別トークン</h3>
 <div class="form-group"><label>クライアント選択</label><select id="clientSelect"><option value="">未選択</option></select></div>
 <div class="form-group"><label>クライアント名</label><input type="text" id="clientNameInput" placeholder="例: A店舗"></div>
@@ -400,7 +400,7 @@ function renderMenuTabs(){
     tabs.appendChild(el)
   });
   const add=document.createElement('div');
-  add.className='menu-add';add.textContent='+ 追加';
+  add.className='menu-add';add.textContent='＋ メニュー追加';
   add.addEventListener('click',()=>createMenu());
   tabs.appendChild(add)
 }
@@ -582,7 +582,7 @@ function renderAreaList(){
   const box=$('areaListContainer');
   const m=currentMenu();
   if(!m||m.areas.length===0){
-    box.innerHTML='<div class="area-empty-help">エリアなし<br><small>キャンバスでドラッグ、または「＋ エリア追加」から作成できます。</small></div>';
+    box.innerHTML='<div class="area-empty-help">エリアなし<br><small>キャンバスでドラッグ、または「＋ エリアを追加」から作成できます。</small></div>';
     return
   }
   box.innerHTML='';
@@ -1238,14 +1238,44 @@ function buildAction(act){
   if(act.type==='richmenuswitch')return{type:'richmenuswitch',richMenuAliasId:act.value,data:'switch='+act.value};
   return{type:'postback',data:'noop'}
 }
+function validateRichMenuForLine(m){
+  if(!m)throw new Error('メニューがありません。');
+  const name=String(m.name||'').trim();
+  const chatBarText=String(m.chatBarText||'').trim();
+  const alias=String(m.alias||'').trim();
+  const areas=Array.isArray(m.areas)?m.areas:[];
+  const size=m.size==='compact'?{w:2500,h:843}:{w:2500,h:1686};
+  if(!name)throw new Error('メニュー名を入力してください。');
+  if([...name].length>300)throw new Error('メニュー名は300文字以内にしてください。');
+  if(!chatBarText)throw new Error('チャットバーテキストを入力してください。');
+  if([...chatBarText].length>14)throw new Error('チャットバーテキストは14文字以内にしてください。');
+  if(areas.length<1)throw new Error('タップエリアを1つ以上作成してください。');
+  if(areas.length>20)throw new Error('タップエリアは20個以内にしてください。');
+  if(alias && !/^[a-z0-9_-]{1,32}$/i.test(alias))throw new Error('エイリアスIDは32文字以内の半角英数字・_・-で入力してください。');
+  areas.forEach((a,index)=>{
+    const label='エリア'+(index+1);
+    const x=Math.round(Number(a.x)), y=Math.round(Number(a.y)), w=Math.round(Number(a.w)), h=Math.round(Number(a.h));
+    if(!Number.isFinite(x)||!Number.isFinite(y)||!Number.isFinite(w)||!Number.isFinite(h)||x<0||y<0||w<=0||h<=0||x+w>size.w||y+h>size.h){
+      throw new Error(label+'の範囲がキャンバス外です。位置・幅・高さを確認してください。');
+    }
+    const act=a.action||{};
+    const type=String(act.type||'').trim();
+    const value=String(act.value||'').trim();
+    if(!type)throw new Error(label+'のアクションを設定してください。');
+    if(!['uri','message','postback','richmenuswitch'].includes(type))throw new Error(label+'のアクション種類が正しくありません。');
+    if(!value)throw new Error(label+'のアクション内容を入力してください。');
+    if(type==='richmenuswitch' && !/^[a-z0-9_-]{1,32}$/i.test(value))throw new Error(label+'の切替先エイリアスIDは32文字以内の半角英数字・_・-で入力してください。');
+  });
+}
 function buildRichMenuJson(m){
+  validateRichMenuForLine(m);
   const{w,h}=m.size==='compact'?{w:2500,h:843}:{w:2500,h:1686};
   return{
     size:{width:w,height:h},
     selected:m.selected!==false,
-    name:m.name,
-    chatBarText:m.chatBarText||'メニュー',
-    areas:m.areas.map(a=>({bounds:{x:a.x,y:a.y,width:a.w,height:a.h},action:buildAction(a.action)}))
+    name:String(m.name||'').trim(),
+    chatBarText:String(m.chatBarText||'').trim()||'メニュー',
+    areas:m.areas.map(a=>({bounds:{x:Math.round(a.x),y:Math.round(a.y),width:Math.round(a.w),height:Math.round(a.h)},action:buildAction(a.action)}))
   }
 }
 
@@ -1395,7 +1425,7 @@ function selectClientToken(id){
   renderClientSelect();
   if(typeof markProjectFileDirty==='function')markProjectFileDirty();
   if(typeof saveProjectToLocal==='function')saveProjectToLocal(false);
-  updateProjectSaveStatus('保存先：'+currentClientProjectName()+'｜自動保存：'+(isProjectAutoSaveEnabled()?'ON':'OFF'),'');
+  updateProjectSaveStatus('保存先：'+currentClientProjectName()+'｜保存確認：'+(isProjectAutoSaveEnabled()?'ON':'OFF'),'');
 }
 
 
@@ -1438,7 +1468,14 @@ function formatRichMenuStatus(data,mode){
 async function appApi(path,payload){
   const headers={'Content-Type':'application/json'};
   const lineToken=getLineToken();
-  if(lineToken)headers['x-line-token']=lineToken;
+  if(lineToken){
+    // fetch のヘッダー値は ISO-8859-1 互換である必要があるため、
+    // 日本語・全角文字・空白などが混ざったトークンは送信前に止める。
+    if(/[^\x21-\x7E]/.test(lineToken)){
+      throw new Error('チャネルアクセストークンに日本語・全角文字・空白が含まれています。LINE Developers のチャネルアクセストークンだけを貼り付け直してください。');
+    }
+    headers['x-line-token']=lineToken;
+  }
   const res=await fetch('/api/'+path,{method:'POST',headers,body:JSON.stringify(payload||{})});
   let data={};
   const text=await res.text();
@@ -1687,7 +1724,7 @@ function markProjectFileSaved(){
   updateProjectSaveStatus('保存済み｜保存先：'+currentClientProjectName(),'saved');
 }
 window.addEventListener('beforeunload',e=>{
-  if(!hasProjectFileUnsavedChanges||!isProjectAutoSaveEnabled())return;
+  if(!hasProjectFileUnsavedChanges)return;
   clearTimeout(autoSaveTimer);
   e.preventDefault();
   e.returnValue='変更があります。離れる前に必要ならお手軽保存してください。';
@@ -1802,7 +1839,7 @@ function projectData(options={}){
   const imageCount=externalImages?externalImageList.length:exportedMenus.filter(m=>!!m.bgImageData).length;
   return {
     app:'richmenu-plus',
-    version:'3.5-cloud-v6.5-sheet-organize',
+    version:'6.9.8-security-reliability',
     exportType:saveKind==='backup'?'project-backup':'project',
     backupSaveMode:saveKind==='backup'?(externalImages?'json-plus-png':'full-with-images'):'',
     browserSaveMode:includeImages?'full':'compact-no-images',
@@ -2224,7 +2261,7 @@ function confirmBeforeClientProjectSwitch(targetName,targetKey){
   if(hasProjectFileUnsavedChanges||isProjectAutoSaveEnabled()){
     const saveNow=confirm('「'+targetLabel+'」を開く前に、現在表示されている内容をお手軽保存しますか？\n\nOK：保存してから開く\nキャンセル：保存せずに切り替える確認へ進む');
     if(saveNow){saveProjectToLocal(true);return true;}
-    return confirm('保存せずに「'+targetLabel+'」を開きますか？\n現在の表示内容が別クライアントに上書き保存されないよう、自動保存待ちの処理は止めてから切り替えます。');
+    return confirm('保存せずに「'+targetLabel+'」を開きますか？\n現在の表示内容が別クライアントに上書き保存されないよう、保存待ちの処理は止めてから切り替えます。');
   }
   return true;
 }
@@ -2409,12 +2446,12 @@ function renderProjectClientListMenu(){
   newProjectBtn.type='button';
   newProjectBtn.id='projectClientMenuNewProjectBtn';
   newProjectBtn.className='client-manager-new-btn';
-  newProjectBtn.textContent='＋ 新規作成';
-  newProjectBtn.title='新しいクライアント用の空プロジェクトを作成';
+  newProjectBtn.textContent='＋ 新しい作業を開始';
+  newProjectBtn.title='新しい作業を開始します。必要な場合は先に保存してください。';
   newProjectBtn.addEventListener('click',e=>{
     e.preventDefault();e.stopPropagation();closeProjectClientMenu();
     if(typeof window.createNewProjectFromRightMenu==='function')window.createNewProjectFromRightMenu();
-    else showToast('新規作成機能を準備できていません。ページを再読み込みしてください。','error');
+    else showToast('新しい作業開始機能を準備できていません。ページを再読み込みしてください。','error');
   });
   const search=document.createElement('input');
   search.type='search';
@@ -2447,7 +2484,7 @@ function renderProjectClientListMenu(){
     if(!filtered.length){
       const empty=document.createElement('div');
       empty.className='client-manager-empty';
-      empty.textContent=list.length?'検索に一致する保存データがありません。':'まだお手軽保存されたクライアント別データはありません。新規作成またはクライアント名を入力して、お手軽保存または切り替え時の確認保存を行うと表示されます。';
+      empty.textContent=list.length?'検索に一致する保存データがありません。':'まだこのPCに保存された作業データはありません。クライアント名を入力して「このPCに保存」すると表示されます。';
       listBox.appendChild(empty);
       return;
     }
@@ -2977,7 +3014,7 @@ function setupRightThreeTabs(){
     apiBtn.classList.remove('header-line-action');
     apiBtn.classList.remove('right-primary-action','btn-primary','api-main-action');
     apiBtn.classList.add('save-primary-action');
-    apiBtn.textContent='💾 お手軽保存';
+    apiBtn.textContent='💾 このPCに保存';
     apiBtn.style.width='100%';
     saveActionRow.appendChild(apiBtn);
     let backupBtn=document.getElementById('btnBackupProjectSave');
@@ -2986,7 +3023,7 @@ function setupRightThreeTabs(){
       backupBtn.type='button';
       backupBtn.id='btnBackupProjectSave';
       backupBtn.className='btn backup-save-action';
-      backupBtn.textContent='📦 バックアップ保存';
+      backupBtn.textContent='📦 JSONで保存';
       backupBtn.addEventListener('click',()=>{
         if(typeof downloadProjectFile==='function')downloadProjectFile();
         else if($('btnDownloadProject'))$('btnDownloadProject').click();
@@ -3242,7 +3279,7 @@ function setupAreaAddButton(){
   btn.type='button';
   btn.id='btnAddAreaFromPanel';
   btn.className='btn btn-add-area';
-  btn.textContent='＋ エリア追加';
+  btn.textContent='＋ エリアを追加';
   btn.title='空いている位置にエリアを追加します';
   head.appendChild(title);
   head.appendChild(btn);
@@ -3541,7 +3578,7 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
     if(lineTitle)lineTitle.textContent='保存管理';
     const apiBtn=$('btnApiUpload');
     if(apiBtn){
-      apiBtn.textContent='💾 お手軽保存';
+      apiBtn.textContent='💾 このPCに保存';
       apiBtn.style.width='100%';
       apiBtn.classList.remove('header-line-action','right-primary-action','btn-primary','api-main-action');
       apiBtn.classList.add('save-primary-action');
@@ -3593,11 +3630,11 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
   function createNewProjectFromRightMenu(){
     const clientInput=$('clientProjectNameInput');
     const defaultClientName=normalizeClientNameForProject(clientInput&&clientInput.value);
-    const enteredName=prompt('新しく作成するクライアント名を入力してください。\n空欄のままでも新規作成できます。',defaultClientName);
+    const enteredName=prompt('新しい作業を開始します。\nクライアント名を入力してください。\n空欄のままでも開始できます。',defaultClientName);
     if(enteredName===null)return;
     const newClientName=normalizeClientNameForProject(enteredName);
     const hasWork=Array.isArray(menus) && menus.some(m=>m && ((m.areas&&m.areas.length) || m.bgImageData || (m.name&&m.name!=='メニュー1')));
-    const msg='現在の作業内容を新規作成で置き換えます。必要な場合は先にバックアップ保存してください。実行しますか？';
+    const msg='新しい作業を開始しますか？\n\n現在の作業内容は画面から消えます。\n必要な場合は先に保存してください。';
     if(hasWork && !confirm(msg))return;
     try{
       menus.length=0;
@@ -3633,11 +3670,11 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
       if(typeof markProjectFileDirty==='function')markProjectFileDirty();
       if(typeof saveProjectToLocal==='function')saveProjectToLocal(false);
       if(typeof updateProjectSaveStatus==='function'){
-        updateProjectSaveStatus(newClientName?'新規作成しました｜クライアント追加済み：'+newClientName:'新規作成しました。まだクライアント名は未設定です。','dirty');
+        updateProjectSaveStatus(newClientName?'新しい作業を開始しました｜クライアント名：'+newClientName:'新しい作業を開始しました。まだクライアント名は未設定です。','dirty');
       }
-      showToast(newClientName?'新規作成＋クライアント追加をしました':'新規作成しました','success');
+      showToast(newClientName?'新しい作業を開始しました':'新しい作業を開始しました','success');
     }catch(e){
-      showToast('新規作成に失敗しました: '+(e&&e.message?e.message:e),'error');
+      showToast('新しい作業の開始に失敗しました: '+(e&&e.message?e.message:e),'error');
     }
   }
   window.createNewProjectFromRightMenu=createNewProjectFromRightMenu;
@@ -3851,7 +3888,7 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
       title.className='save-card-title';
       card.insertBefore(title,card.firstChild);
     }
-    title.innerHTML='<h3>基本設定</h3><small>メニュー名・画像操作・自動保存状態を確認できます</small>'; 
+    title.innerHTML='<h3>基本設定</h3><small>メニュー名・画像操作・保存確認状態を確認できます</small>'; 
     qsa(':scope > .save-card-title',card).forEach((el,i)=>{if(i>0)el.remove();});
 
     if(settings){
@@ -4663,9 +4700,27 @@ setTimeout(()=>{fitZoom();updateRightPanelTitles();renderAreaList();renderUserLi
   const ENDPOINT_KEY='richmenu_plus_cloud_apps_script_url_v1';
   const SELECTED_ID_KEY='richmenu_plus_cloud_selected_id_v1';
   const SPREADSHEET_URL_KEY='richmenu_plus_cloud_spreadsheet_url_v1';
+  const CLOUD_ACCESS_KEY_STORAGE='richmenu_plus_cloud_access_key_v1';
   const $=id=>document.getElementById(id);
   const qs=sel=>document.querySelector(sel);
-  const APPS_SCRIPT_TEMPLATE = String.raw`const SHEET_NAME = 'クラウド保存一覧';
+  function getCloudAccessKey(){
+    let key='';
+    try{key=String(localStorage.getItem(CLOUD_ACCESS_KEY_STORAGE)||'').trim();}catch(_){ }
+    // 過去版などで不正な値が残っていても、ヘッダーや通信処理へ流さない。
+    // 正常なアクセスキーは48文字の16進数だけを使用する。
+    if(/^[a-f0-9]{48}$/.test(key))return key;
+    const bytes=new Uint8Array(24);
+    if(window.crypto&&window.crypto.getRandomValues)window.crypto.getRandomValues(bytes);
+    else for(let i=0;i<bytes.length;i++)bytes[i]=Math.floor(Math.random()*256);
+    key=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+    try{localStorage.setItem(CLOUD_ACCESS_KEY_STORAGE,key);}catch(_){ }
+    return key;
+  }
+  function appsScriptCode(){
+    return APPS_SCRIPT_TEMPLATE.replace('__RMP_CLOUD_ACCESS_KEY__',getCloudAccessKey());
+  }
+  const APPS_SCRIPT_TEMPLATE = String.raw`const CLOUD_ACCESS_KEY = '__RMP_CLOUD_ACCESS_KEY__';
+const SHEET_NAME = 'クラウド保存一覧';
 const LEGACY_SHEET_NAME = 'richmenu_plus_cloud_index';
 const FOLDER_NAME = 'RichMenuPlus_CloudData';
 const HEADERS_JA = ['クラウドID','クライアント名','保存名','更新日時','DriveファイルID','トークン保存','メニュー数','メモ'];
@@ -4702,6 +4757,10 @@ function output(obj, callback) {
 }
 
 function handleRequest(req) {
+  const suppliedKey = String((req && req.cloudAccessKey) || '');
+  if (!CLOUD_ACCESS_KEY || suppliedKey !== CLOUD_ACCESS_KEY) {
+    return { ok:false, message:'クラウド保存の認証に失敗しました。リッチメニュープラス側で「コードをコピー」し直し、Apps Scriptを新バージョンで再デプロイしてください。' };
+  }
   const action = String(req.action || 'test');
   if (action === 'test') return testConnection();
   if (action === 'save') return saveProject(req);
@@ -5219,12 +5278,23 @@ function loadProject(req) {
   function makePayload(){
     if(typeof projectData!=='function')throw new Error('保存データを作成できません。');
     const data=projectData({includeImages:true,saveKind:'cloud'});
+    // クラウド保存にはLINEのチャネルアクセストークンを含めない。
+    data.channelAccessToken='';
+    data.tokenIncluded=false;
+    if(Array.isArray(data.clients)){
+      data.clients=data.clients.map(c=>({...c,channelAccessToken:''}));
+    }
     data.exportType='cloud-project';
     data.cloudSavedAt=new Date().toISOString();
     return data;
   }
+  function withCloudAuth(payload){
+    return {...(payload||{}),cloudAccessKey:getCloudAccessKey()};
+  }
   async function postJson(url,payload){
-    const res=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    // Apps Script は本文を直接読み取れるため、明示的なカスタムヘッダーは付けない。
+    // これによりブラウザの RequestInit.headers 文字コード制約による保存エラーを避ける。
+    const res=await fetch(url,{method:'POST',body:JSON.stringify(withCloudAuth(payload))});
     const text=await res.text();
     try{return JSON.parse(text)}catch(e){throw new Error('応答を読み取れませんでした。Apps Scriptの公開設定を確認してください。')}
   }
@@ -5235,7 +5305,7 @@ function loadProject(req) {
       const timer=setTimeout(()=>{cleanup();reject(new Error('接続がタイムアウトしました。'))},20000);
       function cleanup(){clearTimeout(timer);delete window[cb];if(script.parentNode)script.parentNode.removeChild(script);}
       window[cb]=data=>{cleanup();resolve(data)};
-      const usp=new URLSearchParams({...params,callback:cb});
+      const usp=new URLSearchParams({...withCloudAuth(params),callback:cb});
       script.src=url+(url.includes('?')?'&':'?')+usp.toString();
       script.onerror=()=>{cleanup();reject(new Error('Apps Scriptに接続できませんでした。'))};
       document.body.appendChild(script);
@@ -5253,7 +5323,7 @@ function loadProject(req) {
     const input=document.createElement('input');
     input.type='hidden';
     input.name='payload';
-    input.value=JSON.stringify(payload);
+    input.value=JSON.stringify(withCloudAuth(payload));
     form.appendChild(input);
     document.body.appendChild(iframe);
     document.body.appendChild(form);
@@ -5511,7 +5581,7 @@ function loadProject(req) {
   }
   async function copyScriptCode(){
     try{
-      await navigator.clipboard.writeText(APPS_SCRIPT_TEMPLATE);
+      await navigator.clipboard.writeText(appsScriptCode());
       toast('Apps Scriptコードをコピーしました','success');
       setStatus('Apps Scriptコードをコピーしました。');
     }catch(e){
@@ -5690,7 +5760,7 @@ function loadProject(req) {
       if(typeof updateMasterCardQuickStatus==='function')setTimeout(updateMasterCardQuickStatus,0);
     }
     const code=$('cloudAppsScriptCode');
-    if(code)code.value=APPS_SCRIPT_TEMPLATE;
+    if(code)code.value=appsScriptCode();
     const select=$('cloudProjectSelect');
     if(select)select.addEventListener('change',e=>{try{localStorage.setItem(SELECTED_ID_KEY,e.target.value||'')}catch(_){}});
     const test=$('btnCloudSaveTest'); if(test)test.addEventListener('click',cloudTest);
@@ -6527,10 +6597,10 @@ function loadProject(req) {
         '<button type="button" class="master-save-modal-close" id="masterSaveModalClose" aria-label="閉じる">×</button>'+
       '</div>'+
       '<div class="master-save-modal-tabs">'+
-        '<button type="button" class="master-save-modal-tab" data-tab="save">保存する</button>'+
-        '<button type="button" class="master-save-modal-tab" data-tab="load">読み込む</button>'+
-        '<button type="button" class="master-save-modal-tab" data-tab="manage">管理する</button>'+
-        '<button type="button" class="master-save-modal-tab" data-tab="settings">設定</button>'+
+        '<button type="button" class="master-save-modal-tab" data-tab="save">保存・読み込み</button>'+
+        
+        '<button type="button" class="master-save-modal-tab" data-tab="settings">クラウド設定</button>'+
+        '<button type="button" class="master-save-modal-tab" data-tab="manage">データ整理</button>'+
       '</div>'+
       '<div class="master-save-modal-body">'+
         '<div class="master-save-pane" data-pane="save">'+
@@ -6566,8 +6636,8 @@ function loadProject(req) {
               '<h4>管理する</h4><p>保存先スプレッドシートやクラウド保存データを整理します。</p>'+
               '<div class="master-save-actions">'+
                 '<button type="button" class="blue" id="masterBtnOpenSheet">📊 スプレッドシートを開く</button>'+
-                '<button type="button" id="masterBtnOrganizeSheet">🧹 シート整理</button>'+
-                '<button type="button" id="masterBtnDeduplicate">🔁 重複整理</button>'+
+                '<button type="button" id="masterBtnOrganizeSheet">スプレッドシートを整える</button>'+
+                '<button type="button" id="masterBtnDeduplicate">重複データを整理</button>'+
               '</div>'+
               '<div class="master-sheet-result" id="masterSheetResult"><div id="masterSheetResultMessage">保存先スプレッドシートのURLを取得すると、ここに表示されます。</div><div class="actions"><a id="masterSheetResultLink" href="#" target="_blank" rel="noopener" style="display:none;">📊 スプレッドシートを開く</a><button type="button" id="masterSheetCopyBtn">URLをコピー</button></div></div>'+
             '</div>'+
@@ -6575,7 +6645,7 @@ function loadProject(req) {
               '<h4>削除・危険な操作</h4><p>削除は元に戻せないため、必要なものだけ実行してください。</p>'+
               '<div class="master-danger-box">'+
                 '<strong>危険な操作</strong>'+
-                '<button type="button" class="danger" id="masterBtnCloudDelete">クラウド削除</button>'+
+                '<button type="button" class="danger" id="masterBtnCloudDelete">クラウド保存を削除</button>'+
                 '<div style="font-size:11px;color:#991b1b;line-height:1.6;">クラウド削除は、Driveの保存ファイルとスプレッドシートの該当行を対象にします。</div>'+
               '</div>'+
             '</div>'+
@@ -7269,6 +7339,1199 @@ function loadProject(req) {
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindJsonLoadButtons);
   else bindJsonLoadButtons();
   [300,800,1500,3000].forEach(function(ms){setTimeout(bindJsonLoadButtons,ms);});
+})();
+</script>
+
+
+<style id="saveManagerThreeTabUiV694Style">
+  #masterSaveModal.save-manager-v694 .master-save-modal-tabs{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  #masterSaveModal.save-manager-v694 .master-save-modal-title span::after{
+    content:"｜保存・読み込み / クラウド設定 / データ整理";
+  }
+  .master-v694-pane{display:none!important;gap:14px!important;}
+  .master-v694-pane.active{display:grid!important;}
+  .master-v694-section-title{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:10px!important;
+    margin:0!important;
+    font-size:15px!important;
+    font-weight:900!important;
+    color:#0f172a!important;
+  }
+  .master-v694-mini{
+    font-size:11.5px!important;
+    line-height:1.6!important;
+    color:#64748b!important;
+    margin:0!important;
+  }
+  .master-v694-card{
+    background:#fff!important;
+    border:1px solid #dbe3ee!important;
+    border-radius:14px!important;
+    padding:14px!important;
+    box-shadow:0 1px 4px rgba(15,23,42,.06)!important;
+    display:grid!important;
+    gap:12px!important;
+  }
+  .master-v694-card h4{
+    margin:0!important;
+    font-size:15px!important;
+    font-weight:900!important;
+    color:#0f172a!important;
+  }
+  .master-v694-card p{
+    margin:0!important;
+    font-size:12px!important;
+    line-height:1.6!important;
+    color:#64748b!important;
+  }
+  .master-v694-grid-2{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:14px!important;
+  }
+  .master-v694-actions{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  .master-v694-actions.two{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .master-v694-actions.one{
+    grid-template-columns:1fr!important;
+  }
+  .master-v694-actions button,
+  .master-v694-actions a{
+    min-height:40px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:10px!important;
+    font-size:12px!important;
+    font-weight:900!important;
+    text-decoration:none!important;
+    cursor:pointer!important;
+  }
+  .master-v694-current{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:10px!important;
+  }
+  .master-v694-current .box{
+    border:1px solid #dbeafe!important;
+    border-radius:12px!important;
+    background:#eff6ff!important;
+    padding:10px!important;
+    display:grid!important;
+    gap:4px!important;
+  }
+  .master-v694-current .label{
+    font-size:11px!important;
+    font-weight:900!important;
+    color:#1d4ed8!important;
+  }
+  .master-v694-current .value,
+  .master-v694-current #masterSaveClientName,
+  .master-v694-current #masterSaveFileName{
+    font-size:13px!important;
+    font-weight:900!important;
+    color:#0f172a!important;
+    word-break:break-word!important;
+  }
+  .master-v694-danger{
+    border:1px solid #fecaca!important;
+    background:#fff7f7!important;
+  }
+  .master-v694-danger h4{color:#991b1b!important;}
+  .master-v694-danger-note{
+    border:1px solid #fecaca!important;
+    border-radius:10px!important;
+    background:#fff!important;
+    color:#991b1b!important;
+    padding:10px!important;
+    font-size:11.5px!important;
+    line-height:1.6!important;
+  }
+  .master-v694-status{
+    padding:10px!important;
+    border-radius:10px!important;
+    border:1px solid #bbf7d0!important;
+    background:#f0fdf4!important;
+    color:#166534!important;
+    font-size:12px!important;
+    line-height:1.6!important;
+    font-weight:800!important;
+  }
+  #masterSaveModal.save-manager-v694 .master-sheet-result{
+    margin-top:0!important;
+  }
+  #masterSaveModal.save-manager-v694 .linked-sheet-card,
+  #masterSaveModal.save-manager-v694 .linked-sheet-inline-panel{
+    box-shadow:none!important;
+  }
+  @media(max-width:860px){
+    .master-v694-grid-2,.master-v694-current{grid-template-columns:1fr!important;}
+    .master-v694-actions,.master-v694-actions.two{grid-template-columns:1fr!important;}
+  }
+</style>
+<script id="saveManagerThreeTabUiV694Script">
+(function(){
+  'use strict';
+  function byId(id){return document.getElementById(id);}
+  function qs(sel,root){return (root||document).querySelector(sel);}
+  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
+  function toast(msg,type){if(typeof showToast==='function')showToast(msg,type||'success');}
+  function click(id){var el=byId(id); if(el)el.click(); return !!el;}
+  function make(tag, cls, html){
+    var el=document.createElement(tag);
+    if(cls)el.className=cls;
+    if(html!=null)el.innerHTML=html;
+    return el;
+  }
+  function ensureButton(id,label,cls,handler){
+    var btn=byId(id);
+    if(!btn){
+      btn=document.createElement('button');
+      btn.type='button';
+      btn.id=id;
+      btn.textContent=label;
+      btn.className=cls||'btn';
+      if(handler)btn.addEventListener('click',handler);
+    }
+    return btn;
+  }
+  function ensureJsonInput(){
+    var input=byId('projectFileInput');
+    if(!input){
+      input=document.createElement('input');
+      input.type='file';
+      input.id='projectFileInput';
+      input.accept='application/json,.json';
+      input.style.display='none';
+      document.body.appendChild(input);
+    }
+    if(input.dataset.v694JsonBound!=='1'){
+      input.dataset.v694JsonBound='1';
+      input.addEventListener('change',function(e){
+        var file=e.target.files&&e.target.files[0];
+        if(file){
+          if(typeof readProjectFile==='function')readProjectFile(file);
+          else toast('JSON読み込み処理が見つかりません。ページを再読み込みしてください。','error');
+        }
+        e.target.value='';
+      });
+    }
+    return input;
+  }
+  function openJson(){
+    var input=ensureJsonInput();
+    if(input)input.click();
+  }
+  function saveJson(){
+    if(typeof downloadProjectFile==='function')downloadProjectFile();
+    else click('btnDownloadProject');
+  }
+  function openSheet(){
+    if(typeof window.cloudOpenSpreadsheet==='function')window.cloudOpenSpreadsheet();
+    else click('btnCloudOpenSheetTop') || click('masterBtnOpenSheet');
+  }
+  function currentCard(){
+    var card=make('div','master-v694-card');
+    card.appendChild(make('h4',null,'現在の作業'));
+    card.appendChild(make('p',null,'保存前に、クライアント名と保存名を確認してください。'));
+    var grid=make('div','master-v694-current');
+    var client=make('div','box','<div class="label">クライアント名</div>');
+    var clientVal=byId('masterSaveClientName') || make('div','value','未入力');
+    client.appendChild(clientVal);
+    var file=make('div','box','<div class="label">保存名</div>');
+    var fileVal=byId('masterSaveFileName') || make('div','value','未入力');
+    file.appendChild(fileVal);
+    grid.appendChild(client); grid.appendChild(file);
+    card.appendChild(grid);
+    var status=byId('masterSaveStatusLine');
+    if(status){
+      var statusWrap=make('div','master-v694-status');
+      statusWrap.appendChild(status);
+      card.appendChild(statusWrap);
+    }
+    return card;
+  }
+  function saveLoadPane(){
+    var pane=make('div','master-v694-pane active');
+    pane.dataset.v694Pane='save-load';
+
+    var top=make('div','master-v694-grid-2');
+    top.appendChild(currentCard());
+
+    var save=make('div','master-v694-card');
+    save.appendChild(make('h4',null,'保存する'));
+    save.appendChild(make('p',null,'まずはこのPCに保存。バックアップや別PCで使う時はJSON保存、共有管理はクラウド保存を使います。'));
+    var saveActions=make('div','master-v694-actions');
+    var local=byId('masterBtnLocalSave') || ensureButton('masterBtnLocalSave','💾 このPCに保存（お手軽保存）','btn btn-primary',function(){click('btnApiUpload');});
+    local.textContent='💾 このPCに保存';
+    local.title='このブラウザ内に作業データを保存します。';
+    var json=ensureButton('masterBtnJsonSave','📦 JSONで保存','btn',saveJson);
+    var cloud=byId('masterBtnCloudSave') || ensureButton('masterBtnCloudSave','☁ クラウドに保存','btn',function(){click('btnCloudSave');});
+    cloud.textContent='☁ クラウドに保存';
+    saveActions.appendChild(local); saveActions.appendChild(json); saveActions.appendChild(cloud);
+    save.appendChild(saveActions);
+    top.appendChild(save);
+    pane.appendChild(top);
+
+    var readGrid=make('div','master-v694-grid-2');
+
+    var jsonCard=make('div','master-v694-card');
+    jsonCard.appendChild(make('h4',null,'外部ファイルから読み込む'));
+    jsonCard.appendChild(make('p',null,'JSONバックアップファイルを読み込んで、作業データを復元します。'));
+    var jsonActions=make('div','master-v694-actions one');
+    var jsonLoad=ensureButton('masterBtnJsonLoad','📂 JSONを読み込む','btn btn-primary',openJson);
+    jsonActions.appendChild(jsonLoad);
+    jsonCard.appendChild(jsonActions);
+    jsonCard.appendChild(ensureJsonInput());
+    readGrid.appendChild(jsonCard);
+
+    var cloudCard=make('div','master-v694-card');
+    cloudCard.appendChild(make('h4',null,'クラウドから開く'));
+    cloudCard.appendChild(make('p',null,'クラウド保存済みのデータを一覧から選択して開きます。'));
+    var select=byId('masterCloudProjectSelect');
+    if(select){
+      var field=make('div','master-save-field');
+      field.innerHTML='<label>クラウド保存データ</label>';
+      field.appendChild(select);
+      cloudCard.appendChild(field);
+    }
+    var cloudActions=make('div','master-v694-actions two');
+    var list=byId('masterBtnCloudList') || ensureButton('masterBtnCloudList','一覧を更新','btn',function(){click('btnCloudList');});
+    list.textContent='一覧を更新';
+    var load=byId('masterBtnCloudLoad') || ensureButton('masterBtnCloudLoad','クラウドから開く','btn btn-primary',function(){click('btnCloudLoad');});
+    load.textContent='クラウドから開く';
+    cloudActions.appendChild(list); cloudActions.appendChild(load);
+    cloudCard.appendChild(cloudActions);
+    readGrid.appendChild(cloudCard);
+    pane.appendChild(readGrid);
+
+    var browserCard=make('div','master-v694-card');
+    browserCard.appendChild(make('h4',null,'このPCの保存データ'));
+    browserCard.appendChild(make('p',null,'このブラウザに保存したデータを管理します。'));
+    var browser=byId('masterBrowserSlot');
+    if(browser)browserCard.appendChild(browser);
+    pane.appendChild(browserCard);
+
+    return pane;
+  }
+  function cloudSettingsPane(){
+    var pane=make('div','master-v694-pane');
+    pane.dataset.v694Pane='cloud';
+
+    var grid=make('div','master-v694-grid-2');
+
+    var setting=make('div','master-v694-card');
+    setting.appendChild(make('h4',null,'クラウド設定'));
+    setting.appendChild(make('p',null,'Apps Script URLを設定すると、Google Driveとスプレッドシートに保存できます。'));
+    var url=byId('masterCloudUrlMirror');
+    if(url){
+      var field=make('div','master-save-field');
+      field.innerHTML='<label>Apps Script URL</label>';
+      field.appendChild(url);
+      setting.appendChild(field);
+    }
+    var settingActions=make('div','master-v694-actions two');
+    var test=byId('masterBtnCloudTest') || ensureButton('masterBtnCloudTest','接続テスト','btn btn-primary',function(){click('btnCloudSaveTest');});
+    test.textContent='接続テスト';
+    var copyScript=byId('masterBtnCopyScript') || ensureButton('masterBtnCopyScript','コードをコピー','btn',function(){click('btnCopyCloudScript');});
+    copyScript.textContent='コードをコピー';
+    settingActions.appendChild(test); settingActions.appendChild(copyScript);
+    setting.appendChild(settingActions);
+    grid.appendChild(setting);
+
+    var sheet=make('div','master-v694-card');
+    sheet.appendChild(make('h4',null,'紐づけ中のスプレッドシート'));
+    sheet.appendChild(make('p',null,'クラウド保存で使っているスプレッドシートを確認します。'));
+    var result=byId('masterSheetResult');
+    if(result)sheet.appendChild(result);
+    var inline=byId('linkedSheetInlinePanel');
+    if(inline)sheet.appendChild(inline);
+    var sheetActions=make('div','master-v694-actions');
+    var show=ensureButton('masterBtnShowLinkedSheetV694','紐づけシートを表示','btn',openSheet);
+    var open=ensureButton('masterBtnOpenSheetV694','シートを開く','btn btn-primary',openSheet);
+    var copy=ensureButton('masterBtnCopySheetV694','URLをコピー','btn',function(){click('masterSheetCopyBtn') || click('linkedSheetInlineCopy') || click('btnCopyCloudSheetUrl');});
+    sheetActions.appendChild(show); sheetActions.appendChild(open); sheetActions.appendChild(copy);
+    sheet.appendChild(sheetActions);
+    grid.appendChild(sheet);
+    pane.appendChild(grid);
+
+    var code=byId('masterCloudCodeMirror');
+    if(code){
+      var codeCard=make('div','master-v694-card');
+      codeCard.appendChild(make('h4',null,'Apps Script用コード'));
+      codeCard.appendChild(make('p',null,'Apps Scriptを更新する時にコピーして貼り付けます。'));
+      var codeField=make('div','master-save-field');
+      codeField.appendChild(code);
+      codeCard.appendChild(codeField);
+      pane.appendChild(codeCard);
+    }
+    return pane;
+  }
+  function organizePane(){
+    var pane=make('div','master-v694-pane');
+    pane.dataset.v694Pane='organize';
+
+    var grid=make('div','master-v694-grid-2');
+
+    var safe=make('div','master-v694-card');
+    safe.appendChild(make('h4',null,'安全な整理'));
+    safe.appendChild(make('p',null,'保存先スプレッドシートの見た目整理や、重複データの整理を行います。'));
+    var safeActions=make('div','master-v694-actions two');
+    var organize=byId('masterBtnOrganizeSheet') || ensureButton('masterBtnOrganizeSheet','スプレッドシートを整える','btn',function(){click('btnCloudOrganizeSheet');});
+    organize.textContent='スプレッドシートを整える';
+    var dedupe=byId('masterBtnDeduplicate') || ensureButton('masterBtnDeduplicate','重複データを整理','btn',function(){click('btnCloudDeduplicate');});
+    dedupe.textContent='重複データを整理';
+    safeActions.appendChild(organize); safeActions.appendChild(dedupe);
+    safe.appendChild(safeActions);
+    grid.appendChild(safe);
+
+    var confirm=make('div','master-v694-card');
+    confirm.appendChild(make('h4',null,'保存先確認'));
+    confirm.appendChild(make('p',null,'保存先のスプレッドシートを開いて、保存データを直接確認できます。'));
+    var confirmActions=make('div','master-v694-actions one');
+    var openBtn=byId('masterBtnOpenSheet') || ensureButton('masterBtnOpenSheet','スプレッドシートを開く','btn btn-primary',openSheet);
+    openBtn.textContent='スプレッドシートを開く';
+    confirmActions.appendChild(openBtn);
+    confirm.appendChild(confirmActions);
+    grid.appendChild(confirm);
+
+    pane.appendChild(grid);
+
+    var danger=make('div','master-v694-card master-v694-danger');
+    danger.appendChild(make('h4',null,'危険な操作'));
+    danger.appendChild(make('div','master-v694-danger-note','クラウド保存を削除すると、Google Driveの保存ファイルとスプレッドシートの該当行が削除されます。必要なものだけ実行してください。'));
+    var dangerActions=make('div','master-v694-actions one');
+    var del=byId('masterBtnCloudDelete') || ensureButton('masterBtnCloudDelete','クラウド保存を削除','btn btn-danger',function(){click('btnCloudDelete');});
+    del.textContent='クラウド保存を削除';
+    del.classList.add('danger');
+    dangerActions.appendChild(del);
+    danger.appendChild(dangerActions);
+    pane.appendChild(danger);
+
+    return pane;
+  }
+  function activate(tabKey, modal){
+    modal=modal||byId('masterSaveModal');
+    if(!modal)return;
+    qsa('.master-save-modal-tab',modal).forEach(function(btn){
+      var active=btn.dataset.v694Tab===tabKey;
+      btn.classList.toggle('active',active);
+      btn.setAttribute('aria-selected',active?'true':'false');
+    });
+    qsa('.master-v694-pane',modal).forEach(function(p){
+      p.classList.toggle('active',p.dataset.v694Pane===tabKey);
+    });
+  }
+  function transform(){
+    var modal=byId('masterSaveModal');
+    if(!modal)return false;
+    if(modal.dataset.v694Ready==='1'){
+      activate(modal.dataset.v694CurrentTab||'save-load',modal);
+      return true;
+    }
+
+    modal.classList.add('save-manager-v694');
+    var tabs=qs('.master-save-modal-tabs',modal);
+    var body=qs('.master-save-modal-body',modal);
+    if(!tabs||!body)return false;
+
+    // Keep source elements available by moving them into the new panes.
+    var panes={
+      saveLoad: saveLoadPane(),
+      cloud: cloudSettingsPane(),
+      organize: organizePane()
+    };
+
+    tabs.innerHTML='';
+    [
+      ['save-load','保存・読み込み'],
+      ['cloud','クラウド設定'],
+      ['organize','データ整理']
+    ].forEach(function(pair,i){
+      var btn=document.createElement('button');
+      btn.type='button';
+      btn.className='master-save-modal-tab'+(i===0?' active':'');
+      btn.dataset.v694Tab=pair[0];
+      btn.textContent=pair[1];
+      btn.setAttribute('aria-selected',i===0?'true':'false');
+      btn.addEventListener('click',function(){
+        modal.dataset.v694CurrentTab=pair[0];
+        activate(pair[0],modal);
+      });
+      tabs.appendChild(btn);
+    });
+
+    body.innerHTML='';
+    body.appendChild(panes.saveLoad);
+    body.appendChild(panes.cloud);
+    body.appendChild(panes.organize);
+
+    modal.dataset.v694Ready='1';
+    modal.dataset.v694CurrentTab='save-load';
+    activate('save-load',modal);
+    return true;
+  }
+  function scheduleTransform(){
+    [0,80,200,500,1000,1800].forEach(function(ms){setTimeout(transform,ms);});
+  }
+  var prevOpen=window.openMasterSaveModal;
+  window.openMasterSaveModal=function(){
+    if(typeof prevOpen==='function')prevOpen.apply(this,arguments);
+    scheduleTransform();
+  };
+  function bindSummaryWatcher(){
+    var summary=qs('.project-client-management-summary');
+    if(summary&&summary.dataset.v694Watch!=='1'){
+      summary.dataset.v694Watch='1';
+      summary.addEventListener('click',scheduleTransform,true);
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){bindSummaryWatcher();scheduleTransform();});
+  else {bindSummaryWatcher();scheduleTransform();}
+  [300,800,1500,3000].forEach(function(ms){setTimeout(function(){bindSummaryWatcher();scheduleTransform();},ms);});
+})();
+</script>
+
+
+<style id="uiClarityV695Style">
+  .v695-help-grid{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:8px!important;
+    margin-top:8px!important;
+  }
+  .v695-help-item{
+    border:1px solid #dbeafe!important;
+    border-radius:10px!important;
+    background:#f8fbff!important;
+    padding:9px!important;
+    font-size:11.5px!important;
+    line-height:1.55!important;
+    color:#475569!important;
+  }
+  .v695-help-item strong{
+    display:block!important;
+    margin-bottom:3px!important;
+    color:#1d4ed8!important;
+    font-size:12px!important;
+    font-weight:900!important;
+  }
+  .v695-inline-note{
+    border:1px solid #e2e8f0!important;
+    border-radius:10px!important;
+    background:#f8fafc!important;
+    padding:9px!important;
+    font-size:11.5px!important;
+    line-height:1.55!important;
+    color:#64748b!important;
+  }
+  .v695-new-project-note{
+    margin-top:8px!important;
+    border:1px solid #fed7aa!important;
+    background:#fff7ed!important;
+    color:#9a3412!important;
+    border-radius:10px!important;
+    padding:9px!important;
+    font-size:11.5px!important;
+    line-height:1.55!important;
+  }
+  .v695-button-label-fixed{
+    white-space:normal!important;
+    line-height:1.35!important;
+  }
+  #masterSaveModal.save-manager-v694 .master-v694-card[data-v695-kind="save"] .master-v694-actions{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  @media(max-width:860px){
+    .v695-help-grid{grid-template-columns:1fr!important;}
+    #masterSaveModal.save-manager-v694 .master-v694-card[data-v695-kind="save"] .master-v694-actions{
+      grid-template-columns:1fr!important;
+    }
+  }
+</style>
+<script id="uiClarityV695Script">
+(function(){
+  'use strict';
+  function byId(id){return document.getElementById(id);}
+  function qs(sel,root){return (root||document).querySelector(sel);}
+  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
+  function txt(el,value){if(el && value && el.textContent!==value)el.textContent=value;}
+  function toast(msg,type){if(typeof showToast==='function')showToast(msg,type||'success');}
+
+  function renameButtons(){
+    var pairs=[
+      ['btnLoadJsonProjectFile','📂 JSONを読み込む'],
+      ['btnLoadProjectFile','📂 JSONを読み込む'],
+      ['masterBtnJsonLoad','📂 JSONを読み込む'],
+      ['btnDownloadProject','📦 JSONで保存'],
+      ['masterBtnJsonSave','📦 JSONで保存'],
+      ['btnAddArea','＋ エリアを追加'],
+      ['addAreaBtn','＋ エリアを追加'],
+      ['btnAddRichMenu','＋ メニュー追加'],
+      ['addMenuBtn','＋ メニュー追加'],
+      ['btnAddUser','＋ ユーザーを追加'],
+      ['addUserBtn','＋ ユーザーを追加'],
+      ['masterBtnCloudSave','☁ クラウドに保存'],
+      ['masterBtnCloudLoad','クラウドから開く'],
+      ['masterBtnCloudList','一覧を更新'],
+      ['masterBtnOrganizeSheet','スプレッドシートを整える'],
+      ['masterBtnDeduplicate','重複データを整理'],
+      ['masterBtnCloudDelete','クラウド保存を削除']
+    ];
+    pairs.forEach(function(pair){
+      var el=byId(pair[0]);
+      if(el){
+        txt(el,pair[1]);
+        el.classList.add('v695-button-label-fixed');
+      }
+    });
+
+    qsa('button').forEach(function(btn){
+      var t=(btn.textContent||'').trim();
+      if(t==='＋ 新規作成' || t==='+ 新規作成' || t==='新規作成'){
+        btn.textContent='＋ 新しい作業を開始';
+        btn.classList.add('v695-button-label-fixed');
+        btn.dataset.v695NewProjectButton='1';
+      }else if(t==='＋ 追加' || t==='+ 追加'){
+        var area=btn.closest('#panel-areas,.area-list,.area-main-block');
+        var user=btn.closest('#panel-users,#drawer-users-section,.user-list,.default-user-list');
+        var menu=btn.closest('.rich-menu-tabs,.menu-tabs,.menu-tab-row,.tab-list');
+        if(area)btn.textContent='＋ エリアを追加';
+        else if(user)btn.textContent='＋ ユーザーを追加';
+        else if(menu)btn.textContent='＋ メニュー追加';
+        else btn.textContent='＋ 追加する内容を選択';
+        btn.classList.add('v695-button-label-fixed');
+      }else if(t==='＋ エリア追加' || t==='+ エリア追加'){
+        btn.textContent='＋ エリアを追加';
+        btn.classList.add('v695-button-label-fixed');
+      }
+    });
+  }
+
+  function addSaveExplanations(){
+    var modal=byId('masterSaveModal');
+    if(!modal)return;
+    var saveCard=qs('.master-v694-card', qs('.master-v694-pane[data-v694-pane="save-load"]', modal));
+    // find card with 保存する heading
+    qsa('.master-v694-card', modal).forEach(function(card){
+      var h=qs('h4',card);
+      if(h && h.textContent.indexOf('保存する')!==-1){
+        saveCard=card;
+      }
+    });
+    if(saveCard && !saveCard.querySelector('.v695-help-grid')){
+      saveCard.dataset.v695Kind='save';
+      var grid=document.createElement('div');
+      grid.className='v695-help-grid';
+      grid.innerHTML=
+        '<div class="v695-help-item"><strong>このPCに保存</strong>普段の作業保存用。このブラウザ内に保存します。</div>'+
+        '<div class="v695-help-item"><strong>JSONで保存</strong>バックアップ・別PC用。ファイルとして保存します。</div>'+
+        '<div class="v695-help-item"><strong>クラウドに保存</strong>Google Driveとスプレッドシートで管理します。</div>';
+      var actions=qs('.master-v694-actions',saveCard);
+      if(actions)actions.insertAdjacentElement('afterend',grid);
+      else saveCard.appendChild(grid);
+    }
+
+    qsa('.master-v694-card',modal).forEach(function(card){
+      var h=qs('h4',card);
+      if(h && h.textContent.indexOf('外部ファイルから読み込む')!==-1 && !card.querySelector('.v695-inline-note')){
+        var note=document.createElement('div');
+        note.className='v695-inline-note';
+        note.textContent='JSON保存したバックアップファイルを選択すると、作業データを復元します。';
+        card.appendChild(note);
+      }
+      if(h && h.textContent.indexOf('クラウドから開く')!==-1 && !card.querySelector('.v695-inline-note')){
+        var note2=document.createElement('div');
+        note2.className='v695-inline-note';
+        note2.textContent='先に「一覧を更新」を押してから、開きたい保存データを選択してください。';
+        card.appendChild(note2);
+      }
+    });
+  }
+
+  function addNewProjectNote(){
+    var meta=qs('.project-meta-card');
+    if(!meta)return;
+    if(meta.querySelector('.v695-new-project-note'))return;
+    var newBtn=qsa('button',meta).find(function(btn){
+      return (btn.textContent||'').indexOf('新しい作業を開始')!==-1 || (btn.textContent||'').indexOf('新規作成')!==-1;
+    });
+    if(!newBtn)return;
+    var note=document.createElement('div');
+    note.className='v695-new-project-note';
+    note.textContent='新しい作業を始める前に、必要な場合は先に保存してください。';
+    newBtn.insertAdjacentElement('afterend',note);
+  }
+
+  function patchNewProjectConfirm(){
+    qsa('button').forEach(function(btn){
+      var t=(btn.textContent||'').trim();
+      if(btn.dataset.v695ConfirmPatched==='1')return;
+      if(t.indexOf('新しい作業を開始')===-1 && t.indexOf('新規作成')===-1)return;
+      btn.dataset.v695ConfirmPatched='1';
+      btn.addEventListener('click',function(e){
+        var message='新しい作業を開始しますか？\n\n現在の作業内容は画面から消えます。\n必要な場合は先に保存してください。';
+        if(!window.confirm(message)){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return false;
+        }
+      },true);
+    });
+  }
+
+  function improveSaveManagerTabs(){
+    var modal=byId('masterSaveModal');
+    if(!modal)return;
+    qsa('.master-save-modal-tab',modal).forEach(function(btn){
+      var t=(btn.textContent||'').trim();
+      if(t==='保存・読み込み')btn.title='このPC保存・JSON保存・クラウド保存・読み込みを行います';
+      if(t==='クラウド設定')btn.title='Apps Script URLとスプレッドシート連携を設定します';
+      if(t==='データ整理')btn.title='シート整理・重複整理・削除を行います';
+    });
+  }
+
+  function run(){
+    renameButtons();
+    addSaveExplanations();
+    addNewProjectNote();
+    patchNewProjectConfirm();
+    improveSaveManagerTabs();
+  }
+
+  var prevOpen=window.openMasterSaveModal;
+  if(prevOpen && !prevOpen.__v695Wrapped){
+    var wrapped=function(){
+      var result=prevOpen.apply(this,arguments);
+      [80,200,500,1000].forEach(function(ms){setTimeout(run,ms);});
+      return result;
+    };
+    wrapped.__v695Wrapped=true;
+    window.openMasterSaveModal=wrapped;
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);
+  else run();
+  [300,800,1500,3000,5000].forEach(function(ms){setTimeout(run,ms);});
+})();
+</script>
+
+
+<style id="uiDirectFixV696Style">
+  #masterSaveModal.v696-save-ui .master-save-modal-tabs{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  #masterSaveModal.v696-save-ui .master-save-modal-body{
+    display:block!important;
+  }
+  .v696-pane{display:none!important;gap:14px!important;}
+  .v696-pane.active{display:grid!important;}
+  .v696-grid-2{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:14px!important;
+  }
+  .v696-card{
+    background:#fff!important;
+    border:1px solid #dbe3ee!important;
+    border-radius:14px!important;
+    padding:14px!important;
+    box-shadow:0 1px 4px rgba(15,23,42,.06)!important;
+    display:grid!important;
+    gap:12px!important;
+  }
+  .v696-card h4{
+    margin:0!important;
+    font-size:15px!important;
+    font-weight:900!important;
+    color:#0f172a!important;
+  }
+  .v696-card p{
+    margin:0!important;
+    font-size:12px!important;
+    line-height:1.6!important;
+    color:#64748b!important;
+  }
+  .v696-current{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:10px!important;
+  }
+  .v696-current-box{
+    border:1px solid #dbeafe!important;
+    border-radius:12px!important;
+    background:#eff6ff!important;
+    padding:10px!important;
+    display:grid!important;
+    gap:4px!important;
+  }
+  .v696-current-box .label{
+    font-size:11px!important;
+    font-weight:900!important;
+    color:#1d4ed8!important;
+  }
+  .v696-current-box .value{
+    font-size:13px!important;
+    font-weight:900!important;
+    color:#0f172a!important;
+    word-break:break-word!important;
+  }
+  .v696-actions{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  .v696-actions.two{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .v696-actions.one{grid-template-columns:1fr!important;}
+  .v696-actions button,
+  .v696-actions a{
+    min-height:40px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:10px!important;
+    font-size:12px!important;
+    font-weight:900!important;
+    text-decoration:none!important;
+    cursor:pointer!important;
+    white-space:normal!important;
+    line-height:1.35!important;
+  }
+  .v696-help-grid{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  .v696-help-item{
+    border:1px solid #dbeafe!important;
+    border-radius:10px!important;
+    background:#f8fbff!important;
+    padding:9px!important;
+    font-size:11.5px!important;
+    line-height:1.55!important;
+    color:#475569!important;
+  }
+  .v696-help-item strong{
+    display:block!important;
+    margin-bottom:3px!important;
+    color:#1d4ed8!important;
+    font-size:12px!important;
+    font-weight:900!important;
+  }
+  .v696-note{
+    border:1px solid #e2e8f0!important;
+    border-radius:10px!important;
+    background:#f8fafc!important;
+    padding:9px!important;
+    font-size:11.5px!important;
+    line-height:1.55!important;
+    color:#64748b!important;
+  }
+  .v696-danger{
+    border-color:#fecaca!important;
+    background:#fff7f7!important;
+  }
+  .v696-danger h4{color:#991b1b!important;}
+  .v696-danger-note{
+    border:1px solid #fecaca!important;
+    border-radius:10px!important;
+    background:#fff!important;
+    color:#991b1b!important;
+    padding:10px!important;
+    font-size:11.5px!important;
+    line-height:1.6!important;
+  }
+  .v696-version-marker{
+    display:none!important;
+  }
+  @media(max-width:860px){
+    .v696-grid-2,.v696-current,.v696-help-grid{grid-template-columns:1fr!important;}
+    .v696-actions,.v696-actions.two{grid-template-columns:1fr!important;}
+  }
+</style>
+<script id="uiDirectFixV696Script">
+(function(){
+  'use strict';
+  var fixing=false;
+  function byId(id){return document.getElementById(id);}
+  function qs(sel,root){return (root||document).querySelector(sel);}
+  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
+  function toast(msg,type){if(typeof showToast==='function')showToast(msg,type||'success');}
+  function click(id){var el=byId(id); if(el){el.click(); return true;} return false;}
+  function make(tag,cls,html){
+    var el=document.createElement(tag);
+    if(cls)el.className=cls;
+    if(html!=null)el.innerHTML=html;
+    return el;
+  }
+  function normalizeLabels(){
+    var map={
+      btnAddUser:'＋ ユーザーを追加',
+      btnLoadJsonProjectFile:'📂 JSONを読み込む',
+      btnLoadProjectFile:'📂 JSONを読み込む',
+      btnDownloadProject:'📦 JSONで保存',
+      btnBackupProjectSave:'📦 JSONで保存',
+      btnApiUpload:'💾 このPCに保存',
+      masterBtnCloudSave:'☁ クラウドに保存',
+      masterBtnCloudLoad:'クラウドから開く',
+      masterBtnCloudList:'一覧を更新',
+      masterBtnOrganizeSheet:'スプレッドシートを整える',
+      masterBtnDeduplicate:'重複データを整理',
+      masterBtnCloudDelete:'クラウド保存を削除'
+    };
+    Object.keys(map).forEach(function(id){
+      var el=byId(id);
+      if(el && el.textContent.trim()!==map[id])el.textContent=map[id];
+    });
+    qsa('button,.menu-add').forEach(function(el){
+      var t=(el.textContent||'').trim();
+      if(t==='+ 追加' || t==='＋ 追加'){
+        if(el.classList.contains('menu-add'))el.textContent='＋ メニュー追加';
+        else if(el.closest('#panel-users,#drawer-users-section,.user-add-row,.user-list'))el.textContent='＋ ユーザーを追加';
+        else if(el.closest('#panel-areas,.area-main-block,.area-list'))el.textContent='＋ エリアを追加';
+      }
+      if(t==='+ エリア追加' || t==='＋ エリア追加')el.textContent='＋ エリアを追加';
+      if(t==='+ 新規作成' || t==='＋ 新規作成' || t==='新規作成')el.textContent='＋ 新しい作業を開始';
+    });
+  }
+  function ensureJsonInput(){
+    var input=byId('projectFileInput');
+    if(!input){
+      input=document.createElement('input');
+      input.type='file';
+      input.id='projectFileInput';
+      input.accept='application/json,.json';
+      input.style.display='none';
+      document.body.appendChild(input);
+    }
+    if(input.dataset.v696Bound!=='1'){
+      input.dataset.v696Bound='1';
+      input.addEventListener('change',function(e){
+        var file=e.target.files&&e.target.files[0];
+        if(file){
+          if(typeof readProjectFile==='function')readProjectFile(file);
+          else toast('JSON読み込み処理が見つかりません。ページを再読み込みしてください。','error');
+        }
+        e.target.value='';
+      });
+    }
+    return input;
+  }
+  function copyTextValue(text){
+    if(!text){toast('コピーするURLがまだありません。','error');return;}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){toast('URLをコピーしました','success');}).catch(function(){fallbackCopy(text);});
+    }else fallbackCopy(text);
+  }
+  function fallbackCopy(text){
+    try{
+      var ta=document.createElement('textarea');
+      ta.value=text;
+      ta.style.position='fixed';
+      ta.style.left='-9999px';
+      document.body.appendChild(ta);
+      ta.focus();ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      toast('URLをコピーしました','success');
+    }catch(e){
+      toast('自動コピーできませんでした。URLを選択してコピーしてください。','error');
+    }
+  }
+  function getSheetUrl(){
+    var ids=['masterSheetResultLink','cloudSheetDirectLink','linkedSheetInlineOpen'];
+    for(var i=0;i<ids.length;i++){
+      var a=byId(ids[i]);
+      if(a&&a.href&&a.href.indexOf('http')===0)return a.href;
+    }
+    try{return localStorage.getItem('richmenu_plus_cloud_spreadsheet_url_v1')||'';}catch(_){return '';}
+  }
+  function updateCurrentInfo(){
+    var client=byId('v696CurrentClient');
+    var file=byId('v696CurrentFile');
+    var srcClient=byId('clientProjectNameInput');
+    var srcFile=byId('projectFileName');
+    if(client)client.textContent=(srcClient&&srcClient.value)||'未入力';
+    if(file)file.textContent=(srcFile&&srcFile.value)||'未入力';
+  }
+  function syncCloudSelect(){
+    var src=byId('cloudProjectSelect');
+    var dst=byId('v696CloudProjectSelect');
+    if(!src||!dst)return;
+    var current=dst.value;
+    dst.innerHTML=src.innerHTML||'<option value="">クラウド保存データを選択</option>';
+    if(current)dst.value=current;
+  }
+  function openSheet(){
+    if(typeof window.cloudOpenSpreadsheet==='function')window.cloudOpenSpreadsheet();
+    else click('btnCloudOpenSheetTop')||click('masterBtnOpenSheet');
+  }
+  function setTab(modal,key){
+    qsa('.master-save-modal-tab',modal).forEach(function(btn){
+      var active=btn.dataset.v696Tab===key;
+      btn.classList.toggle('active',active);
+      btn.setAttribute('aria-selected',active?'true':'false');
+    });
+    qsa('.v696-pane',modal).forEach(function(p){
+      p.classList.toggle('active',p.dataset.v696Pane===key);
+    });
+    modal.dataset.v696Current=key;
+  }
+  function buildSaveLoadPane(){
+    var pane=make('div','v696-pane active'); pane.dataset.v696Pane='save-load';
+
+    var top=make('div','v696-grid-2');
+
+    var current=make('div','v696-card');
+    current.appendChild(make('h4',null,'現在の作業'));
+    current.appendChild(make('p',null,'保存前に、クライアント名と保存名を確認してください。'));
+    current.appendChild(make('div','v696-current',
+      '<div class="v696-current-box"><div class="label">クライアント名</div><div class="value" id="v696CurrentClient">未入力</div></div>'+
+      '<div class="v696-current-box"><div class="label">保存名</div><div class="value" id="v696CurrentFile">未入力</div></div>'
+    ));
+    top.appendChild(current);
+
+    var save=make('div','v696-card');
+    save.appendChild(make('h4',null,'保存する'));
+    save.appendChild(make('p',null,'保存方法を選んでください。普段は「このPCに保存」、バックアップは「JSONで保存」、共有管理は「クラウドに保存」です。'));
+    var saveActions=make('div','v696-actions');
+    var local=make('button','btn btn-primary','💾 このPCに保存');
+    local.type='button'; local.onclick=function(){click('btnApiUpload');};
+    var json=make('button','btn','📦 JSONで保存');
+    json.type='button'; json.onclick=function(){if(typeof downloadProjectFile==='function')downloadProjectFile();else click('btnDownloadProject');};
+    var cloud=make('button','btn','☁ クラウドに保存');
+    cloud.type='button'; cloud.onclick=function(){click('btnCloudSave');};
+    saveActions.append(local,json,cloud);
+    save.appendChild(saveActions);
+    save.appendChild(make('div','v696-help-grid',
+      '<div class="v696-help-item"><strong>このPCに保存</strong>普段の作業保存用。このブラウザ内に保存します。</div>'+
+      '<div class="v696-help-item"><strong>JSONで保存</strong>バックアップ・別PC用。ファイルとして保存します。</div>'+
+      '<div class="v696-help-item"><strong>クラウドに保存</strong>Google Driveとスプレッドシートで管理します。</div>'
+    ));
+    top.appendChild(save);
+    pane.appendChild(top);
+
+    var read=make('div','v696-grid-2');
+    var jsonLoad=make('div','v696-card');
+    jsonLoad.appendChild(make('h4',null,'外部ファイルから読み込む'));
+    jsonLoad.appendChild(make('p',null,'JSON保存したバックアップファイルから、作業データを復元します。'));
+    var jsonAct=make('div','v696-actions one');
+    var jsonBtn=make('button','btn btn-primary','📂 JSONを読み込む');
+    jsonBtn.type='button'; jsonBtn.onclick=function(){ensureJsonInput().click();};
+    jsonAct.appendChild(jsonBtn);
+    jsonLoad.appendChild(jsonAct);
+    jsonLoad.appendChild(make('div','v696-note','JSON保存したバックアップファイルを選択してください。'));
+    read.appendChild(jsonLoad);
+
+    var cloudLoad=make('div','v696-card');
+    cloudLoad.appendChild(make('h4',null,'クラウドから開く'));
+    cloudLoad.appendChild(make('p',null,'クラウド保存済みのデータを一覧から選択して開きます。'));
+    var field=make('div','master-save-field','<label>クラウド保存データ</label>');
+    var select=make('select',null,'<option value="">クラウド保存データを選択</option>');
+    select.id='v696CloudProjectSelect';
+    field.appendChild(select);
+    cloudLoad.appendChild(field);
+    var cloudAct=make('div','v696-actions two');
+    var list=make('button','btn','一覧を更新');
+    list.type='button'; list.onclick=function(){click('btnCloudList'); setTimeout(syncCloudSelect,300); setTimeout(syncCloudSelect,1000);};
+    var open=make('button','btn btn-primary','クラウドから開く');
+    open.type='button'; open.onclick=function(){
+      var src=byId('cloudProjectSelect'), dst=byId('v696CloudProjectSelect');
+      if(src&&dst){src.value=dst.value;src.dispatchEvent(new Event('change',{bubbles:true}));}
+      click('btnCloudLoad');
+    };
+    cloudAct.append(list,open);
+    cloudLoad.appendChild(cloudAct);
+    cloudLoad.appendChild(make('div','v696-note','先に「一覧を更新」を押してから、開きたい保存データを選択してください。'));
+    read.appendChild(cloudLoad);
+    pane.appendChild(read);
+
+    var browser=make('div','v696-card');
+    browser.appendChild(make('h4',null,'このPCの保存データ'));
+    browser.appendChild(make('p',null,'このブラウザに保存した作業データを開く・名前変更・削除できます。'));
+    var slot=make('div','master-save-browser-slot');
+    slot.id='v696BrowserSlot';
+    var actions=qs('.client-manager-actions');
+    var listBox=qs('.client-manager-list');
+    if(actions)slot.appendChild(actions);
+    if(listBox)slot.appendChild(listBox);
+    browser.appendChild(slot);
+    pane.appendChild(browser);
+
+    setTimeout(function(){updateCurrentInfo();syncCloudSelect();},0);
+    return pane;
+  }
+  function buildCloudPane(){
+    var pane=make('div','v696-pane'); pane.dataset.v696Pane='cloud';
+
+    var grid=make('div','v696-grid-2');
+
+    var setting=make('div','v696-card');
+    setting.appendChild(make('h4',null,'クラウド設定'));
+    setting.appendChild(make('p',null,'Apps Script URLを設定すると、Google Driveとスプレッドシートに保存できます。'));
+    var field=make('div','master-save-field','<label>Apps Script URL</label>');
+    var input=make('input');
+    input.type='url'; input.id='v696CloudUrl'; input.placeholder='https://script.google.com/macros/s/xxxxx/exec';
+    var srcUrl=byId('cloudSaveEndpointInput')||byId('masterCloudUrlMirror');
+    if(srcUrl)input.value=srcUrl.value||'';
+    input.addEventListener('input',function(){
+      var src=byId('cloudSaveEndpointInput')||byId('masterCloudUrlMirror');
+      if(src){src.value=input.value;src.dispatchEvent(new Event('input',{bubbles:true}));}
+    });
+    field.appendChild(input);
+    setting.appendChild(field);
+    var actions=make('div','v696-actions two');
+    var test=make('button','btn btn-primary','接続テスト');
+    test.type='button'; test.onclick=function(){
+      var src=byId('cloudSaveEndpointInput')||byId('masterCloudUrlMirror');
+      if(src){src.value=input.value;src.dispatchEvent(new Event('input',{bubbles:true}));}
+      click('btnCloudSaveTest')||click('masterBtnCloudTest');
+    };
+    var copy=make('button','btn','コードをコピー');
+    copy.type='button'; copy.onclick=function(){click('btnCopyCloudScript')||click('masterBtnCopyScript');};
+    actions.append(test,copy);
+    setting.appendChild(actions);
+    grid.appendChild(setting);
+
+    var sheet=make('div','v696-card');
+    sheet.appendChild(make('h4',null,'紐づけ中のスプレッドシート'));
+    sheet.appendChild(make('p',null,'クラウド保存で使っているスプレッドシートを確認します。'));
+    var result=byId('masterSheetResult') || make('div','master-sheet-result','<div id="masterSheetResultMessage">保存先スプレッドシートのURLを取得すると、ここに表示されます。</div>');
+    sheet.appendChild(result);
+    var sheetActions=make('div','v696-actions');
+    var show=make('button','btn','紐づけシートを表示');
+    show.type='button'; show.onclick=openSheet;
+    var openBtn=make('button','btn btn-primary','シートを開く');
+    openBtn.type='button'; openBtn.onclick=openSheet;
+    var copyUrl=make('button','btn','URLをコピー');
+    copyUrl.type='button'; copyUrl.onclick=function(){copyTextValue(getSheetUrl());};
+    sheetActions.append(show,openBtn,copyUrl);
+    sheet.appendChild(sheetActions);
+    grid.appendChild(sheet);
+
+    pane.appendChild(grid);
+
+    var code=make('div','v696-card');
+    code.appendChild(make('h4',null,'Apps Script用コード'));
+    code.appendChild(make('p',null,'Apps Scriptを更新する時にコピーして貼り付けます。'));
+    var codeBox=byId('masterCloudCodeMirror') || byId('cloudAppsScriptCode');
+    if(codeBox)code.appendChild(codeBox);
+    pane.appendChild(code);
+    return pane;
+  }
+  function buildOrganizePane(){
+    var pane=make('div','v696-pane'); pane.dataset.v696Pane='organize';
+
+    var grid=make('div','v696-grid-2');
+    var safe=make('div','v696-card');
+    safe.appendChild(make('h4',null,'安全な整理'));
+    safe.appendChild(make('p',null,'保存先スプレッドシートの見た目整理や、重複データの整理を行います。'));
+    var safeActions=make('div','v696-actions two');
+    var organize=make('button','btn','スプレッドシートを整える');
+    organize.type='button'; organize.onclick=function(){click('btnCloudOrganizeSheet')||click('masterBtnOrganizeSheet');};
+    var dedupe=make('button','btn','重複データを整理');
+    dedupe.type='button'; dedupe.onclick=function(){click('btnCloudDeduplicate')||click('masterBtnDeduplicate');};
+    safeActions.append(organize,dedupe);
+    safe.appendChild(safeActions);
+    grid.appendChild(safe);
+
+    var confirm=make('div','v696-card');
+    confirm.appendChild(make('h4',null,'保存先確認'));
+    confirm.appendChild(make('p',null,'保存先のスプレッドシートを開いて、保存データを直接確認できます。'));
+    var confirmActions=make('div','v696-actions one');
+    var openSheetBtn=make('button','btn btn-primary','スプレッドシートを開く');
+    openSheetBtn.type='button'; openSheetBtn.onclick=openSheet;
+    confirmActions.appendChild(openSheetBtn);
+    confirm.appendChild(confirmActions);
+    grid.appendChild(confirm);
+    pane.appendChild(grid);
+
+    var danger=make('div','v696-card v696-danger');
+    danger.appendChild(make('h4',null,'危険な操作'));
+    danger.appendChild(make('div','v696-danger-note','クラウド保存を削除すると、Google Driveの保存ファイルとスプレッドシートの該当行が削除されます。必要なものだけ実行してください。'));
+    var dangerActions=make('div','v696-actions one');
+    var del=make('button','btn btn-danger danger','クラウド保存を削除');
+    del.type='button'; del.onclick=function(){click('btnCloudDelete')||click('masterBtnCloudDelete');};
+    dangerActions.appendChild(del);
+    danger.appendChild(dangerActions);
+    pane.appendChild(danger);
+    return pane;
+  }
+  function rebuildSaveModal(){
+    var modal=byId('masterSaveModal');
+    if(!modal || fixing)return;
+    fixing=true;
+    try{
+      modal.classList.add('v696-save-ui');
+      var tabs=qs('.master-save-modal-tabs',modal);
+      var body=qs('.master-save-modal-body',modal);
+      if(!tabs||!body)return;
+      var current=modal.dataset.v696Current||'save-load';
+      tabs.innerHTML='';
+      [
+        ['save-load','保存・読み込み'],
+        ['cloud','クラウド設定'],
+        ['organize','データ整理']
+      ].forEach(function(pair,i){
+        var btn=document.createElement('button');
+        btn.type='button';
+        btn.className='master-save-modal-tab'+(pair[0]===current?' active':'');
+        btn.dataset.v696Tab=pair[0];
+        btn.textContent=pair[1];
+        btn.setAttribute('aria-selected',pair[0]===current?'true':'false');
+        btn.addEventListener('click',function(){setTab(modal,pair[0]);});
+        tabs.appendChild(btn);
+      });
+      body.innerHTML='';
+      body.appendChild(buildSaveLoadPane());
+      body.appendChild(buildCloudPane());
+      body.appendChild(buildOrganizePane());
+      setTab(modal,current);
+      modal.dataset.v696Ready='1';
+    }finally{
+      fixing=false;
+    }
+  }
+  function patchNewProjectClick(){
+    qsa('button').forEach(function(btn){
+      var t=(btn.textContent||'').trim();
+      if(btn.dataset.v696NewConfirm==='1')return;
+      if(t.indexOf('新しい作業を開始')===-1)return;
+      btn.dataset.v696NewConfirm='1';
+      btn.addEventListener('click',function(e){
+        var ok=confirm('新しい作業を開始しますか？\n\n現在の作業内容は画面から消えます。\n必要な場合は先に保存してください。');
+        if(!ok){e.preventDefault();e.stopImmediatePropagation();return false;}
+      },true);
+    });
+  }
+  var scheduled=false;
+  function run(){
+    scheduled=false;
+    normalizeLabels();
+    rebuildSaveModal();
+    patchNewProjectClick();
+    updateCurrentInfo();
+    syncCloudSelect();
+  }
+  function schedule(){
+    if(scheduled)return;
+    scheduled=true;
+    setTimeout(run,60);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);
+  else run();
+  new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+  [300,800,1500,3000,5000].forEach(function(ms){setTimeout(run,ms);});
 })();
 </script>
 

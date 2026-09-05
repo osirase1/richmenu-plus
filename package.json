@@ -1,13 +1,13 @@
 {
   "name": "richmenu-plus-master-cloud",
-  "version": "6.9.3-json-load-input-fix",
+  "version": "6.9.8-security-reliability",
   "private": true,
-  "description": "RichMenu Plus master cloud edition v6.9.3 with JSON project file input recovery fix.",
+  "description": "RichMenu Plus master cloud edition v6.9.8 with secured cloud save, LINE validation, unsaved-change protection, and retained 3-tab save manager.",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "check": "node --check api/*.js",
-    "start": "vercel dev"
+    "check": "node -e \"const fs=require('fs'),cp=require('child_process');if(!fs.existsSync('api')){console.error('api/ がありません。LINE反映機能を含む正式構成では api/ が必要です。');process.exit(1)}const files=fs.readdirSync('api').filter(f=>f.endsWith('.js'));if(!files.length){console.error('api/*.js がありません。');process.exit(1)}for(const f of files){cp.execFileSync(process.execPath,['--check','api/'+f],{stdio:'inherit'})}\"",
+    "start": "npx vercel dev"
   }
 }
